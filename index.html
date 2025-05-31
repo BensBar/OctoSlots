@@ -1,3 +1,7 @@
+Create index.html and the sounds directory with a README file in the OctoSlots repository.
+
+File: index.html
+Content:
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -151,6 +155,9 @@
       top: 0;
       left: 0;
       transition: transform 0.1s linear;
+      /* Fix for black spaces */
+      backface-visibility: hidden;
+      will-change: transform;
     }
     
     .reel-item {
@@ -160,6 +167,10 @@
       height: clamp(150px, 30vh, 300px);
       width: 100%;
       overflow: hidden;
+      /* Fix for black spaces */
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
     
     .reel-item img {
@@ -475,7 +486,7 @@
   <header class="app-header">
     <div class="user-info">Welcome, BensBar</div>
     <div class="game-title">OctoSlots</div>
-    <div class="date-info">2025-05-31 22:20:26 UTC</div>
+    <div class="date-info">2025-05-31 23:02:48 UTC</div>
   </header>
   
   <div class="slot-machine-container">
@@ -679,11 +690,28 @@
         });
       }
       
-      // Reset reel to initial position
+      // Reset reel to initial position - IMPROVED VERSION
       function resetReelPosition(reelContainer) {
-        const symbolHeight = reelContainer.querySelector('.reel-item').offsetHeight;
-        // Position the reel to show the middle batch of symbols
-        const initialOffset = -symbolHeight * config.symbolsPerReel;
+        const symbols = reelContainer.querySelectorAll('.reel-item');
+        const symbolHeight = symbols[0].offsetHeight;
+        
+        // Create more buffer symbols to ensure no gaps
+        const totalSymbols = symbols.length;
+        const visibleArea = reelContainer.parentElement.offsetHeight;
+        
+        // Calculate how many symbols we need to cover the visible area plus some buffer
+        const neededSymbols = Math.ceil(visibleArea / symbolHeight) * 3;
+        
+        // Add more symbols if needed
+        if (totalSymbols < neededSymbols) {
+          const template = Array.from(symbols).map(s => s.cloneNode(true));
+          for (let i = 0; i < neededSymbols - totalSymbols; i++) {
+            reelContainer.appendChild(template[i % template.length].cloneNode(true));
+          }
+        }
+        
+        // Position the reel at a whole-symbol offset for clean alignment
+        const initialOffset = -symbolHeight * Math.floor(symbols.length / 3);
         reelContainer.style.transform = `translateY(${initialOffset}px)`;
       }
       
@@ -752,7 +780,7 @@
         });
       }
       
-      // Spin all reels with sequential stopping
+      // Spin all reels with sequential stopping - OPTION 1 IMPLEMENTATION
       async function spinAllReels() {
         if (state.spinning) return;
         
@@ -776,27 +804,38 @@
         // Start flashing lights
         startLights();
         
-        // Determine spin duration for each reel
+        // Determine spin durations for each reel
         const baseDuration = Math.random() * (config.spinDuration.max - config.spinDuration.min) + config.spinDuration.min;
         
-        // Spin each reel with increasing delays
+        // Start all reels spinning at the same time
+        const spinPromises = [];
+        
         for (let i = 0; i < config.reelCount; i++) {
           // Each reel spins a bit longer than the previous
           const reelDuration = baseDuration + (i * config.winDelay);
           
-          await spinReel(i, reelDuration);
+          // Start the spin but don't await it yet
+          spinPromises.push(spinReel(i, reelDuration));
+        }
+        
+        // Now await each reel stopping in sequence
+        for (let i = 0; i < config.reelCount; i++) {
+          await spinPromises[i];
           state.reelsCompleted++;
           
           // Play stop sound
           playSound('stop');
           
-          // Check for wins after all reels have stopped
-          if (state.reelsCompleted === config.reelCount) {
-            await checkWin();
-            state.spinning = false;
-            elements.spinButton.disabled = false;
+          // Small pause between reels stopping
+          if (i < config.reelCount - 1) {
+            await new Promise(resolve => setTimeout(resolve, config.winDelay));
           }
         }
+        
+        // Check for wins after all reels have stopped
+        await checkWin();
+        state.spinning = false;
+        elements.spinButton.disabled = false;
       }
       
       // Check for winning combinations
@@ -914,24 +953,24 @@
         elements.winDisplay.textContent = state.lastWin;
       }
       
-      // Sound effects (placeholders - you would need to add actual sounds)
+      // Sound effects - updated to use the sounds directory
       function playSound(soundType) {
-        // This is a placeholder for actual sound implementation
-        console.log(`Playing sound: ${soundType}`);
-        
-        // Example implementation with actual audio:
-        /*
+        // Actual sound implementation
         const sounds = {
           spin: new Audio('sounds/spin.mp3'),
           stop: new Audio('sounds/stop.mp3'),
           win: new Audio('sounds/win.mp3')
         };
         
-        if (sounds[soundType]) {
-          sounds[soundType].currentTime = 0;
-          sounds[soundType].play();
+        // Try to play the sound, but don't break the game if the file is missing
+        try {
+          if (sounds[soundType]) {
+            sounds[soundType].currentTime = 0;
+            sounds[soundType].play().catch(err => console.log('Sound not available yet'));
+          }
+        } catch (err) {
+          console.log('Sound playback error');
         }
-        */
       }
       
       // Event listeners
@@ -993,3 +1032,28 @@
   </script>
 </body>
 </html>
+
+File: sounds/README.md
+Content:
+# Sound Files for OctoSlots
+
+This directory contains sound files used by the OctoSlots game.
+
+## Required Sound Files
+
+For the full game experience, place the following sound files in this directory:
+
+1. `spin.mp3` - Sound that plays when reels start spinning
+2. `stop.mp3` - Sound that plays when each reel stops
+3. `win.mp3` - Sound that plays when player wins
+
+## Finding Sound Files
+
+You can find free sound effects on sites like:
+- [Freesound.org](https://freesound.org/)
+- [Mixkit](https://mixkit.co/free-sound-effects/game/)
+- [ZapSplat](https://www.zapsplat.com/sound-effect-categories/game-sounds/)
+
+## Sound File Format
+
+The game works best with MP3 files, but other formats like WAV and OGG will also work depending on browser support.
