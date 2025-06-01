@@ -483,7 +483,7 @@
   <header class="app-header">
     <div class="user-info">Welcome, BensBar</div>
     <div class="game-title">OctoSlots</div>
-    <div class="date-info">2025-06-01 00:24:50 UTC</div>
+    <div class="date-info">2025-06-01 00:37:23 UTC</div>
   </header>
   
   <div class="slot-machine-container">
@@ -587,7 +587,7 @@
         defaultCredits: 500,
         spinDuration: {
           min: 2000,  // Minimum spin time in ms
-          max: 4000   // Maximum spin time in ms
+          max: 3000   // Maximum spin time in ms (reduced from 4000)
         },
         winDelay: 300, // Delay between reels stopping in ms
         prizes: {
@@ -666,7 +666,7 @@
           const shuffledOctocats = [...octocats].sort(() => Math.random() - 0.5);
           
           // Create many more symbols than before to ensure no black spaces
-          const totalSymbols = config.symbolsPerReel * 10; // 10x more than needed
+          const totalSymbols = config.symbolsPerReel * 20; // 20x more than needed (increased from 10x)
           
           for (let i = 0; i < totalSymbols; i++) {
             // Pick an octocat (cycling through shuffled array)
@@ -697,7 +697,7 @@
         const visibleArea = reelContainer.parentElement.offsetHeight;
         
         // Calculate how many symbols we need to cover the visible area plus a large buffer
-        const neededSymbols = Math.ceil(visibleArea / symbolHeight) * 10;
+        const neededSymbols = Math.ceil(visibleArea / symbolHeight) * 20; // Increased multiplier
         
         // Add more symbols if needed
         if (totalSymbols < neededSymbols) {
@@ -712,7 +712,7 @@
         reelContainer.style.transform = `translateY(${initialOffset}px)`;
       }
       
-      // Spin a single reel
+      // Spin a single reel - IMPROVED TO PREVENT BLACK FLASH
       function spinReel(reelIndex, duration) {
         return new Promise(resolve => {
           const reelContainer = elements.reels[reelIndex];
@@ -728,52 +728,59 @@
             currentY = matrix.m42; // Y translation value
           }
           
-          // Calculate final position
-          // We want to land on a whole symbol and ensure we've moved at least 10 full cycles
-          const minRotations = 10; // Much more rotations to ensure continuous appearance
-          const totalHeight = symbolHeight * symbolCount;
-          const minDistance = totalHeight * minRotations;
+          // Start with a small immediate movement to provide visual feedback
+          // This prevents the black flash at the beginning
+          reelContainer.style.transition = 'transform 0.1s linear';
+          reelContainer.style.transform = `translateY(${currentY - symbolHeight}px)`;
           
-          // Add a random amount to ensure different stopping positions
-          const randomStops = Math.floor(Math.random() * config.symbolsPerReel);
-          const finalOffset = currentY - (minDistance + (randomStops * symbolHeight));
-          
-          // Update animation properties - smoother cubic-bezier curve
-          reelContainer.style.transition = `transform ${duration / 1000}s cubic-bezier(0.1, 0.1, 0.25, 1)`;
-          reelContainer.style.transform = `translateY(${finalOffset}px)`;
-          
-          // When animation completes
-          const handleTransitionEnd = () => {
-            reelContainer.removeEventListener('transitionend', handleTransitionEnd);
+          // Calculate final position after a brief delay to ensure the initial movement is visible
+          setTimeout(() => {
+            // We want to land on a whole symbol and ensure we've moved at least 10 full cycles
+            const minRotations = 10; // Much more rotations to ensure continuous appearance
+            const totalHeight = symbolHeight * symbolCount;
+            const minDistance = totalHeight * minRotations;
             
-            // Reset position while maintaining the appearance
-            // We need to find which symbol is now at the center
-            const totalDistance = Math.abs(finalOffset - currentY);
-            const rotations = Math.floor(totalDistance / totalHeight);
-            const remainingDistance = totalDistance - (rotations * totalHeight);
-            const symbolsToShift = Math.round(remainingDistance / symbolHeight);
+            // Add a random amount to ensure different stopping positions
+            const randomStops = Math.floor(Math.random() * config.symbolsPerReel);
+            const finalOffset = currentY - (minDistance + (randomStops * symbolHeight));
             
-            // Remove transition temporarily
-            reelContainer.style.transition = 'none';
+            // Update animation properties - smoother cubic-bezier curve
+            reelContainer.style.transition = `transform ${duration / 1000}s cubic-bezier(0.05, 0.15, 0.15, 1)`;
+            reelContainer.style.transform = `translateY(${finalOffset}px)`;
             
-            // Reset to middle position
-            resetReelPosition(reelContainer);
+            // When animation completes
+            const handleTransitionEnd = () => {
+              reelContainer.removeEventListener('transitionend', handleTransitionEnd);
+              
+              // Reset position while maintaining the appearance
+              // We need to find which symbol is now at the center
+              const totalDistance = Math.abs(finalOffset - currentY);
+              const rotations = Math.floor(totalDistance / totalHeight);
+              const remainingDistance = totalDistance - (rotations * totalHeight);
+              const symbolsToShift = Math.round(remainingDistance / symbolHeight);
+              
+              // Remove transition temporarily
+              reelContainer.style.transition = 'none';
+              
+              // Reset to middle position
+              resetReelPosition(reelContainer);
+              
+              // Force reflow
+              reelContainer.offsetHeight;
+              
+              // Restore transition for future spins
+              reelContainer.style.transition = '';
+              
+              // Record the center symbol
+              const centerIndex = Math.floor(symbols.length / 2);
+              state.currentSymbols[reelIndex] = symbols[centerIndex].dataset.name;
+              
+              // Spin complete
+              resolve();
+            };
             
-            // Force reflow
-            reelContainer.offsetHeight;
-            
-            // Restore transition for future spins
-            reelContainer.style.transition = '';
-            
-            // Record the center symbol
-            const centerIndex = Math.floor(symbols.length / 2);
-            state.currentSymbols[reelIndex] = symbols[centerIndex].dataset.name;
-            
-            // Spin complete
-            resolve();
-          };
-          
-          reelContainer.addEventListener('transitionend', handleTransitionEnd);
+            reelContainer.addEventListener('transitionend', handleTransitionEnd);
+          }, 50); // Small delay before main animation starts
         });
       }
       
@@ -800,6 +807,9 @@
         
         // Start flashing lights
         startLights();
+        
+        // Play spin sound immediately for better feedback
+        playSound('spin');
         
         // Determine spin durations for each reel
         const baseDuration = Math.random() * (config.spinDuration.max - config.spinDuration.min) + config.spinDuration.min;
