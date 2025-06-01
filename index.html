@@ -485,7 +485,7 @@
   <header class="app-header">
     <div class="user-info">Welcome, BensBar</div>
     <div class="game-title">OctoSlots</div>
-    <div class="date-info">2025-06-01 02:20:38 UTC</div>
+    <div class="date-info">2025-06-01 02:30:32 UTC</div>
   </header>
   
   <div class="slot-machine-container">
@@ -582,6 +582,11 @@
       const stopSound = new Audio('sounds/stop.wav');
       const winSound = new Audio('sounds/win.wav');
       
+      // Set volume levels to ensure sounds are audible
+      spinSound.volume = 1.0;
+      stopSound.volume = 1.0;
+      winSound.volume = 1.0;
+      
       // Try to pre-load and start (even if silenced) to overcome browser restrictions
       spinSound.volume = 0.01;
       spinSound.play().then(() => {
@@ -589,6 +594,20 @@
         spinSound.currentTime = 0;
         spinSound.volume = 1;
       }).catch(e => console.log('Audio preload failed, will try again when user interacts'));
+      
+      // Play a sound with proper error handling
+      function playSound(sound) {
+        // Create a fresh instance to avoid conflicts
+        const soundInstance = sound.cloneNode();
+        soundInstance.volume = 1.0;
+        
+        // Play with proper error handling
+        soundInstance.play().catch(e => {
+          console.log('Error playing sound', e);
+        });
+        
+        return soundInstance;
+      }
       
       // Game configuration
       const config = {
@@ -800,13 +819,10 @@
               // Store the middle symbol as the current symbol for this reel
               state.currentSymbols[i] = finalSymbols[i];
               
-              // Play stop sound
-              try {
-                stopSound.currentTime = 0;
-                stopSound.play();
-              } catch (e) {
-                console.log('Error playing stop sound', e);
-              }
+              // Play stop sound with a slight delay to avoid overlap
+              setTimeout(() => {
+                playSound(stopSound);
+              }, 50);
               
               // If this is the last reel, stop spin sound
               if (i === 2) {
@@ -882,12 +898,11 @@
       
       // Celebrate a win
       function celebrateWin(amount) {
-        try {
-          winSound.currentTime = 0;
-          winSound.play();
-        } catch (e) {
-          console.log('Error playing win sound', e);
-        }
+        // Ensure win sound plays with a slight delay after the last stop sound
+        setTimeout(() => {
+          // Use our helper function for consistent sound handling
+          playSound(winSound);
+        }, 300);
         
         // Flash lights more intensely
         const lightInterval = setInterval(() => {
