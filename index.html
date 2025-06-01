@@ -466,7 +466,7 @@
   <header class="app-header">
     <div class="user-info">Welcome, BensBar</div>
     <div class="game-title">OctoSlots</div>
-    <div class="date-info">2025-06-01 01:37:09 UTC</div>
+    <div class="date-info">2025-06-01 01:56:17 UTC</div>
   </header>
   
   <div class="slot-machine-container">
@@ -674,21 +674,65 @@
         reelInner.style.top = `${initialOffset}px`;
       }
       
-      // Spin a single reel
+      // Start spinning animation for a reel (visual only)
+      function startReelSpin(reelIndex) {
+        const reelInner = elements.reelInners[reelIndex];
+        const symbolHeight = config.symbolHeight;
+        
+        // Set up continuous spinning animation using CSS
+        reelInner.style.transition = `top 0.1s linear`;
+        
+        // Create an animation loop
+        let spinOffset = 0;
+        const spinInterval = setInterval(() => {
+          spinOffset += 20; // Move down 20px each frame
+          
+          // Apply the position
+          reelInner.style.top = spinOffset + 'px';
+          
+          // If we've moved down too far, reset to create continuous spinning effect
+          if (spinOffset > config.symbolHeight * 2) {
+            // Reset position without animation
+            reelInner.style.transition = 'none';
+            spinOffset = 0;
+            reelInner.style.top = spinOffset + 'px';
+            
+            // Re-enable animation after a tiny delay
+            setTimeout(() => {
+              reelInner.style.transition = `top 0.1s linear`;
+            }, 16); // One frame at 60fps
+          }
+          
+          // Stop if the game isn't spinning anymore
+          if (!state.spinning) {
+            clearInterval(spinInterval);
+          }
+        }, 100);
+        
+        // Store the interval ID on the element so we can clear it later
+        reelInner.dataset.spinInterval = spinInterval;
+      }
+      
+      // Stop spinning animation for a reel
       function spinReel(reelIndex, duration) {
         return new Promise(resolve => {
           const reelInner = elements.reelInners[reelIndex];
-          const symbolHeight = config.symbolHeight;
           
-          // Get current position
-          const currentTop = parseInt(reelInner.style.top || '0');
+          // Clear the continuous spin interval
+          if (reelInner.dataset.spinInterval) {
+            clearInterval(parseInt(reelInner.dataset.spinInterval));
+          }
           
-          // Calculate destination (move down multiple symbol heights)
-          const symbolsToScroll = 30 + Math.floor(Math.random() * 10); // Random number of symbols
-          const destinationTop = currentTop + (symbolsToScroll * symbolHeight);
-          
-          // Set up animation
+          // Reset transition to allow for stop animation
           reelInner.style.transition = `top ${duration / 1000}s cubic-bezier(0.15, 0.41, 0.69, 0.98)`;
+          
+          // Determine a stopping position that aligns with a symbol
+          const symbolHeight = config.symbolHeight;
+          const currentTop = parseInt(reelInner.style.top || '0');
+          const adjustment = symbolHeight - (currentTop % symbolHeight);
+          const destinationTop = currentTop + adjustment;
+          
+          // Animate to the final position
           reelInner.style.top = `${destinationTop}px`;
           
           // When animation completes
@@ -699,7 +743,6 @@
             reelInner.style.transition = 'none';
             
             // Reset position but keep same visual appearance
-            // This prevents the reel from getting too far out of bounds
             resetReelPosition(reelInner);
             
             // Determine center symbol
@@ -753,19 +796,31 @@
         // Determine spin durations for each reel
         const baseDuration = Math.random() * (config.spinDuration.max - config.spinDuration.min) + config.spinDuration.min;
         
-        // Spin each reel with progressively longer durations
+        // Start all reels spinning at the same time
+        const spinPromises = [];
         for (let i = 0; i < config.reelCount; i++) {
+          // Each reel spins longer than the previous
           const reelDuration = baseDuration + (i * 300);
-          await spinReel(i, reelDuration);
           
-          // Play stop sound
-          playSound('stop');
+          // Start spinning this reel
+          const spinPromise = new Promise(resolve => {
+            // Set a timeout to stop this reel after its duration
+            setTimeout(async () => {
+              await spinReel(i, 500); // Quick stop animation
+              playSound('stop');
+              resolve();
+            }, reelDuration);
+          });
           
-          // Small delay between reels stopping
-          if (i < config.reelCount - 1) {
-            await new Promise(resolve => setTimeout(resolve, config.stopDelay));
-          }
+          // Add to our collection of promises
+          spinPromises.push(spinPromise);
+          
+          // Start the reel spinning immediately (visual only)
+          startReelSpin(i);
         }
+        
+        // Wait for all reels to finish
+        await Promise.all(spinPromises);
         
         // Check for wins
         await checkWin();
