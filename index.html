@@ -490,7 +490,7 @@
   <header class="app-header">
     <div class="user-info">Welcome, BensBar</div>
     <div class="game-title">OctoSlots</div>
-    <div class="date-info">2025-06-01 13:36:38 UTC</div>
+    <div class="date-info">2025-06-01 13:42:08 UTC</div>
   </header>
   
   <!-- Audio elements embedded in the page -->
@@ -593,6 +593,12 @@
       const stopSound = document.getElementById('stop-sound');
       const winSound = document.getElementById('win-sound');
       const loseSound = document.getElementById('lose-sound');
+      
+      // Set all volumes to ensure they're audible
+      spinSound.volume = 1.0;
+      stopSound.volume = 1.0;
+      winSound.volume = 1.0;
+      loseSound.volume = 1.0; // Make sure this is set
       
       // Create additional stop sounds for simultaneous play
       const stopSound2 = new Audio('sounds/stop.wav');
@@ -916,11 +922,13 @@
           
           return true;
         } else {
-          // Play lose sound when there's no win
+          // CHANGED: Play lose sound directly instead of cloning
           setTimeout(() => {
+            console.log("Playing lose sound"); // Add this for debugging
             loseSound.currentTime = 0;
+            loseSound.volume = 1.0; // Ensure full volume
             loseSound.play().catch(e => console.log("Error playing lose sound:", e));
-          }, 500);
+          }, 800); // Increased delay to make it more distinct
           
           stopLights();
           return false;
