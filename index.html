@@ -490,13 +490,15 @@
   <header class="app-header">
     <div class="user-info">Welcome, BensBar</div>
     <div class="game-title">OctoSlots</div>
-    <div class="date-info">2025-06-01 13:42:08 UTC</div>
+    <div class="date-info">2025-06-01 15:13:45 UTC</div>
   </header>
   
   <!-- Audio elements embedded in the page -->
   <audio id="spin-sound" src="sounds/spin.wav" preload="auto"></audio>
   <audio id="stop-sound" src="sounds/stop.wav" preload="auto"></audio>
   <audio id="win-sound" src="sounds/win.wav" preload="auto"></audio>
+  <audio id="win2-sound" src="sounds/win2.wav" preload="auto"></audio>
+  <audio id="win3-sound" src="sounds/win3.wav" preload="auto"></audio>
   <audio id="lose-sound" src="sounds/lose.wav" preload="auto"></audio>
   
   <div class="slot-machine-container">
@@ -588,38 +590,210 @@
   
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Get audio elements directly from the DOM
-      const spinSound = document.getElementById('spin-sound');
-      const stopSound = document.getElementById('stop-sound');
-      const winSound = document.getElementById('win-sound');
-      const loseSound = document.getElementById('lose-sound');
+      // Audio system
+      const audioContext = {
+        initialized: false,
+        context: null,
+        soundsLoaded: false,
+        sounds: {
+          spin: null,
+          stop: null,
+          win: null,
+          win2: null,
+          win3: null,
+          lose: null
+        },
+        volumes: {
+          spin: 1.0,
+          stop: 1.0,
+          win: 1.0,
+          win2: 1.0,
+          win3: 1.0,
+          lose: 1.0
+        }
+      };
       
-      // Set all volumes to ensure they're audible
-      spinSound.volume = 1.0;
-      stopSound.volume = 1.0;
-      winSound.volume = 1.0;
-      loseSound.volume = 1.0; // Make sure this is set
+      // Simple HTML5 Audio backup for browsers without Web Audio API
+      const fallbackAudio = {
+        spin: document.getElementById('spin-sound'),
+        stop: document.getElementById('stop-sound'),
+        win: document.getElementById('win-sound'),
+        win2: document.getElementById('win2-sound'),
+        win3: document.getElementById('win3-sound'),
+        lose: document.getElementById('lose-sound')
+      };
       
-      // Create additional stop sounds for simultaneous play
-      const stopSound2 = new Audio('sounds/stop.wav');
-      const stopSound3 = new Audio('sounds/stop.wav');
+      // Set all audio elements to full volume
+      Object.values(fallbackAudio).forEach(audio => {
+        if (audio) audio.volume = 1.0;
+      });
+      
+      // Initialize Web Audio API for better control
+      function initAudio() {
+        try {
+          // Only initialize once
+          if (audioContext.initialized) return true;
+          
+          // Create audio context
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return false;
+          
+          audioContext.context = new AudioContext();
+          
+          // Load all sound files
+          const sounds = [
+            { name: 'spin', url: 'sounds/spin.wav' },
+            { name: 'stop', url: 'sounds/stop.wav' },
+            { name: 'win', url: 'sounds/win.wav' },
+            { name: 'win2', url: 'sounds/win2.wav' },
+            { name: 'win3', url: 'sounds/win3.wav' },
+            { name: 'lose', url: 'sounds/lose.wav' }
+          ];
+          
+          sounds.forEach(sound => loadSound(sound.name, sound.url));
+          
+          audioContext.initialized = true;
+          console.log('Audio system initialized successfully');
+          return true;
+        } catch (e) {
+          console.error('Failed to initialize audio:', e);
+          return false;
+        }
+      }
+      
+      // Load a sound file
+      function loadSound(name, url) {
+        try {
+          fetch(url)
+            .then(response => response.arrayBuffer())
+            .then(arrayBuffer => audioContext.context.decodeAudioData(arrayBuffer))
+            .then(audioBuffer => {
+              audioContext.sounds[name] = audioBuffer;
+              console.log(`Loaded sound: ${name}`);
+              
+              // Check if all sounds are loaded
+              const allSoundsLoaded = Object.values(audioContext.sounds).every(sound => sound !== null);
+              if (allSoundsLoaded) {
+                audioContext.soundsLoaded = true;
+                console.log('All sounds loaded successfully');
+              }
+            })
+            .catch(e => {
+              console.error(`Error loading sound ${name}:`, e);
+              // If loading fails, we'll fall back to HTML5 Audio
+            });
+        } catch (e) {
+          console.error(`Error in loadSound ${name}:`, e);
+        }
+      }
+      
+      // Play a sound - tries Web Audio API first, falls back to HTML5 Audio
+      function playSound(name) {
+        try {
+          // If Web Audio is initialized and the sound is loaded, use it
+          if (audioContext.initialized && audioContext.sounds[name]) {
+            const source = audioContext.context.createBufferSource();
+            source.buffer = audioContext.sounds[name];
+            
+            // Create gain node for volume control
+            const gainNode = audioContext.context.createGain();
+            gainNode.gain.value = audioContext.volumes[name];
+            
+            // Connect nodes
+            source.connect(gainNode);
+            gainNode.connect(audioContext.context.destination);
+            
+            // Play the sound
+            source.start(0);
+            return source;
+          } 
+          // Otherwise fall back to HTML5 Audio
+          else if (fallbackAudio[name]) {
+            fallbackAudio[name].currentTime = 0;
+            fallbackAudio[name].volume = 1.0; // Ensure full volume
+            const promise = fallbackAudio[name].play();
+            
+            if (promise !== undefined) {
+              promise.catch(e => {
+                console.error(`Error playing sound ${name}:`, e);
+                // Try alternate method if HTML5 Audio fails
+                if (name === 'spin') {
+                  // For spin sound, try creating a new Audio element
+                  const newAudio = new Audio('sounds/spin.wav');
+                  newAudio.volume = 1.0;
+                  newAudio.play().catch(e => console.log(`Even new audio failed for ${name}:`, e));
+                }
+              });
+            }
+            
+            return fallbackAudio[name];
+          }
+        } catch (e) {
+          console.error(`Error in playSound ${name}:`, e);
+          return null;
+        }
+      }
+      
+      // Stop a sound
+      function stopSound(source) {
+        if (!source) return;
+        
+        try {
+          // If it's a Web Audio source
+          if (source.stop) {
+            source.stop(0);
+          } 
+          // If it's an HTML5 Audio element
+          else if (source.pause) {
+            source.pause();
+            source.currentTime = 0;
+          }
+        } catch (e) {
+          console.error('Error stopping sound:', e);
+        }
+      }
       
       // Unlock audio on first user interaction
       function unlockAudio() {
-        // Play and immediately pause all sounds to unlock them
-        spinSound.play().then(() => spinSound.pause()).catch(e => console.log("Audio unlock failed", e));
-        stopSound.play().then(() => stopSound.pause()).catch(e => console.log("Audio unlock failed", e));
-        winSound.play().then(() => winSound.pause()).catch(e => console.log("Audio unlock failed", e));
-        loseSound.play().then(() => loseSound.pause()).catch(e => console.log("Audio unlock failed", e));
+        console.log('Unlocking audio...');
         
-        // Remove the event listeners once audio is unlocked
+        // Try to initialize Web Audio API
+        if (initAudio()) {
+          // Play a silent sound to unlock the audio context
+          const silentBuffer = audioContext.context.createBuffer(1, 1, 22050);
+          const source = audioContext.context.createBufferSource();
+          source.buffer = silentBuffer;
+          source.connect(audioContext.context.destination);
+          source.start(0);
+        }
+        
+        // Also try to unlock HTML5 Audio elements as a fallback
+        Object.values(fallbackAudio).forEach(audio => {
+          if (audio) {
+            audio.volume = 0.01;
+            audio.play().then(() => {
+              audio.pause();
+              audio.currentTime = 0;
+              audio.volume = 1.0;
+            }).catch(e => {
+              console.log('Audio unlock for HTML5 failed, but that\'s okay:', e);
+            });
+          }
+        });
+        
+        // Remove the event listeners once we've tried to unlock
         document.removeEventListener('click', unlockAudio);
         document.removeEventListener('touchstart', unlockAudio);
+        document.removeEventListener('keydown', unlockAudio);
       }
       
       // Add event listeners to unlock audio
       document.addEventListener('click', unlockAudio);
       document.addEventListener('touchstart', unlockAudio);
+      document.addEventListener('keydown', unlockAudio);
+      
+      // Actively playing sounds
+      let spinSoundInstance = null;
       
       // Game configuration
       const config = {
@@ -703,21 +877,6 @@
         lever: document.getElementById('lever')
       };
       
-      // Play a sound with better error handling
-      function playSound(sound) {
-        // Create a new instance for each play to avoid conflicts
-        const soundToPlay = sound.cloneNode();
-        soundToPlay.volume = 1.0;
-        
-        const playPromise = soundToPlay.play();
-        
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            console.log('Error playing sound:', error);
-          });
-        }
-      }
-      
       // Set a random symbol in a slot item
       function setRandomSymbol(slotItem) {
         const randomOctocat = octocats[Math.floor(Math.random() * octocats.length)];
@@ -787,9 +946,11 @@
           return;
         }
         
-        // Play spin sound immediately
-        spinSound.currentTime = 0;
-        spinSound.play().catch(e => console.log("Error playing spin sound:", e));
+        // Unlock audio again (some browsers need this on each interaction)
+        unlockAudio();
+        
+        // Play spin sound
+        spinSoundInstance = playSound('spin');
         
         // Deduct bet amount
         state.credits -= state.bet;
@@ -842,20 +1003,12 @@
               // Store the middle symbol as the current symbol for this reel
               state.currentSymbols[i] = finalSymbols[i];
               
-              // Play the appropriate stop sound for this reel
-              if (i === 0) {
-                stopSound.currentTime = 0;
-                stopSound.play().catch(e => console.log("Error playing stop sound:", e));
-              } else if (i === 1) {
-                stopSound2.currentTime = 0;
-                stopSound2.play().catch(e => console.log("Error playing stop sound 2:", e));
-              } else {
-                stopSound3.currentTime = 0;
-                stopSound3.play().catch(e => console.log("Error playing stop sound 3:", e));
-                
-                // Stop spin sound when last reel stops
-                spinSound.pause();
-                spinSound.currentTime = 0;
+              // Play stop sound
+              playSound('stop');
+              
+              // If this is the last reel, stop spin sound
+              if (i === 2) {
+                stopSound(spinSoundInstance);
               }
               
               resolve();
@@ -883,11 +1036,13 @@
         });
         
         let winAmount = 0;
+        let winType = '';
         
         // Check for 3 matching symbols
         const threeMatch = Object.entries(counts).find(([symbol, count]) => count === 3);
         if (threeMatch) {
           const [symbol, _] = threeMatch;
+          winType = 'three';
           
           // Check for specific high-value combinations
           if (symbol === 'Original') {
@@ -904,6 +1059,7 @@
           const twoMatch = Object.entries(counts).find(([symbol, count]) => count === 2);
           if (twoMatch) {
             winAmount = config.prizes.twoMatching;
+            winType = 'two';
           }
         }
         
@@ -915,20 +1071,24 @@
           
           // Small delay before playing win sound to ensure it's heard
           setTimeout(() => {
-            winSound.currentTime = 0;
-            winSound.play().catch(e => console.log("Error playing win sound:", e));
+            // Play the appropriate win sound based on win type
+            if (winType === 'three') {
+              playSound('win3');
+            } else if (winType === 'two') {
+              playSound('win2');
+            } else {
+              playSound('win');  // Fallback
+            }
+            
             showWinMessage(winAmount);
           }, 500);
           
           return true;
         } else {
-          // CHANGED: Play lose sound directly instead of cloning
+          // Play lose sound when there's no win
           setTimeout(() => {
-            console.log("Playing lose sound"); // Add this for debugging
-            loseSound.currentTime = 0;
-            loseSound.volume = 1.0; // Ensure full volume
-            loseSound.play().catch(e => console.log("Error playing lose sound:", e));
-          }, 800); // Increased delay to make it more distinct
+            playSound('lose');
+          }, 800);
           
           stopLights();
           return false;
@@ -1041,6 +1201,10 @@
       
       // Initialize game
       function init() {
+        // Try to initialize audio right away
+        initAudio();
+        
+        // Set up the rest of the game
         initializeSlots();
         updateDisplay();
         setupEventListeners();
