@@ -140,13 +140,11 @@
       box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
     }
     
-    .reel-inner {
+    .reel-symbols {
       position: absolute;
       width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: top 0.1s linear;
+      height: auto;
+      text-align: center;
     }
     
     .symbol {
@@ -163,56 +161,44 @@
       object-fit: contain;
     }
     
-    .win-line {
+    .win-line-container {
       position: absolute;
       left: 0;
       right: 0;
       top: 50%;
-      height: 4px;
-      background-color: rgba(255, 255, 255, 0.3);
       transform: translateY(-50%);
-      pointer-events: none;
       z-index: 5;
-      border-top: 1px solid var(--highlight-color);
-      border-bottom: 1px solid var(--highlight-color);
+      display: flex;
+      align-items: center;
+      pointer-events: none;
     }
     
-    .win-line.highlight {
+    .win-line {
+      flex-grow: 1;
+      height: 4px;
+      background-color: rgba(255, 0, 0, 0.5);
+      border-top: 1px solid rgba(255, 255, 255, 0.8);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+    }
+    
+    .win-line-marker {
+      width: 10px;
+      height: 10px;
+      background-color: red;
+      border-radius: 50%;
+      border: 1px solid white;
+    }
+    
+    .win-line-container.highlight .win-line {
       background-color: var(--win-color);
       box-shadow: 0 0 10px var(--win-color);
       animation: pulse 1s infinite;
-      border-color: var(--win-color);
     }
     
-    .win-marker {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background-color: var(--highlight-color);
-      border-radius: 50%;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 6;
-    }
-    
-    .win-marker.left {
-      left: -5px;
-    }
-    
-    .win-marker.right {
-      right: -5px;
-    }
-    
-    .reel-marker {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background-color: var(--highlight-color);
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 6;
-      right: 5px;
+    .win-line-container.highlight .win-line-marker {
+      background-color: var(--win-color);
+      box-shadow: 0 0 10px var(--win-color);
+      animation: pulse 1s infinite;
     }
     
     @keyframes pulse {
@@ -444,6 +430,21 @@
     .lever.pulled {
       transform: rotate(60deg);
     }
+
+    /* Animation for spinning */
+    @keyframes spin {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-300px); }
+    }
+    
+    .spinning {
+      animation: spin 0.5s linear infinite;
+    }
+
+    /* Blurring effect for spinning */
+    .blur {
+      filter: blur(1px);
+    }
     
     @media (max-width: 767px) {
       .reels-container {
@@ -501,7 +502,7 @@
   <header class="app-header">
     <div class="user-info">Welcome, BensBar</div>
     <div class="game-title">OctoSlots</div>
-    <div class="date-info">2025-06-01 02:02:42 UTC</div>
+    <div class="date-info">2025-06-01 02:07:10 UTC</div>
   </header>
   
   <div class="slot-machine-container">
@@ -541,21 +542,19 @@
       
       <div class="reels-container">
         <div class="reel" id="reel1">
-          <div class="reel-inner" id="reel1-inner"></div>
-          <div class="reel-marker"></div>
+          <div class="reel-symbols" id="reel1-symbols"></div>
         </div>
         <div class="reel" id="reel2">
-          <div class="reel-inner" id="reel2-inner"></div>
-          <div class="reel-marker"></div>
+          <div class="reel-symbols" id="reel2-symbols"></div>
         </div>
         <div class="reel" id="reel3">
-          <div class="reel-inner" id="reel3-inner"></div>
-          <div class="reel-marker"></div>
+          <div class="reel-symbols" id="reel3-symbols"></div>
         </div>
         
-        <div class="win-line" id="win-line">
-          <div class="win-marker left"></div>
-          <div class="win-marker right"></div>
+        <div class="win-line-container" id="win-line-container">
+          <div class="win-line-marker"></div>
+          <div class="win-line"></div>
+          <div class="win-line-marker"></div>
         </div>
       </div>
       
@@ -596,16 +595,14 @@
       // Game configuration
       const config = {
         reelCount: 3,
-        symbolsPerReel: 15, // Total symbols per reel
-        visibleSymbols: 3, // Visible symbols per reel
-        symbolHeight: 100, // Height of each symbol in pixels
+        symbolsPerReel: 5, // Number of symbols per reel
         spinCost: 10,
         defaultCredits: 500,
         spinDuration: {
-          min: 2000,
-          max: 3000
+          min: 1000,
+          max: 2000
         },
-        stopDelay: 300, // Delay between reels stopping
+        stopDelay: 500, // Delay between reels stopping
         prizes: {
           jackpot: 1000,
           threeOriginal: 1000,
@@ -619,23 +616,22 @@
       const state = {
         credits: config.defaultCredits,
         spinning: false,
-        reelsCompleted: 0,
+        spinSound: null,
         currentSymbols: [null, null, null],
         bet: config.spinCost,
         lastWin: 0,
-        canPull: true,
-        spinSound: null // To store the spin sound so we can stop it
+        canPull: true
       };
       
       // DOM Elements
       const elements = {
         reels: Array.from({ length: config.reelCount }, (_, i) => document.getElementById(`reel${i+1}`)),
-        reelInners: Array.from({ length: config.reelCount }, (_, i) => document.getElementById(`reel${i+1}-inner`)),
+        reelSymbols: Array.from({ length: config.reelCount }, (_, i) => document.getElementById(`reel${i+1}-symbols`)),
         spinButton: document.getElementById('spin-button'),
         creditsDisplay: document.getElementById('credits'),
         betDisplay: document.getElementById('bet-amount'),
         winDisplay: document.getElementById('win-amount'),
-        winLine: document.getElementById('win-line'),
+        winLineContainer: document.getElementById('win-line-container'),
         winMessage: document.getElementById('win-message'),
         winValue: document.getElementById('win-value'),
         continueButton: document.getElementById('continue-button'),
@@ -684,13 +680,13 @@
       
       // Initialize reels with symbols
       function initializeReels() {
-        elements.reelInners.forEach((reelInner, reelIndex) => {
-          reelInner.innerHTML = '';
+        elements.reelSymbols.forEach((reelSymbols, reelIndex) => {
+          reelSymbols.innerHTML = '';
           
           // Create a shuffled set of symbols for this reel
           const shuffledOctocats = shuffleArray(octocats);
           
-          // Create symbols (more than visible to allow for scrolling)
+          // Create symbols for this reel
           for (let i = 0; i < config.symbolsPerReel; i++) {
             const symbol = document.createElement('div');
             symbol.className = 'symbol';
@@ -701,111 +697,23 @@
             symbol.innerHTML = `<img src="${octocat.image}" alt="${octocat.name}">`;
             symbol.dataset.name = octocat.name;
             
-            reelInner.appendChild(symbol);
+            reelSymbols.appendChild(symbol);
           }
           
-          // Position the reel initially
-          resetReelPosition(reelInner);
+          // Position the middle symbol at the center of the reel
+          positionSymbols(reelSymbols);
         });
       }
       
-      // Reset reel to initial position
-      function resetReelPosition(reelInner) {
-        // Position so that symbols are centered in view
-        const initialOffset = -(config.symbolHeight * (config.symbolsPerReel - config.visibleSymbols) / 2);
-        reelInner.style.top = `${initialOffset}px`;
-      }
-      
-      // Start spinning animation for a reel (visual only)
-      function startReelSpin(reelIndex) {
-        const reelInner = elements.reelInners[reelIndex];
-        const symbolHeight = config.symbolHeight;
+      // Position symbols in the reel
+      function positionSymbols(reelSymbols) {
+        const symbols = reelSymbols.querySelectorAll('.symbol');
+        const symbolHeight = 100; // Height in pixels
+        const reelHeight = reelSymbols.parentElement.offsetHeight;
+        const totalSymbolsHeight = symbols.length * symbolHeight;
         
-        // Set up continuous spinning animation using CSS
-        reelInner.style.transition = `top 0.1s linear`;
-        
-        // Create an animation loop
-        let spinOffset = 0;
-        const spinInterval = setInterval(() => {
-          spinOffset += 20; // Move down 20px each frame
-          
-          // Apply the position
-          reelInner.style.top = spinOffset + 'px';
-          
-          // If we've moved down too far, reset to create continuous spinning effect
-          if (spinOffset > config.symbolHeight * 2) {
-            // Reset position without animation
-            reelInner.style.transition = 'none';
-            spinOffset = 0;
-            reelInner.style.top = spinOffset + 'px';
-            
-            // Re-enable animation after a tiny delay
-            setTimeout(() => {
-              reelInner.style.transition = `top 0.1s linear`;
-            }, 16); // One frame at 60fps
-          }
-          
-          // Stop if the game isn't spinning anymore
-          if (!state.spinning) {
-            clearInterval(spinInterval);
-          }
-        }, 100);
-        
-        // Store the interval ID on the element so we can clear it later
-        reelInner.dataset.spinInterval = spinInterval;
-      }
-      
-      // Stop spinning animation for a reel
-      function spinReel(reelIndex, duration) {
-        return new Promise(resolve => {
-          const reelInner = elements.reelInners[reelIndex];
-          
-          // Clear the continuous spin interval
-          if (reelInner.dataset.spinInterval) {
-            clearInterval(parseInt(reelInner.dataset.spinInterval));
-          }
-          
-          // Reset transition to allow for stop animation
-          reelInner.style.transition = `top ${duration / 1000}s cubic-bezier(0.15, 0.41, 0.69, 0.98)`;
-          
-          // Determine a stopping position that aligns with a symbol
-          const symbolHeight = config.symbolHeight;
-          const currentTop = parseInt(reelInner.style.top || '0');
-          const adjustment = symbolHeight - (currentTop % symbolHeight);
-          const destinationTop = currentTop + adjustment;
-          
-          // Animate to the final position
-          reelInner.style.top = `${destinationTop}px`;
-          
-          // When animation completes
-          const handleTransitionEnd = () => {
-            reelInner.removeEventListener('transitionend', handleTransitionEnd);
-            
-            // Remove transition temporarily
-            reelInner.style.transition = 'none';
-            
-            // Reset position but keep same visual appearance
-            resetReelPosition(reelInner);
-            
-            // Determine center symbol
-            const symbols = Array.from(reelInner.querySelectorAll('.symbol'));
-            const centerIndex = Math.floor(symbols.length / 2);
-            const centerSymbol = symbols[centerIndex];
-            
-            // Store current symbol
-            if (centerSymbol && centerSymbol.dataset.name) {
-              state.currentSymbols[reelIndex] = centerSymbol.dataset.name;
-            }
-            
-            // Restore transition for future animations
-            setTimeout(() => {
-              reelInner.style.transition = '';
-              resolve();
-            }, 50);
-          };
-          
-          reelInner.addEventListener('transitionend', handleTransitionEnd);
-        });
+        // Position symbols to center the middle one
+        reelSymbols.style.top = `${(reelHeight - totalSymbolsHeight) / 2}px`;
       }
       
       // Spin all reels
@@ -824,10 +732,8 @@
         
         // Reset state
         state.spinning = true;
-        state.reelsCompleted = 0;
-        state.lastWin = 0;
         elements.spinButton.disabled = true;
-        elements.winLine.classList.remove('highlight');
+        elements.winLineContainer.classList.remove('highlight');
         
         // Start flashing lights
         startLights();
@@ -835,41 +741,34 @@
         // Play spin sound
         state.spinSound = playSound('spin');
         
-        // Determine spin durations for each reel
-        const baseDuration = Math.random() * (config.spinDuration.max - config.spinDuration.min) + config.spinDuration.min;
+        // Start spinning animation on all reels
+        elements.reelSymbols.forEach(reelSymbols => {
+          // Clear previous symbols
+          while (reelSymbols.firstChild) {
+            reelSymbols.removeChild(reelSymbols.firstChild);
+          }
+          
+          // Add spinning class to create animation
+          reelSymbols.classList.add('spinning', 'blur');
+        });
         
-        // Start all reels spinning at the same time
-        const spinPromises = [];
+        // Stop reels one by one after delay
         for (let i = 0; i < config.reelCount; i++) {
-          // Each reel spins longer than the previous
-          const reelDuration = baseDuration + (i * 300);
+          const delay = config.spinDuration.min + (i * config.stopDelay);
           
-          // Start spinning this reel
-          const spinPromise = new Promise(resolve => {
-            // Set a timeout to stop this reel after its duration
-            setTimeout(async () => {
-              await spinReel(i, 500); // Quick stop animation
-              playSound('stop');
-              
-              // If this is the last reel, stop the spin sound
-              if (i === config.reelCount - 1 && state.spinSound) {
-                state.spinSound.pause();
-                state.spinSound.currentTime = 0;
-              }
-              
-              resolve();
-            }, reelDuration);
-          });
-          
-          // Add to our collection of promises
-          spinPromises.push(spinPromise);
-          
-          // Start the reel spinning immediately (visual only)
-          startReelSpin(i);
+          await new Promise(resolve => setTimeout(() => {
+            stopReel(i);
+            playSound('stop');
+            
+            // If this is the last reel, stop the spin sound
+            if (i === config.reelCount - 1 && state.spinSound) {
+              state.spinSound.pause();
+              state.spinSound = null;
+            }
+            
+            resolve();
+          }, delay));
         }
-        
-        // Wait for all reels to finish
-        await Promise.all(spinPromises);
         
         // Check for wins
         await checkWin();
@@ -877,6 +776,49 @@
         // Reset state
         state.spinning = false;
         elements.spinButton.disabled = false;
+      }
+      
+      // Stop a single reel
+      function stopReel(reelIndex) {
+        const reelSymbols = elements.reelSymbols[reelIndex];
+        
+        // Remove spinning animation
+        reelSymbols.classList.remove('spinning', 'blur');
+        
+        // Generate new random symbols
+        reelSymbols.innerHTML = '';
+        
+        // Create new symbols with one in the middle being the "result"
+        const resultSymbol = getRandomOctocat();
+        
+        // Create symbols around the result
+        for (let i = 0; i < config.symbolsPerReel; i++) {
+          const symbol = document.createElement('div');
+          symbol.className = 'symbol';
+          
+          // Middle symbol is the result
+          const octocat = (i === Math.floor(config.symbolsPerReel / 2)) 
+            ? resultSymbol 
+            : getRandomOctocat();
+          
+          symbol.innerHTML = `<img src="${octocat.image}" alt="${octocat.name}">`;
+          symbol.dataset.name = octocat.name;
+          
+          reelSymbols.appendChild(symbol);
+          
+          // Store the center symbol
+          if (i === Math.floor(config.symbolsPerReel / 2)) {
+            state.currentSymbols[reelIndex] = octocat.name;
+          }
+        }
+        
+        // Position symbols correctly
+        positionSymbols(reelSymbols);
+      }
+      
+      // Get a random octocat
+      function getRandomOctocat() {
+        return octocats[Math.floor(Math.random() * octocats.length)];
       }
       
       // Check for winning combinations
@@ -916,7 +858,7 @@
         }
         
         if (winAmount > 0) {
-          elements.winLine.classList.add('highlight');
+          elements.winLineContainer.classList.add('highlight');
           state.lastWin = winAmount;
           state.credits += winAmount;
           updateDisplay();
@@ -989,22 +931,25 @@
       
       // Sound effects
       function playSound(soundType) {
-        // Stop any previous sound of this type
+        // If there's an existing spin sound, stop it
         if (state.spinSound && soundType === 'spin') {
           state.spinSound.pause();
-          state.spinSound.currentTime = 0;
+          state.spinSound = null;
         }
         
-        const sound = new Audio(`sounds/${soundType}.wav`);
-        
         try {
+          const sound = new Audio(`sounds/${soundType}.wav`);
           sound.play().catch(err => console.log('Sound not available yet'));
+          
+          // If it's the spin sound, store it for later control
+          if (soundType === 'spin') {
+            return sound;
+          }
         } catch (err) {
           console.log('Sound playback error');
         }
         
-        // Return the sound object so we can control it later
-        return sound;
+        return null;
       }
       
       // Setup event listeners
