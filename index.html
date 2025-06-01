@@ -126,6 +126,7 @@
       justify-content: space-between;
       gap: 10px;
       margin-bottom: 20px;
+      position: relative;
     }
     
     .reel {
@@ -164,20 +165,54 @@
     
     .win-line {
       position: absolute;
-      left: 20px;
-      right: 20px;
+      left: 0;
+      right: 0;
       top: 50%;
-      height: 5px;
-      background-color: rgba(255, 255, 255, 0.2);
+      height: 4px;
+      background-color: rgba(255, 255, 255, 0.3);
       transform: translateY(-50%);
       pointer-events: none;
       z-index: 5;
+      border-top: 1px solid var(--highlight-color);
+      border-bottom: 1px solid var(--highlight-color);
     }
     
     .win-line.highlight {
       background-color: var(--win-color);
       box-shadow: 0 0 10px var(--win-color);
       animation: pulse 1s infinite;
+      border-color: var(--win-color);
+    }
+    
+    .win-marker {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: var(--highlight-color);
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 6;
+    }
+    
+    .win-marker.left {
+      left: -5px;
+    }
+    
+    .win-marker.right {
+      right: -5px;
+    }
+    
+    .reel-marker {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--highlight-color);
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 6;
+      right: 5px;
     }
     
     @keyframes pulse {
@@ -466,7 +501,7 @@
   <header class="app-header">
     <div class="user-info">Welcome, BensBar</div>
     <div class="game-title">OctoSlots</div>
-    <div class="date-info">2025-06-01 01:56:17 UTC</div>
+    <div class="date-info">2025-06-01 02:02:42 UTC</div>
   </header>
   
   <div class="slot-machine-container">
@@ -507,16 +542,22 @@
       <div class="reels-container">
         <div class="reel" id="reel1">
           <div class="reel-inner" id="reel1-inner"></div>
+          <div class="reel-marker"></div>
         </div>
         <div class="reel" id="reel2">
           <div class="reel-inner" id="reel2-inner"></div>
+          <div class="reel-marker"></div>
         </div>
         <div class="reel" id="reel3">
           <div class="reel-inner" id="reel3-inner"></div>
+          <div class="reel-marker"></div>
+        </div>
+        
+        <div class="win-line" id="win-line">
+          <div class="win-marker left"></div>
+          <div class="win-marker right"></div>
         </div>
       </div>
-      
-      <div class="win-line" id="win-line"></div>
       
       <div class="controls">
         <div class="score-display">
@@ -582,7 +623,8 @@
         currentSymbols: [null, null, null],
         bet: config.spinCost,
         lastWin: 0,
-        canPull: true
+        canPull: true,
+        spinSound: null // To store the spin sound so we can stop it
       };
       
       // DOM Elements
@@ -791,7 +833,7 @@
         startLights();
         
         // Play spin sound
-        playSound('spin');
+        state.spinSound = playSound('spin');
         
         // Determine spin durations for each reel
         const baseDuration = Math.random() * (config.spinDuration.max - config.spinDuration.min) + config.spinDuration.min;
@@ -808,6 +850,13 @@
             setTimeout(async () => {
               await spinReel(i, 500); // Quick stop animation
               playSound('stop');
+              
+              // If this is the last reel, stop the spin sound
+              if (i === config.reelCount - 1 && state.spinSound) {
+                state.spinSound.pause();
+                state.spinSound.currentTime = 0;
+              }
+              
               resolve();
             }, reelDuration);
           });
@@ -940,20 +989,22 @@
       
       // Sound effects
       function playSound(soundType) {
-        const sounds = {
-          spin: new Audio('sounds/spin.wav'),
-          stop: new Audio('sounds/stop.wav'),
-          win: new Audio('sounds/win.wav')
-        };
+        // Stop any previous sound of this type
+        if (state.spinSound && soundType === 'spin') {
+          state.spinSound.pause();
+          state.spinSound.currentTime = 0;
+        }
+        
+        const sound = new Audio(`sounds/${soundType}.wav`);
         
         try {
-          if (sounds[soundType]) {
-            sounds[soundType].currentTime = 0;
-            sounds[soundType].play().catch(err => console.log('Sound not available yet'));
-          }
+          sound.play().catch(err => console.log('Sound not available yet'));
         } catch (err) {
           console.log('Sound playback error');
         }
+        
+        // Return the sound object so we can control it later
+        return sound;
       }
       
       // Setup event listeners
