@@ -4,15 +4,495 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>OctoSlots - GitHub Octocat Slot Machine</title>
-  <!-- ... styles unchanged ... -->
-  <!-- (SKIP: styles omitted for brevity, same as your file) -->
+  <style>
+    :root {
+      --primary-bg: #0d1117;
+      --secondary-bg: #161b22;
+      --border-color: #30363d;
+      --text-color: #c9d1d9;
+      --highlight-color: #58a6ff;
+      --gold-color: #f1e05a;
+      --win-color: #3fb950;
+      --header-height: 60px;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      user-select: none;
+    }
+    
+    body {
+      background-color: var(--primary-bg);
+      color: var(--text-color);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 15px;
+      height: var(--header-height);
+      background-color: var(--secondary-bg);
+      border-bottom: 1px solid var(--border-color);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+    }
+    
+    .user-info, .date-info {
+      font-size: 14px;
+      color: #8b949e;
+    }
+    
+    .game-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--highlight-color);
+    }
+    
+    .slot-machine-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: calc(100vh - var(--header-height));
+      width: 100vw;
+      padding: 20px;
+      margin-top: var(--header-height);
+    }
+    
+    .slot-machine {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      background-color: var(--secondary-bg);
+      border-radius: 20px;
+      border: 3px solid var(--border-color);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
+                  inset 0 0 10px rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      overflow: hidden;
+    }
+    
+    .machine-top {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 10px;
+      border-bottom: 2px solid var(--border-color);
+      position: relative;
+    }
+    
+    .jackpot-display {
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      font-weight: bold;
+      color: var(--gold-color);
+      text-shadow: 0 0 10px rgba(241, 224, 90, 0.5);
+    }
+    
+    .flashing-lights {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 10px;
+      display: flex;
+      justify-content: space-around;
+    }
+    
+    .light {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #444;
+    }
+    
+    .light.on {
+      background-color: var(--highlight-color);
+      box-shadow: 0 0 10px var(--highlight-color);
+    }
+    
+    .reels-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    
+    .reel {
+      position: relative;
+      flex: 1;
+      height: clamp(150px, 30vh, 300px);
+      background-color: var(--primary-bg);
+      border-radius: 10px;
+      border: 2px solid var(--border-color);
+      overflow: hidden;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    .slot-item {
+      position: absolute;
+      width: 100%;
+      height: 33.33%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: top 0.5s ease-out;
+    }
+    
+    .slot-item.top {
+      top: 0;
+    }
+    
+    .slot-item.middle {
+      top: 33.33%;
+    }
+    
+    .slot-item.bottom {
+      top: 66.66%;
+    }
+    
+    .slot-item img {
+      max-width: 70%;
+      max-height: 70%;
+      object-fit: contain;
+    }
+    
+    .spinning .slot-item {
+      animation: spin-blur 0.1s infinite linear;
+    }
+    
+    @keyframes spin-blur {
+      0%, 100% { filter: blur(1px); }
+      50% { filter: blur(2px); }
+    }
+    
+    .win-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 6px;
+      background-color: red;
+      transform: translateY(-50%);
+      z-index: 5;
+      pointer-events: none;
+      border: 1px solid white;
+      box-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
+      opacity: 0.6;
+    }
+    
+    .win-line.highlight {
+      background-color: lime;
+      box-shadow: 0 0 10px lime;
+      opacity: 0.8;
+      animation: pulse 1s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 0.8; }
+      100% { opacity: 0.5; }
+    }
+    
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      border-top: 2px solid var(--border-color);
+    }
+    
+    .score-display {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    
+    .score-card {
+      background-color: var(--primary-bg);
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: 2px solid var(--border-color);
+      text-align: center;
+      min-width: 120px;
+    }
+    
+    .score-card h3 {
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: #8b949e;
+    }
+    
+    .score-value {
+      font-size: 22px;
+      font-weight: bold;
+      color: var(--highlight-color);
+    }
+    
+    .spin-button {
+      background: linear-gradient(to bottom, #1f6feb, #1158c7);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 15px 40px;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .spin-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    .spin-button:active {
+      transform: translateY(1px);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .spin-button:disabled {
+      background: linear-gradient(to bottom, #2b3442, #1d2430);
+      color: #4d5566;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    
+    .spin-button::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0));
+      pointer-events: none;
+    }
+    
+    .win-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(22, 27, 34, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      z-index: 20;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .win-message.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .win-message h2 {
+      color: var(--gold-color);
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    
+    .win-message p {
+      color: var(--text-color);
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+    
+    .win-message button {
+      background-color: var(--highlight-color);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    
+    .paytable {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: var(--secondary-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      padding: 10px;
+      font-size: 12px;
+      z-index: 30;
+      transform: scale(0);
+      transform-origin: top right;
+      transition: transform 0.3s ease;
+    }
+    
+    .paytable-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: var(--secondary-bg);
+      color: var(--highlight-color);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 16px;
+      cursor: pointer;
+      z-index: 31;
+    }
+    
+    .paytable.show {
+      transform: scale(1);
+    }
+    
+    .paytable h3 {
+      color: var(--highlight-color);
+      margin-bottom: 5px;
+    }
+    
+    .paytable-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    
+    .paytable-item img {
+      width: 30px;
+      height: 30px;
+      margin-right: 10px;
+    }
+    
+    .lever-container {
+      position: absolute;
+      right: -40px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .lever-base {
+      width: 40px;
+      height: 80px;
+      background-color: #333;
+      border-radius: 10px 10px 0 0;
+      position: relative;
+    }
+    
+    .lever {
+      width: 20px;
+      height: 120px;
+      background: linear-gradient(to bottom, #c0392b, #e74c3c);
+      border-radius: 10px;
+      position: absolute;
+      top: 0;
+      left: 10px;
+      transform-origin: top center;
+      transform: rotate(0deg);
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .lever::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 0;
+      width: 20px;
+      height: 20px;
+      background-color: #c0392b;
+      border-radius: 50%;
+    }
+    
+    .lever.pulled {
+      transform: rotate(60deg);
+    }
+
+    /* Audio elements for sounds */
+    audio {
+      display: none;
+    }
+    
+    @media (max-width: 767px) {
+      .reels-container {
+        gap: 5px;
+      }
+      
+      .reel {
+        height: clamp(100px, 20vh, 200px);
+      }
+      
+      .slot-machine {
+        padding: 10px;
+      }
+      
+      .spin-button {
+        padding: 10px 30px;
+        font-size: 20px;
+      }
+      
+      .score-card {
+        min-width: 80px;
+        padding: 8px;
+      }
+      
+      .score-value {
+        font-size: 18px;
+      }
+      
+      .lever-container {
+        display: none; /* Hide lever on mobile */
+      }
+    }
+    
+    @media (max-height: 600px) {
+      .machine-top {
+        margin-bottom: 10px;
+        padding: 5px;
+      }
+      
+      .jackpot-display {
+        font-size: 1.2rem;
+      }
+      
+      .controls {
+        padding: 5px;
+      }
+      
+      .score-display {
+        margin-bottom: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="app-header">
     <div class="user-info">Welcome, BensBar</div>
     <div class="game-title">OctoSlots</div>
-    <div class="date-info">2025-06-02 13:07:23</div>
+    <div class="date-info">2025-06-02 01:49:45</div>
   </header>
+  
   <!-- Audio elements embedded in the page -->
   <audio id="spin-sound" src="sounds/spin.wav" preload="auto"></audio>
   <audio id="stop-sound" src="sounds/stop.wav" preload="auto"></audio>
@@ -20,20 +500,42 @@
   <audio id="win2-sound" src="sounds/win2.wav" preload="auto"></audio>
   <audio id="win3-sound" src="sounds/win3.wav" preload="auto"></audio>
   <audio id="lose-sound" src="sounds/lose.wav" preload="auto"></audio>
+  
   <div class="slot-machine-container">
     <div class="slot-machine">
-      <!-- ... machine and paytable ... -->
       <button class="paytable-button">?</button>
       <div class="paytable">
-        <!-- ... paytable content ... -->
+        <h3>Pay Table</h3>
+        <div class="paytable-item">
+          <img src="https://octodex.github.com/images/original.png" alt="Original">
+          <span>x3: 1000 pts</span>
+        </div>
+        <div class="paytable-item">
+          <img src="https://octodex.github.com/images/octobiwan.jpg" alt="Octobiwan">
+          <span>x3: 500 pts</span>
+        </div>
+        <div class="paytable-item">
+          <span>Any 3 matching: 250 pts</span>
+        </div>
+        <div class="paytable-item">
+          <span>Any 2 matching: 50 pts</span>
+        </div>
       </div>
+      
       <div class="machine-top">
         <div class="flashing-lights">
-          <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
-          <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
         </div>
         <div class="jackpot-display">JACKPOT: 1000</div>
       </div>
+      
       <div class="reels-container">
         <div id="reel1" class="reel">
           <div class="slot-item top" id="reel1-top"></div>
@@ -50,21 +552,34 @@
           <div class="slot-item middle" id="reel3-middle"></div>
           <div class="slot-item bottom" id="reel3-bottom"></div>
         </div>
+        
         <div id="win-line" class="win-line"></div>
       </div>
+      
       <div class="controls">
         <div class="score-display">
-          <div class="score-card"><h3>CREDITS</h3><div class="score-value" id="credits">500</div></div>
-          <div class="score-card"><h3>BET</h3><div class="score-value" id="bet-amount">10</div></div>
-          <div class="score-card"><h3>WIN</h3><div class="score-value" id="win-amount">0</div></div>
+          <div class="score-card">
+            <h3>CREDITS</h3>
+            <div class="score-value" id="credits">500</div>
+          </div>
+          <div class="score-card">
+            <h3>BET</h3>
+            <div class="score-value" id="bet-amount">10</div>
+          </div>
+          <div class="score-card">
+            <h3>WIN</h3>
+            <div class="score-value" id="win-amount">0</div>
+          </div>
         </div>
         <button class="spin-button" id="spin-button">SPIN</button>
       </div>
+      
       <div class="win-message" id="win-message">
         <h2>WINNER!</h2>
         <p>You won <span id="win-value">250</span> credits!</p>
         <button id="continue-button">CONTINUE</button>
       </div>
+      
       <div class="lever-container">
         <div class="lever-base">
           <div class="lever" id="lever"></div>
@@ -72,12 +587,44 @@
       </div>
     </div>
   </div>
+  
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // ... (other code unchanged) ...
-      // (from your existing code - fetch/check soundAvailability, octocats array, etc.)
-
-      // --- Audio Section ---
+      // Flag to track which sounds are available
+      const soundAvailability = {
+        win2: false,
+        win3: false
+      };
+      
+      // Check if the specialized win sounds exist
+      function checkSoundAvailability() {
+        // Check win2.wav
+        fetch('sounds/win2.wav')
+          .then(response => {
+            soundAvailability.win2 = response.ok;
+            console.log('win2 sound available:', soundAvailability.win2);
+          })
+          .catch(() => {
+            soundAvailability.win2 = false;
+            console.log('win2 sound not available');
+          });
+          
+        // Check win3.wav
+        fetch('sounds/win3.wav')
+          .then(response => {
+            soundAvailability.win3 = response.ok;
+            console.log('win3 sound available:', soundAvailability.win3);
+          })
+          .catch(() => {
+            soundAvailability.win3 = false;
+            console.log('win3 sound not available');
+          });
+      }
+      
+      // Check sound availability at startup
+      checkSoundAvailability();
+      
+      // Simple HTML5 Audio for direct sound management
       const sounds = {
         spin: document.getElementById('spin-sound'),
         stop: document.getElementById('stop-sound'),
@@ -86,63 +633,279 @@
         win3: document.getElementById('win3-sound'),
         lose: document.getElementById('lose-sound')
       };
-      Object.values(sounds).forEach(sound => { if (sound) sound.volume = 1.0; });
-
-      // Always keep reference to current spin sound
+      
+      // Set all sounds to full volume
+      Object.values(sounds).forEach(sound => {
+        if (sound) sound.volume = 1.0;
+      });
+      
+      // Play a sound with fallback handling
+      function playSound(name) {
+        console.log(`Attempting to play sound: ${name}`);
+        // Handle specialized win sounds
+        if (name === 'win2' && !soundAvailability.win2) {
+          console.log('win2 not available, using regular win sound');
+          name = 'win';
+        }
+        if (name === 'win3' && !soundAvailability.win3) {
+          console.log('win3 not available, using regular win sound');
+          name = 'win';
+        }
+        // For 'spin', always create a new Audio object for reliability
+        if (name === 'spin') {
+          const spinAudio = new Audio('sounds/spin.wav');
+          spinAudio.volume = 1.0;
+          spinAudio.play().catch(e => console.error('Spin sound error:', e));
+          return spinAudio;
+        }
+        // Get the sound element
+        const sound = sounds[name];
+        if (!sound) {
+          console.error(`Sound not found: ${name}`);
+          return null;
+        }
+        // Reset and play
+        try {
+          sound.currentTime = 0;
+          sound.volume = 1.0;
+          const promise = sound.play();
+          if (promise !== undefined) {
+            promise.catch(error => {
+              console.error(`Error playing ${name} sound:`, error);
+              // If standard play fails, try alternate approaches
+              if (name === 'win' || name === 'win2' || name === 'win3') {
+                console.log(`Trying alternative method for ${name} sound`);
+                const newSound = new Audio(`sounds/${name === 'win2' || name === 'win3' ? 'win' : name}.wav`);
+                newSound.volume = 1.0;
+                newSound.play().catch(e => console.log(`Even new audio failed for ${name}:`, e));
+              }
+            });
+          }
+          return sound;
+        } catch (error) {
+          console.error(`Exception playing ${name} sound:`, error);
+          return null;
+        }
+      }
+      
+      // Stop a sound
+      function stopSound(sound) {
+        if (!sound) return;
+        try {
+          sound.pause();
+          sound.currentTime = 0;
+        } catch (e) {
+          console.error('Error stopping sound:', e);
+        }
+      }
+      
+      // Unlock audio on first user interaction
+      function unlockAudio() {
+        console.log('Unlocking audio...');
+        
+        // Try to unlock all audio elements
+        Object.values(sounds).forEach(sound => {
+          if (sound) {
+            sound.volume = 0.01;
+            sound.play().then(() => {
+              sound.pause();
+              sound.currentTime = 0;
+              sound.volume = 1.0;
+              console.log(`Unlocked sound: ${sound.id}`);
+            }).catch(e => {
+              console.log(`Audio unlock failed for ${sound.id}:`, e);
+            });
+          }
+        });
+        
+        // Remove the event listeners once we've tried to unlock
+        document.removeEventListener('click', unlockAudio);
+        document.removeEventListener('touchstart', unlockAudio);
+        document.removeEventListener('keydown', unlockAudio);
+      }
+      
+      // Add event listeners to unlock audio
+      document.addEventListener('click', unlockAudio);
+      document.addEventListener('touchstart', unlockAudio);
+      document.addEventListener('keydown', unlockAudio);
+      
+      // Currently playing spin sound
       let spinSoundInstance = null;
-
-      function playSpinSound() {
-        if (spinSoundInstance) {
-          spinSoundInstance.pause();
-          spinSoundInstance.currentTime = 0;
+      
+      // Game configuration
+      const config = {
+        spinCost: 10,
+        defaultCredits: 500,
+        spinDuration: 2000,
+        stopDelay: 500,
+        prizes: {
+          jackpot: 1000,
+          threeOriginal: 1000,
+          threeOctobiwan: 500,
+          threeMatching: 250,
+          twoMatching: 50
         }
-        // Always reset and play
-        spinSoundInstance = sounds.spin;
-        if (spinSoundInstance) {
-          spinSoundInstance.currentTime = 0;
-          spinSoundInstance.loop = true;
-          spinSoundInstance.play().catch(e => console.log("Spin sound error:", e));
+      };
+      
+      // Game state
+      const state = {
+        credits: config.defaultCredits,
+        spinning: false,
+        currentSymbols: [null, null, null],
+        bet: config.spinCost,
+        lastWin: 0,
+        canPull: true
+      };
+      
+      // Collection of Octocats
+      const octocats = [
+        { name: 'Original', image: 'https://octodex.github.com/images/original.png', value: 10 },
+        { name: 'Surftocat', image: 'https://octodex.github.com/images/surftocat.png', value: 5 },
+        { name: 'Yogitocat', image: 'https://octodex.github.com/images/yogitocat.png', value: 5 },
+        { name: 'Hulatocat', image: 'https://octodex.github.com/images/hula_loop_octodex03.gif', value: 5 },
+        { name: 'Dinotocat', image: 'https://octodex.github.com/images/dinotocat.png', value: 5 },
+        { name: 'Labtocat', image: 'https://octodex.github.com/images/labtocat.png', value: 5 },
+        { name: 'Octobiwan', image: 'https://octodex.github.com/images/octobiwan.jpg', value: 8 },
+        { name: 'Inspectocat', image: 'https://octodex.github.com/images/inspectocat.jpg', value: 5 },
+        { name: 'Spectrocat', image: 'https://octodex.github.com/images/spectrocat.png', value: 5 },
+        { name: 'Minion', image: 'https://octodex.github.com/images/minion.png', value: 5 },
+        { name: 'Droidtocat', image: 'https://octodex.github.com/images/droidtocat.png', value: 5 },
+        { name: 'Ironcat', image: 'https://octodex.github.com/images/ironcat.jpg', value: 5 },
+        { name: 'Grinchtocat', image: 'https://octodex.github.com/images/grinchtocat.gif', value: 5 },
+        { name: 'Megacat', image: 'https://octodex.github.com/images/megacat.jpg', value: 5 },
+        { name: 'Repo', image: 'https://octodex.github.com/images/repo.png', value: 5 }
+      ];
+      
+      // DOM Elements
+      const elements = {
+        reels: [
+          document.getElementById('reel1'),
+          document.getElementById('reel2'),
+          document.getElementById('reel3')
+        ],
+        slotItems: {
+          top: [
+            document.getElementById('reel1-top'),
+            document.getElementById('reel2-top'),
+            document.getElementById('reel3-top')
+          ],
+          middle: [
+            document.getElementById('reel1-middle'),
+            document.getElementById('reel2-middle'),
+            document.getElementById('reel3-middle')
+          ],
+          bottom: [
+            document.getElementById('reel1-bottom'),
+            document.getElementById('reel2-bottom'),
+            document.getElementById('reel3-bottom')
+          ]
+        },
+        spinButton: document.getElementById('spin-button'),
+        creditsDisplay: document.getElementById('credits'),
+        betDisplay: document.getElementById('bet-amount'),
+        winDisplay: document.getElementById('win-amount'),
+        winLine: document.getElementById('win-line'),
+        winMessage: document.getElementById('win-message'),
+        winValue: document.getElementById('win-value'),
+        continueButton: document.getElementById('continue-button'),
+        paytableButton: document.querySelector('.paytable-button'),
+        paytable: document.querySelector('.paytable'),
+        lights: document.querySelectorAll('.light'),
+        lever: document.getElementById('lever')
+      };
+      
+      // Set a random symbol in a slot item
+      function setRandomSymbol(slotItem) {
+        const randomOctocat = octocats[Math.floor(Math.random() * octocats.length)];
+        slotItem.innerHTML = `<img src="${randomOctocat.image}" alt="${randomOctocat.name}">`;
+        slotItem.dataset.name = randomOctocat.name;
+        return randomOctocat;
+      }
+      
+      // Set a specific symbol in a slot item
+      function setSymbol(slotItem, symbolName) {
+        const octocat = octocats.find(o => o.name === symbolName) || octocats[0];
+        slotItem.innerHTML = `<img src="${octocat.image}" alt="${octocat.name}">`;
+        slotItem.dataset.name = octocat.name;
+        return octocat;
+      }
+      
+      // Initialize all slot items with random symbols
+      function initializeSlots() {
+        // Set random symbols in all positions
+        for (let i = 0; i < 3; i++) {
+          setRandomSymbol(elements.slotItems.top[i]);
+          setRandomSymbol(elements.slotItems.middle[i]);
+          setRandomSymbol(elements.slotItems.bottom[i]);
         }
       }
-      function stopSpinSound() {
-        if (spinSoundInstance) {
-          spinSoundInstance.pause();
-          spinSoundInstance.currentTime = 0;
-          spinSoundInstance.loop = false;
+      
+      // Determine the final symbols for each reel
+      function determineWinningSymbols() {
+        // Decide if this spin should be a winner
+        const randomValue = Math.random();
+        let symbols = [];
+        
+        if (randomValue < 0.1) {
+          // 10% chance for 3 matching symbols
+          const symbolName = octocats[Math.floor(Math.random() * octocats.length)].name;
+          symbols = [symbolName, symbolName, symbolName];
+        } else if (randomValue < 0.3) {
+          // 20% chance for 2 matching symbols
+          const symbolName1 = octocats[Math.floor(Math.random() * octocats.length)].name;
+          let symbolName2;
+          do {
+            symbolName2 = octocats[Math.floor(Math.random() * octocats.length)].name;
+          } while (symbolName2 === symbolName1);
+          
+          symbols = [symbolName1, symbolName1, symbolName2];
+          // Shuffle to make it less predictable
+          symbols.sort(() => Math.random() - 0.5);
+        } else {
+          // Random symbols
+          symbols = [
+            octocats[Math.floor(Math.random() * octocats.length)].name,
+            octocats[Math.floor(Math.random() * octocats.length)].name,
+            octocats[Math.floor(Math.random() * octocats.length)].name
+          ];
         }
+        
+        return symbols;
       }
-
-      // --- DOM & State Section (unchanged) ---
-
-      // --- SPIN FUNCTION ---
+      
+      // Spin all reels
       async function spinAllReels() {
         if (state.spinning) return;
-
-        // Hide win box immediately if present (FIX 2)
-        elements.winMessage.classList.remove('show');
-
-        // ... your checks for credits, etc. ...
+        
+        // Check if player has enough credits
         if (state.credits < state.bet) {
           alert('Not enough credits!');
           return;
         }
-
+        
+        // Unlock audio again (some browsers need this on each interaction)
         unlockAudio();
-
-        // Start SPIN SOUND before reels start (FIX 1)
-        playSpinSound();
-
+        
+        // Deduct bet amount
         state.credits -= state.bet;
         updateDisplay();
-
+        
+        // Reset state
         state.spinning = true;
         state.lastWin = 0;
         elements.spinButton.disabled = true;
         elements.winLine.classList.remove('highlight');
+        
+        // Start flashing lights
         startLights();
-
+        
+        // Determine winning symbols
         const finalSymbols = determineWinningSymbols();
+        
+        // Add spinning class to all reels
         elements.reels.forEach(reel => reel.classList.add('spinning'));
+        
+        // Rapidly change symbols during spinning animation
         const spinningIntervals = elements.reels.map((reel, reelIndex) => {
           return setInterval(() => {
             setRandomSymbol(elements.slotItems.top[reelIndex]);
@@ -150,41 +913,247 @@
             setRandomSymbol(elements.slotItems.bottom[reelIndex]);
           }, 100);
         });
-
+        
+        // Stop reels one by one
         for (let i = 0; i < 3; i++) {
           await new Promise(resolve => {
             setTimeout(() => {
+              // Clear the spinning interval
               clearInterval(spinningIntervals[i]);
+              
+              // Remove spinning class
               elements.reels[i].classList.remove('spinning');
+              
+              // Set final symbols for this reel
+              // Generate a different symbol for top and bottom
               const otherSymbol1 = octocats[Math.floor(Math.random() * octocats.length)].name;
               const otherSymbol2 = octocats[Math.floor(Math.random() * octocats.length)].name;
+              
+              // Set the symbols
               setSymbol(elements.slotItems.top[i], otherSymbol1);
               setSymbol(elements.slotItems.middle[i], finalSymbols[i]);
               setSymbol(elements.slotItems.bottom[i], otherSymbol2);
+              
+              // Store the middle symbol as the current symbol for this reel
               state.currentSymbols[i] = finalSymbols[i];
+              
+              // Play stop sound
               playSound('stop');
-              // Stop SPIN SOUND immediately after last reel (FIX 1)
+              
+              // If this is the last reel, stop spin sound
               if (i === 2) {
-                stopSpinSound();
+                stopSound(spinSoundInstance);
               }
+              
               resolve();
             }, config.spinDuration + (i * config.stopDelay));
           });
         }
-
+        
+        // Check for wins
         await checkWin();
+        
+        // Reset game state
         state.spinning = false;
         elements.spinButton.disabled = false;
       }
-
-      // --- SPIN BUTTON EVENT ---
-      elements.spinButton.addEventListener('click', () => {
-        spinAllReels();
-      });
-
-      // --- Other event listeners & game logic unchanged ---
-
-      // ... (rest of your JS code unchanged) ...
+      
+      // Check for winning combinations
+      async function checkWin() {
+        // Get the symbols from the middle row
+        const symbols = [...state.currentSymbols];
+        
+        // Count occurrences of each symbol
+        const counts = {};
+        symbols.forEach(s => {
+          counts[s] = (counts[s] || 0) + 1;
+        });
+        
+        let winAmount = 0;
+        let winType = '';
+        
+        // Check for 3 matching symbols
+        const threeMatch = Object.entries(counts).find(([symbol, count]) => count === 3);
+        if (threeMatch) {
+          const [symbol, _] = threeMatch;
+          winType = 'three';
+          
+          // Check for specific high-value combinations
+          if (symbol === 'Original') {
+            winAmount = config.prizes.threeOriginal;
+          } else if (symbol === 'Octobiwan') {
+            winAmount = config.prizes.threeOctobiwan;
+          } else {
+            // Generic three matching symbols
+            winAmount = config.prizes.threeMatching;
+          }
+        } 
+        // Check for 2 matching symbols
+        else {
+          const twoMatch = Object.entries(counts).find(([symbol, count]) => count === 2);
+          if (twoMatch) {
+            winAmount = config.prizes.twoMatching;
+            winType = 'two';
+          }
+        }
+        
+        if (winAmount > 0) {
+          elements.winLine.classList.add('highlight');
+          state.lastWin = winAmount;
+          state.credits += winAmount;
+          updateDisplay();
+          
+          // Small delay before playing win sound to ensure it's heard
+          setTimeout(() => {
+            console.log(`Playing win sound for type: ${winType}`);
+            
+            // Play the appropriate win sound based on win type
+            if (winType === 'three') {
+              // Try win3 sound, but fall back to regular win sound if needed
+              playSound('win3');
+            } else if (winType === 'two') {
+              // Try win2 sound, but fall back to regular win sound if needed
+              playSound('win2');
+            } else {
+              // Generic win sound
+              playSound('win');
+            }
+            
+            showWinMessage(winAmount);
+          }, 500);
+          
+          return true;
+        } else {
+          // Play lose sound when there's no win - 300ms delay
+          setTimeout(() => {
+            console.log("Playing lose sound");
+            playSound('lose');
+          }, 300);
+          
+          stopLights();
+          return false;
+        }
+      }
+      
+      // Show win message and celebrate
+      function showWinMessage(amount) {
+        // Flash lights more intensely
+        const lightInterval = setInterval(() => {
+          elements.lights.forEach(light => {
+            light.classList.toggle('on');
+          });
+        }, 100);
+        
+        // Update win display
+        elements.winDisplay.textContent = amount;
+        
+        // Show win message
+        elements.winValue.textContent = amount;
+        elements.winMessage.classList.add('show');
+        
+        // Setup continue button
+        elements.continueButton.onclick = () => {
+          elements.winMessage.classList.remove('show');
+          clearInterval(lightInterval);
+          stopLights();
+        };
+      }
+      
+      // Flash lights
+      function startLights() {
+        let lightIndex = 0;
+        
+        const lightSequence = setInterval(() => {
+          // Turn off all lights
+          elements.lights.forEach(light => light.classList.remove('on'));
+          
+          // Turn on current light
+          elements.lights[lightIndex].classList.add('on');
+          
+          // Move to next light
+          lightIndex = (lightIndex + 1) % elements.lights.length;
+          
+          // If not spinning anymore, stop the lights
+          if (!state.spinning) {
+            clearInterval(lightSequence);
+          }
+        }, 100);
+      }
+      
+      // Stop lights
+      function stopLights() {
+        elements.lights.forEach(light => light.classList.remove('on'));
+      }
+      
+      // Update displays
+      function updateDisplay() {
+        elements.creditsDisplay.textContent = state.credits;
+        elements.betDisplay.textContent = state.bet;
+        elements.winDisplay.textContent = state.lastWin;
+      }
+      
+      // Setup event listeners
+      function setupEventListeners() {
+        // Spin button
+        elements.spinButton.addEventListener('click', () => {
+          if (!state.spinning) {
+            // Always hide win popup before spinning
+            elements.winMessage.classList.remove('show');
+            stopSound(sounds.spin); // Not strictly needed now, but safe
+            playSound('spin');
+            spinAllReels();
+          }
+        });
+        // Paytable button
+        elements.paytableButton.addEventListener('click', () => {
+          elements.paytable.classList.toggle('show');
+        });
+        
+        // Continue button (after win)
+        elements.continueButton.addEventListener('click', () => {
+          elements.winMessage.classList.remove('show');
+        });
+        
+        // Lever pull
+        if (elements.lever) {
+          elements.lever.addEventListener('click', () => {
+            if (!state.spinning && state.canPull) {
+              elements.winMessage.classList.remove('show');
+              stopSound(sounds.spin);
+              playSound('spin');
+              state.canPull = false;
+              elements.lever.classList.add('pulled');
+              setTimeout(() => {
+                elements.lever.classList.remove('pulled');
+                state.canPull = true;
+              }, 1000);
+              spinAllReels();
+            }
+          });
+        }
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+          if (e.code === 'Space' && !state.spinning) {
+            e.preventDefault();
+            elements.winMessage.classList.remove('show');
+            stopSound(sounds.spin);
+            playSound('spin');
+            spinAllReels();
+          }
+        });
+      }
+      
+      // Initialize game
+      function init() {
+        // Set up the game
+        initializeSlots();
+        updateDisplay();
+        setupEventListeners();
+      }
+      
+      // Start the game
+      init();
     });
   </script>
 </body>
