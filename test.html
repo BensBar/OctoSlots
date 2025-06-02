@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>OctoSlots - GitHub Octocat Slot Machine</title>
+  <style>
+    :root {
+      --primary-bg: #0d1117;
+      --secondary-bg: #161b22;
+      --border-color: #30363d;
+      --text-color: #c9d1d9;
+      --highlight-color: #58a6ff;
+      --gold-color: #f1e05a;
+      --win-color: #3fb950;
+      --header-height: 60px;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      user-select: none;
+    }
+    body {
+      background-color: var(--primary-bg);
+      color: var(--text-color);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+    }
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 15px;
+      height: var(--header-height);
+      background-color: var(--secondary-bg);
+      border-bottom: 1px solid var(--border-color);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+    }
+    .user-info, .date-info {
+      font-size: 14px;
+      color: #8b949e;
+    }
+    .game-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--highlight-color);
+    }
+    .slot-machine-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: calc(100vh - var(--header-height));
+      width: 100vw;
+      padding: 20px;
+      margin-top: var(--header-height);
+    }
+    .slot-machine {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      background-color: var(--secondary-bg);
+      border-radius: 20px;
+      border: 3px solid var(--border-color);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
+                  inset 0 0 10px rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      overflow: hidden;
+    }
+    .machine-top {
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 10px;
+      border-bottom: 2px solid var(--border-color);
+      position: relative;
+    }
+    .jackpot-display {
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      font-weight: bold;
+      color: var(--gold-color);
+      text-shadow: 0 0 10px rgba(241, 224, 90, 0.5);
+    }
+    .flashing-lights {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 10px;
+      display: flex;
+      justify-content: space-around;
+    }
+    .light {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #444;
+    }
+    .light.on {
+      background-color: var(--highlight-color);
+      box-shadow: 0 0 10px var(--highlight-color);
+    }
+    .reels-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .reel {
+      position: relative;
+      flex: 1;
+      height: clamp(150px, 30vh, 300px);
+      background-color: var(--primary-bg);
+      border-radius: 10px;
+      border: 2px solid var(--border-color);
+      overflow: hidden;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    .slot-item {
+      position: absolute;
+      width: 100%;
+      height: 33.33%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: top 0.5s ease-out;
+    }
+    .slot-item.top { top: 0; }
+    .slot-item.middle { top: 33.33%; }
+    .slot-item.bottom { top: 66.66%; }
+    .slot-item img {
+      max-width: 70%;
+      max-height: 70%;
+      object-fit: contain;
+    }
+    .spinning .slot-item {
+      animation: spin-blur 0.1s infinite linear;
+    }
+    @keyframes spin-blur {
+      0%, 100% { filter: blur(1px); }
+      50% { filter: blur(2px); }
+    }
+    .win-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 6px;
+      background-color: red;
+      transform: translateY(-50%);
+      z-index: 5;
+      pointer-events: none;
+      border: 1px solid white;
+      box-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
+      opacity: 0.6;
+    }
+    .win-line.highlight {
+      background-color: lime;
+      box-shadow: 0 0 10px lime;
+      opacity: 0.8;
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 0.8; }
+      100% { opacity: 0.5; }
+    }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      border-top: 2px solid var(--border-color);
+    }
+    .score-display {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    .score-card {
+      background-color: var(--primary-bg);
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: 2px solid var(--border-color);
+      text-align: center;
+      min-width: 120px;
+    }
+    .score-card h3 {
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: #8b949e;
+    }
+    .score-value {
+      font-size: 22px;
+      font-weight: bold;
+      color: var(--highlight-color);
+    }
+    .spin-button {
+      background: linear-gradient(to bottom, #1f6feb, #1158c7);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 15px 40px;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .spin-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+    }
+    .spin-button:active {
+      transform: translateY(1px);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    }
+    .spin-button:disabled {
+      background: linear-gradient(to bottom, #2b3442, #1d2430);
+      color: #4d5566;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .spin-button::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0));
+      pointer-events: none;
+    }
+    .win-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(22, 27, 34, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      z-index: 20;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    .win-message.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    .win-message h2 {
+      color: var(--gold-color);
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    .win-message p {
+      color: var(--text-color);
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+    .win-message button {
+      background-color: var(--highlight-color);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .paytable {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: var(--secondary-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      padding: 10px;
+      font-size: 12px;
+      z-index: 30;
+      transform: scale(0);
+      transform-origin: top right;
+      transition: transform 0.3s ease;
+    }
+    .paytable-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: var(--secondary-bg);
+      color: var(--highlight-color);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 16px;
+      cursor: pointer;
+      z-index: 31;
+    }
+    .paytable.show {
+      transform: scale(1);
+    }
+    .paytable h3 {
+      color: var(--highlight-color);
+      margin-bottom: 5px;
+    }
+    .paytable-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .paytable-item img {
+      width: 30px;
+      height: 30px;
+      margin-right: 10px;
+    }
+    .lever-container {
+      position: absolute;
+      right: -40px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .lever-base {
+      width: 40px;
+      height: 80px;
+      background-color: #333;
+      border-radius: 10px 10px 0 0;
+      position: relative;
+    }
+    .lever {
+      width: 20px;
+      height: 120px;
+      background: linear-gradient(to bottom, #c0392b, #e74c3c);
+      border-radius: 10px;
+      position: absolute;
+      top: 0;
+      left: 10px;
+      transform-origin: top center;
+      transform: rotate(0deg);
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+    .lever::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 0;
+      width: 20px;
+      height: 20px;
+      background-color: #c0392b;
+      border-radius: 50%;
+    }
+    .lever.pulled {
+      transform: rotate(60deg);
+    }
+    audio {
+      display: none;
+    }
+    @media (max-width: 767px) {
+      .reels-container { gap: 5px; }
+      .reel { height: clamp(100px, 20vh, 200px); }
+      .slot-machine { padding: 10px; }
+      .spin-button { padding: 10px 30px; font-size: 20px; }
+      .score-card { min-width: 80px; padding: 8px; }
+      .score-value { font-size: 18px; }
+      .lever-container { display: none; }
+    }
+    @media (max-height: 600px) {
+      .machine-top { margin-bottom: 10px; padding: 5px; }
+      .jackpot-display { font-size: 1.2rem; }
+      .controls { padding: 5px; }
+      .score-display { margin-bottom: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="user-info">Welcome, BensBar</div>
+    <div class="game-title">OctoSlots</div>
+    <div class="date-info">2025-06-01 15:13:45 UTC</div>
+  </header>
+
+  <!-- Audio elements embedded in the page -->
+  <audio id="spin-sound" src="sounds/spin.wav" preload="auto"></audio>
+  <audio id="stop-sound" src="sounds/stop.wav" preload="auto"></audio>
+  <audio id="win-sound" src="sounds/win.wav" preload="auto"></audio>
+  <audio id="win2-sound" src="sounds/win2.wav" preload="auto"></audio>
+  <audio id="win3-sound" src="sounds/win3.wav" preload="auto"></audio>
+  <audio id="lose-sound" src="sounds/lose.wav" preload="auto"></audio>
+  
+  <div class="slot-machine-container">
+    <div class="slot-machine">
+      <button class="paytable-button">?</button>
+      <div class="paytable">
+        <h3>Pay Table</h3>
+        <div class="paytable-item">
+          <img src="https://octodex.github.com/images/original.png" alt="Original">
+          <span>x3: 1000 pts</span>
+        </div>
+        <div class="paytable-item">
+          <img src="https://octodex.github.com/images/octobiwan.jpg" alt="Octobiwan">
+          <span>x3: 500 pts</span>
+        </div>
+        <div class="paytable-item">
+          <span>Any 3 matching: 250 pts</span>
+        </div>
+        <div class="paytable-item">
+          <span>Any 2 matching: 50 pts</span>
+        </div>
+      </div>
+      
+      <div class="machine-top">
+        <div class="flashing-lights">
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+        </div>
+        <div class="jackpot-display">JACKPOT: 1000</div>
+      </div>
+      
+      <div class="reels-container">
+        <div id="reel1" class="reel">
+          <div class="slot-item top" id="reel1-top"></div>
+          <div class="slot-item middle" id="reel1-middle"></div>
+          <div class="slot-item bottom" id="reel1-bottom"></div>
+        </div>
+        <div id="reel2" class="reel">
+          <div class="slot-item top" id="reel2-top"></div>
+          <div class="slot-item middle" id="reel2-middle"></div>
+          <div class="slot-item bottom" id="reel2-bottom"></div>
+        </div>
+        <div id="reel3" class="reel">
+          <div class="slot-item top" id="reel3-top"></div>
+          <div class="slot-item middle" id="reel3-middle"></div>
+          <div class="slot-item bottom" id="reel3-bottom"></div>
+        </div>
+        <div id="win-line" class="win-line"></div>
+      </div>
+      
+      <div class="controls">
+        <div class="score-display">
+          <div class="score-card">
+            <h3>CREDITS</h3>
+            <div class="score-value" id="credits">500</div>
+          </div>
+          <div class="score-card">
+            <h3>BET</h3>
+            <div class="score-value" id="bet-amount">10</div>
+          </div>
+          <div class="score-card">
+            <h3>WIN</h3>
+            <div class="score-value" id="win-amount">0</div>
+          </div>
+        </div>
+        <button class="spin-button" id="spin-button">SPIN</button>
+      </div>
+      
+      <div class="win-message" id="win-message">
+        <h2>WINNER!</h2>
+        <p>You won <span id="win-value">250</span> credits!</p>
+        <button id="continue-button">CONTINUE</button>
+      </div>
+      
+      <div class="lever-container">
+        <div class="lever-base">
+          <div class="lever" id="lever"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // --- Audio Setup ---
+    document.addEventListener('DOMContentLoaded', function() {
+      // HTML5 fallback audio elements
+      const fallbackAudio = {
+        spin: document.getElementById('spin-sound'),
+        stop: document.getElementById('stop-sound'),
+        win: document.getElementById('win-sound'),
+        win2: document.getElementById('win2-sound'),
+        win3: document.getElementById('win3-sound'),
+        lose: document.getElementById('lose-sound')
+      };
+
+      // Set all fallback audio to full volume
+      Object.values(fallbackAudio).forEach(audio => { if (audio) audio.volume = 1.0; });
+
+      // Audio unlock logic for browser autoplay policies
+      let audioUnlocked = false;
+      function unlockAudio() {
+        if (audioUnlocked) return;
+        audioUnlocked = true;
+        Object.values(fallbackAudio).forEach(audio => {
+          if (audio) {
+            audio.volume = 0.01;
+            audio.play().then(() => {
+              audio.pause();
+              audio.currentTime = 0;
+              audio.volume = 1.0;
+            }).catch(() => {});
+          }
+        });
+        document.removeEventListener('click', unlockAudio);
+        document.removeEventListener('touchstart', unlockAudio);
+        document.removeEventListener('keydown', unlockAudio);
+      }
+      document.addEventListener('click', unlockAudio);
+      document.addEventListener('touchstart', unlockAudio);
+      document.addEventListener('keydown', unlockAudio);
+
+      // Play a sound by name
+      function playSound(name) {
+        try {
+          // Use the preloaded <audio> element
+          const audioElem = fallbackAudio[name];
+          if (audioElem) {
+            audioElem.currentTime = 0;
+            audioElem.volume = 1.0;
+            const playPromise = audioElem.play();
+            if (playPromise !== undefined) {
+              playPromise.catch(() => {
+                // If browser blocks play, try last-resort fallback
+                if (name === 'spin') {
+                  const newAudio = new Audio('sounds/spin.wav');
+                  newAudio.volume = 1.0;
+                  newAudio.play().catch(() => {});
+                }
+              });
+            }
+            return audioElem;
+          }
+        } catch (e) {
+          // Last-chance fallback
+          if (name === 'spin') {
+            const newAudio = new Audio('sounds/spin.wav');
+            newAudio.volume = 1.0;
+            newAudio.play().catch(() => {});
+          }
+        }
+        return null;
+      }
+
+      // --- Game logic hooks below ---
+      // Make sure to use playSound('spin'), playSound('win'), etc. in your game logic
+      // Example usage for spin (replace with your actual game logic calls)
+      const spinButton = document.getElementById('spin-button');
+      if (spinButton) {
+        spinButton.addEventListener('click', function() {
+          playSound('spin');
+          // ... your spin logic ...
+        });
+      }
+
+      // Your full slot machine game logic goes below this comment,
+      // be sure to call playSound('spin'), playSound('stop'), playSound('win'), etc. as needed.
+      // (Not included here to keep this as a drop-in fix for your sound system.)
+    });
+  </script>
+</body>
+</html>
