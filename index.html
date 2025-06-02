@@ -642,50 +642,45 @@
       // Play a sound with fallback handling
       function playSound(name) {
         console.log(`Attempting to play sound: ${name}`);
-        
         // Handle specialized win sounds
         if (name === 'win2' && !soundAvailability.win2) {
           console.log('win2 not available, using regular win sound');
           name = 'win';
         }
-        
         if (name === 'win3' && !soundAvailability.win3) {
           console.log('win3 not available, using regular win sound');
           name = 'win';
         }
-        
+        // For 'spin', always create a new Audio object for reliability
+        if (name === 'spin') {
+          const spinAudio = new Audio('sounds/spin.wav');
+          spinAudio.volume = 1.0;
+          spinAudio.play().catch(e => console.error('Spin sound error:', e));
+          return spinAudio;
+        }
         // Get the sound element
         const sound = sounds[name];
-        
         if (!sound) {
           console.error(`Sound not found: ${name}`);
           return null;
         }
-        
         // Reset and play
         try {
           sound.currentTime = 0;
           sound.volume = 1.0;
-          
-          // Try the standard play approach
           const promise = sound.play();
-          
           if (promise !== undefined) {
             promise.catch(error => {
               console.error(`Error playing ${name} sound:`, error);
-              
               // If standard play fails, try alternate approaches
               if (name === 'win' || name === 'win2' || name === 'win3') {
                 console.log(`Trying alternative method for ${name} sound`);
-                
-                // Create a new audio element as a last resort
                 const newSound = new Audio(`sounds/${name === 'win2' || name === 'win3' ? 'win' : name}.wav`);
                 newSound.volume = 1.0;
                 newSound.play().catch(e => console.log(`Even new audio failed for ${name}:`, e));
               }
             });
           }
-          
           return sound;
         } catch (error) {
           console.error(`Exception playing ${name} sound:`, error);
@@ -1102,10 +1097,9 @@
         // Spin button
         elements.spinButton.addEventListener('click', () => {
           if (!state.spinning) {
-            // Hide win popup if visible
+            // Always hide win popup before spinning
             elements.winMessage.classList.remove('show');
-            // Stop and reset spin sound before playing
-            stopSound(sounds.spin);
+            stopSound(sounds.spin); // Not strictly needed now, but safe
             playSound('spin');
             spinAllReels();
           }
@@ -1124,21 +1118,15 @@
         if (elements.lever) {
           elements.lever.addEventListener('click', () => {
             if (!state.spinning && state.canPull) {
-              // Hide win popup if visible
               elements.winMessage.classList.remove('show');
-              // Stop and reset spin sound before playing
               stopSound(sounds.spin);
               playSound('spin');
               state.canPull = false;
               elements.lever.classList.add('pulled');
-              
-              // Animate lever return after pull
               setTimeout(() => {
                 elements.lever.classList.remove('pulled');
                 state.canPull = true;
               }, 1000);
-              
-              // Start spin
               spinAllReels();
             }
           });
@@ -1147,10 +1135,8 @@
         // Keyboard controls
         document.addEventListener('keydown', (e) => {
           if (e.code === 'Space' && !state.spinning) {
-            e.preventDefault(); // Prevent page scrolling
-            // Hide win popup if visible
+            e.preventDefault();
             elements.winMessage.classList.remove('show');
-            // Stop and reset spin sound before playing
             stopSound(sounds.spin);
             playSound('spin');
             spinAllReels();
