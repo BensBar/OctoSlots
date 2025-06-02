@@ -490,7 +490,7 @@
   <header class="app-header">
     <div class="user-info">Welcome, BensBar</div>
     <div class="game-title">OctoSlots</div>
-    <div class="date-info">2025-06-02 00:40:41</div>
+    <div class="date-info">2025-06-02 01:49:45</div>
   </header>
   
   <!-- Audio elements embedded in the page -->
@@ -590,31 +590,42 @@
   
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Audio system
-      const audioContext = {
-        initialized: false,
-        context: null,
-        soundsLoaded: false,
-        sounds: {
-          spin: null,
-          stop: null,
-          win: null,
-          win2: null,
-          win3: null,
-          lose: null
-        },
-        volumes: {
-          spin: 1.0,
-          stop: 1.0,
-          win: 1.0,
-          win2: 1.0,
-          win3: 1.0,
-          lose: 1.0
-        }
+      // Flag to track which sounds are available
+      const soundAvailability = {
+        win2: false,
+        win3: false
       };
       
-      // Simple HTML5 Audio backup for browsers without Web Audio API
-      const fallbackAudio = {
+      // Check if the specialized win sounds exist
+      function checkSoundAvailability() {
+        // Check win2.wav
+        fetch('sounds/win2.wav')
+          .then(response => {
+            soundAvailability.win2 = response.ok;
+            console.log('win2 sound available:', soundAvailability.win2);
+          })
+          .catch(() => {
+            soundAvailability.win2 = false;
+            console.log('win2 sound not available');
+          });
+          
+        // Check win3.wav
+        fetch('sounds/win3.wav')
+          .then(response => {
+            soundAvailability.win3 = response.ok;
+            console.log('win3 sound available:', soundAvailability.win3);
+          })
+          .catch(() => {
+            soundAvailability.win3 = false;
+            console.log('win3 sound not available');
+          });
+      }
+      
+      // Check sound availability at startup
+      checkSoundAvailability();
+      
+      // Simple HTML5 Audio for direct sound management
+      const sounds = {
         spin: document.getElementById('spin-sound'),
         stop: document.getElementById('stop-sound'),
         win: document.getElementById('win-sound'),
@@ -623,131 +634,72 @@
         lose: document.getElementById('lose-sound')
       };
       
-      // Set all audio elements to full volume
-      Object.values(fallbackAudio).forEach(audio => {
-        if (audio) audio.volume = 1.0;
+      // Set all sounds to full volume
+      Object.values(sounds).forEach(sound => {
+        if (sound) sound.volume = 1.0;
       });
       
-      // Initialize Web Audio API for better control
-      function initAudio() {
-        try {
-          // Only initialize once
-          if (audioContext.initialized) return true;
-          
-          // Create audio context
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          if (!AudioContext) return false;
-          
-          audioContext.context = new AudioContext();
-          
-          // Load all sound files
-          const sounds = [
-            { name: 'spin', url: 'sounds/spin.wav' },
-            { name: 'stop', url: 'sounds/stop.wav' },
-            { name: 'win', url: 'sounds/win.wav' },
-            { name: 'win2', url: 'sounds/win2.wav' },
-            { name: 'win3', url: 'sounds/win3.wav' },
-            { name: 'lose', url: 'sounds/lose.wav' }
-          ];
-          
-          sounds.forEach(sound => loadSound(sound.name, sound.url));
-          
-          audioContext.initialized = true;
-          console.log('Audio system initialized successfully');
-          return true;
-        } catch (e) {
-          console.error('Failed to initialize audio:', e);
-          return false;
-        }
-      }
-      
-      // Load a sound file
-      function loadSound(name, url) {
-        try {
-          fetch(url)
-            .then(response => response.arrayBuffer())
-            .then(arrayBuffer => audioContext.context.decodeAudioData(arrayBuffer))
-            .then(audioBuffer => {
-              audioContext.sounds[name] = audioBuffer;
-              console.log(`Loaded sound: ${name}`);
-              
-              // Check if all sounds are loaded
-              const allSoundsLoaded = Object.values(audioContext.sounds).every(sound => sound !== null);
-              if (allSoundsLoaded) {
-                audioContext.soundsLoaded = true;
-                console.log('All sounds loaded successfully');
-              }
-            })
-            .catch(e => {
-              console.error(`Error loading sound ${name}:`, e);
-              // If loading fails, we'll fall back to HTML5 Audio
-            });
-        } catch (e) {
-          console.error(`Error in loadSound ${name}:`, e);
-        }
-      }
-      
-      // Play a sound - tries Web Audio API first, falls back to HTML5 Audio
+      // Play a sound with fallback handling
       function playSound(name) {
+        console.log(`Attempting to play sound: ${name}`);
+        
+        // Handle specialized win sounds
+        if (name === 'win2' && !soundAvailability.win2) {
+          console.log('win2 not available, using regular win sound');
+          name = 'win';
+        }
+        
+        if (name === 'win3' && !soundAvailability.win3) {
+          console.log('win3 not available, using regular win sound');
+          name = 'win';
+        }
+        
+        // Get the sound element
+        const sound = sounds[name];
+        
+        if (!sound) {
+          console.error(`Sound not found: ${name}`);
+          return null;
+        }
+        
+        // Reset and play
         try {
-          // If Web Audio is initialized and the sound is loaded, use it
-          if (audioContext.initialized && audioContext.sounds[name]) {
-            const source = audioContext.context.createBufferSource();
-            source.buffer = audioContext.sounds[name];
-            
-            // Create gain node for volume control
-            const gainNode = audioContext.context.createGain();
-            gainNode.gain.value = audioContext.volumes[name];
-            
-            // Connect nodes
-            source.connect(gainNode);
-            gainNode.connect(audioContext.context.destination);
-            
-            // Play the sound
-            source.start(0);
-            return source;
-          } 
-          // Otherwise fall back to HTML5 Audio
-          else if (fallbackAudio[name]) {
-            fallbackAudio[name].currentTime = 0;
-            fallbackAudio[name].volume = 1.0; // Ensure full volume
-            const promise = fallbackAudio[name].play();
-            
-            if (promise !== undefined) {
-              promise.catch(e => {
-                console.error(`Error playing sound ${name}:`, e);
-                // Try alternate method if HTML5 Audio fails
-                if (name === 'spin') {
-                  // For spin sound, try creating a new Audio element
-                  const newAudio = new Audio('sounds/spin.wav');
-                  newAudio.volume = 1.0;
-                  newAudio.play().catch(e => console.log(`Even new audio failed for ${name}:`, e));
-                }
-              });
-            }
-            
-            return fallbackAudio[name];
+          sound.currentTime = 0;
+          sound.volume = 1.0;
+          
+          // Try the standard play approach
+          const promise = sound.play();
+          
+          if (promise !== undefined) {
+            promise.catch(error => {
+              console.error(`Error playing ${name} sound:`, error);
+              
+              // If standard play fails, try alternate approaches
+              if (name === 'win' || name === 'win2' || name === 'win3') {
+                console.log(`Trying alternative method for ${name} sound`);
+                
+                // Create a new audio element as a last resort
+                const newSound = new Audio(`sounds/${name === 'win2' || name === 'win3' ? 'win' : name}.wav`);
+                newSound.volume = 1.0;
+                newSound.play().catch(e => console.log(`Even new audio failed for ${name}:`, e));
+              }
+            });
           }
-        } catch (e) {
-          console.error(`Error in playSound ${name}:`, e);
+          
+          return sound;
+        } catch (error) {
+          console.error(`Exception playing ${name} sound:`, error);
           return null;
         }
       }
       
       // Stop a sound
-      function stopSound(source) {
-        if (!source) return;
+      function stopSound(sound) {
+        if (!sound) return;
         
         try {
-          // If it's a Web Audio source
-          if (source.stop) {
-            source.stop(0);
-          } 
-          // If it's an HTML5 Audio element
-          else if (source.pause) {
-            source.pause();
-            source.currentTime = 0;
-          }
+          sound.pause();
+          sound.currentTime = 0;
         } catch (e) {
           console.error('Error stopping sound:', e);
         }
@@ -757,26 +709,17 @@
       function unlockAudio() {
         console.log('Unlocking audio...');
         
-        // Try to initialize Web Audio API
-        if (initAudio()) {
-          // Play a silent sound to unlock the audio context
-          const silentBuffer = audioContext.context.createBuffer(1, 1, 22050);
-          const source = audioContext.context.createBufferSource();
-          source.buffer = silentBuffer;
-          source.connect(audioContext.context.destination);
-          source.start(0);
-        }
-        
-        // Also try to unlock HTML5 Audio elements as a fallback
-        Object.values(fallbackAudio).forEach(audio => {
-          if (audio) {
-            audio.volume = 0.01;
-            audio.play().then(() => {
-              audio.pause();
-              audio.currentTime = 0;
-              audio.volume = 1.0;
+        // Try to unlock all audio elements
+        Object.values(sounds).forEach(sound => {
+          if (sound) {
+            sound.volume = 0.01;
+            sound.play().then(() => {
+              sound.pause();
+              sound.currentTime = 0;
+              sound.volume = 1.0;
+              console.log(`Unlocked sound: ${sound.id}`);
             }).catch(e => {
-              console.log('Audio unlock for HTML5 failed, but that\'s okay:', e);
+              console.log(`Audio unlock failed for ${sound.id}:`, e);
             });
           }
         });
@@ -792,7 +735,7 @@
       document.addEventListener('touchstart', unlockAudio);
       document.addEventListener('keydown', unlockAudio);
       
-      // Actively playing sounds
+      // Currently playing spin sound
       let spinSoundInstance = null;
       
       // Game configuration
@@ -1071,13 +1014,18 @@
           
           // Small delay before playing win sound to ensure it's heard
           setTimeout(() => {
+            console.log(`Playing win sound for type: ${winType}`);
+            
             // Play the appropriate win sound based on win type
             if (winType === 'three') {
+              // Try win3 sound, but fall back to regular win sound if needed
               playSound('win3');
             } else if (winType === 'two') {
+              // Try win2 sound, but fall back to regular win sound if needed
               playSound('win2');
             } else {
-              playSound('win');  // Fallback
+              // Generic win sound
+              playSound('win');
             }
             
             showWinMessage(winAmount);
@@ -1085,9 +1033,9 @@
           
           return true;
         } else {
-          // Play lose sound when there's no win - CHANGED from 800ms to 300ms
+          // Play lose sound when there's no win - 300ms delay
           setTimeout(() => {
-            console.log("Playing lose sound"); // Add this for debugging
+            console.log("Playing lose sound");
             playSound('lose');
           }, 300);
           
@@ -1202,10 +1150,7 @@
       
       // Initialize game
       function init() {
-        // Try to initialize audio right away
-        initAudio();
-        
-        // Set up the rest of the game
+        // Set up the game
         initializeSlots();
         updateDisplay();
         setupEventListeners();
