@@ -490,7 +490,7 @@
   <header class="app-header">
     <div class="user-info">Welcome, BensBar</div>
     <div class="game-title">OctoSlots</div>
-    <div class="date-info">2025-06-01 15:13:45 UTC</div>
+    <div class="date-info">2025-06-02 00:40:41</div>
   </header>
   
   <!-- Audio elements embedded in the page -->
@@ -1085,10 +1085,11 @@
           
           return true;
         } else {
-          // Play lose sound when there's no win
+          // Play lose sound when there's no win - CHANGED from 800ms to 300ms
           setTimeout(() => {
+            console.log("Playing lose sound"); // Add this for debugging
             playSound('lose');
-          }, 800);
+          }, 300);
           
           stopLights();
           return false;
