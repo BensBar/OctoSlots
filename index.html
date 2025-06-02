@@ -946,6 +946,17 @@
           return;
         }
         
+        // Hide win message if it's visible before starting a new spin
+        if (elements.winMessage.classList.contains('show')) {
+          // Get light interval from win message
+          const lightIntervalId = elements.winMessage.dataset.lightIntervalId;
+          if (lightIntervalId) {
+            clearInterval(parseInt(lightIntervalId));
+          }
+          elements.winMessage.classList.remove('show');
+          stopLights();
+        }
+        
         // Unlock audio again (some browsers need this on each interaction)
         unlockAudio();
         
@@ -1071,24 +1082,67 @@
           
           // Small delay before playing win sound to ensure it's heard
           setTimeout(() => {
-            // Play the appropriate win sound based on win type
-            if (winType === 'three') {
-              playSound('win3');
-            } else if (winType === 'two') {
-              playSound('win2');
-            } else {
-              playSound('win');  // Fallback
-            }
+            // Force stop any currently playing sounds
+            stopSound(spinSoundInstance);
             
-            showWinMessage(winAmount);
+            // Play win sound using the most direct method possible
+            try {
+              // Create a new audio element for maximum reliability
+              const winAudio = new Audio('sounds/win.wav');
+              winAudio.volume = 1.0;
+              
+              // Log to help diagnose issues
+              console.log("Playing win sound...");
+              
+              // Use the play method and handle any errors
+              const playPromise = winAudio.play();
+              
+              if (playPromise !== undefined) {
+                playPromise.then(() => {
+                  console.log("Win sound played successfully");
+                }).catch(e => {
+                  console.error("Error playing win sound:", e);
+                  // Try an alternative approach if this fails
+                  fallbackAudio['win'].currentTime = 0;
+                  fallbackAudio['win'].volume = 1.0;
+                  fallbackAudio['win'].play().catch(err => console.error("Fallback also failed:", err));
+                });
+              }
+              
+              // Show win message after attempting to play sound
+              showWinMessage(winAmount);
+            } catch (e) {
+              console.error("Exception trying to play win sound:", e);
+              // Still show win message even if sound fails
+              showWinMessage(winAmount);
+            }
           }, 500);
           
           return true;
         } else {
           // Play lose sound when there's no win
+          // Reduced delay from 800ms to 400ms to play faster
           setTimeout(() => {
-            playSound('lose');
-          }, 800);
+            // Use a direct Audio element for more control over the lose sound
+            try {
+              const loseAudio = new Audio('sounds/lose.wav');
+              loseAudio.volume = 1.0;
+              
+              // Start the audio at 0.2 seconds in to skip the intro part of the sound
+              // This makes it feel more immediate after a losing spin
+              loseAudio.currentTime = 0.2;
+              
+              loseAudio.play().catch(err => {
+                console.error("Error playing lose sound:", err);
+                // Fallback to original method if setting currentTime fails
+                playSound('lose');
+              });
+            } catch (e) {
+              console.error("Exception trying to play lose sound:", e);
+              // Fallback to original method
+              playSound('lose');
+            }
+          }, 400);
           
           stopLights();
           return false;
@@ -1103,6 +1157,9 @@
             light.classList.toggle('on');
           });
         }, 100);
+        
+        // Store the interval ID in the win message element's dataset
+        elements.winMessage.dataset.lightIntervalId = lightInterval;
         
         // Update win display
         elements.winDisplay.textContent = amount;
@@ -1157,7 +1214,10 @@
         // Spin button
         elements.spinButton.addEventListener('click', () => {
           if (!state.spinning) {
-            spinAllReels();
+            // Added a small delay to ensure any previous sounds can complete
+            setTimeout(() => {
+              spinAllReels();
+            }, 50);
           }
         });
         
@@ -1184,8 +1244,10 @@
                 state.canPull = true;
               }, 1000);
               
-              // Start spin
-              spinAllReels();
+              // Start spin with a small delay to ensure audio doesn't get interrupted
+              setTimeout(() => {
+                spinAllReels();
+              }, 50);
             }
           });
         }
@@ -1194,7 +1256,11 @@
         document.addEventListener('keydown', (e) => {
           if (e.code === 'Space' && !state.spinning) {
             e.preventDefault(); // Prevent page scrolling
-            spinAllReels();
+            
+            // Start spin with a small delay to ensure audio doesn't get interrupted
+            setTimeout(() => {
+              spinAllReels();
+            }, 50);
           }
         });
       }
