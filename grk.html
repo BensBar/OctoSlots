@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OctoSlots</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .reel {
+            width: 100px;
+            height: 100px;
+            display: inline-block;
+            margin: 0 10px;
+        }
+        .symbol {
+            width: 100px;
+            height: 100px;
+        }
+        #stats {
+            margin-top: 20px;
+        }
+        #paytable {
+            margin-top: 20px;
+            text-align: left;
+            display: inline-block;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>OctoSlots</h1>
+    <div id="reels">
+        <div id="reel1" class="reel"><img id="symbol1" src="" class="symbol"></div>
+        <div id="reel2" class="reel"><img id="symbol2" src="" class="symbol"></div>
+        <div id="reel3" class="reel"><img id="symbol3" src="" class="symbol"></div>
+    </div>
+    <div id="controls">
+        <button id="spin">Spin</button>
+    </div>
+    <div id="stats">
+        Credits: <span id="credits">500</span><br>
+        Bet: <span id="bet">10</span><br>
+        Win: <span id="win">0</span>
+    </div>
+    <div id="paytable">
+        <h3>Pay Table</h3>
+        <ul>
+            <li>3 Originals: 1000</li>
+            <li>3 Octobiwans: 500</li>
+            <li>3 of any other: 250</li>
+            <li>Any 2 matching: 50</li>
+        </ul>
+    </div>
+    <script>
+        const symbols = {
+            'Original': 'https://octodex.github.com/images/daftpunktocat.png',
+            'Octobiwan': 'https://octodex.github.com/images/octobiwan.png',
+            'Surftocat': 'https://octodex.github.com/images/surftocat.png',
+            'Dinotocat': 'https://octodex.github.com/images/dinotocat.png',
+            'Spidertocat': 'https://octodex.github.com/images/spidertocat.png',
+            'Stormtroopocat': 'https://octodex.github.com/images/stormtroopocat.png',
+            'IronCat': 'https://octodex.github.com/images/ironcat.png',
+            'Godotocat': 'https://octodex.github.com/images/godotocat.png',
+            'Labtocat': 'https://octodex.github.com/images/labtocat.png',
+            'Fintechtocat': 'https://octodex.github.com/images/fintechtocat.png'
+        };
+
+        const reelStops = [
+            'Original',
+            'Octobiwan', 'Octobiwan',
+            'Surftocat', 'Surftocat', 'Surftocat',
+            'Dinotocat', 'Dinotocat',
+            'Spidertocat', 'Spidertocat',
+            'Stormtroopocat', 'Stormtroopocat',
+            'IronCat', 'IronCat',
+            'Godotocat', 'Godotocat',
+            'Labtocat', 'Labtocat',
+            'Fintechtocat', 'Fintechtocat'
+        ];
+
+        let credits = 500;
+        let bet = 10;
+        let win = 0;
+
+        function updateDisplay() {
+            document.getElementById('credits').textContent = credits;
+            document.getElementById('bet').textContent = bet;
+            document.getElementById('win').textContent = win;
+        }
+
+        function getSymbolImage(symbol) {
+            return symbols[symbol];
+        }
+
+        function setSymbols(s1, s2, s3) {
+            document.getElementById('symbol1').src = getSymbolImage(s1);
+            document.getElementById('symbol2').src = getSymbolImage(s2);
+            document.getElementById('symbol3').src = getSymbolImage(s3);
+        }
+
+        function spin() {
+            if (credits < bet) {
+                alert('Not enough credits!');
+                return;
+            }
+            credits -= bet;
+            win = 0;
+
+            const index1 = Math.floor(Math.random() * reelStops.length);
+            const index2 = Math.floor(Math.random() * reelStops.length);
+            const index3 = Math.floor(Math.random() * reelStops.length);
+            const s1 = reelStops[index1];
+            const s2 = reelStops[index2];
+            const s3 = reelStops[index3];
+
+            setSymbols(s1, s2, s3);
+
+            if (s1 === s2 && s2 === s3) {
+                if (s1 === 'Original') win = 1000;
+                else if (s1 === 'Octobiwan') win = 500;
+                else win = 250;
+            } else if (s1 === s2 || s1 === s3 || s2 === s3) {
+                win = 50;
+            }
+
+            credits += win;
+            updateDisplay();
+        }
+
+        updateDisplay();
+        const initS1 = reelStops[Math.floor(Math.random() * reelStops.length)];
+        const initS2 = reelStops[Math.floor(Math.random() * reelStops.length)];
+        const initS3 = reelStops[Math.floor(Math.random() * reelStops.length)];
+        setSymbols(initS1, initS2, initS3);
+        document.getElementById('spin').addEventListener('click', spin);
+    </script>
+</body>
+</html>
