@@ -696,7 +696,6 @@
       // Stop a sound
       function stopSound(sound) {
         if (!sound) return;
-        
         try {
           sound.pause();
           sound.currentTime = 0;
@@ -891,9 +890,6 @@
         
         // Unlock audio again (some browsers need this on each interaction)
         unlockAudio();
-        
-        // Play spin sound
-        spinSoundInstance = playSound('spin');
         
         // Deduct bet amount
         state.credits -= state.bet;
@@ -1106,10 +1102,14 @@
         // Spin button
         elements.spinButton.addEventListener('click', () => {
           if (!state.spinning) {
+            // Hide win popup if visible
+            elements.winMessage.classList.remove('show');
+            // Stop and reset spin sound before playing
+            stopSound(sounds.spin);
+            playSound('spin');
             spinAllReels();
           }
         });
-        
         // Paytable button
         elements.paytableButton.addEventListener('click', () => {
           elements.paytable.classList.toggle('show');
@@ -1124,6 +1124,11 @@
         if (elements.lever) {
           elements.lever.addEventListener('click', () => {
             if (!state.spinning && state.canPull) {
+              // Hide win popup if visible
+              elements.winMessage.classList.remove('show');
+              // Stop and reset spin sound before playing
+              stopSound(sounds.spin);
+              playSound('spin');
               state.canPull = false;
               elements.lever.classList.add('pulled');
               
@@ -1143,6 +1148,11 @@
         document.addEventListener('keydown', (e) => {
           if (e.code === 'Space' && !state.spinning) {
             e.preventDefault(); // Prevent page scrolling
+            // Hide win popup if visible
+            elements.winMessage.classList.remove('show');
+            // Stop and reset spin sound before playing
+            stopSound(sounds.spin);
+            playSound('spin');
             spinAllReels();
           }
         });
