@@ -8,29 +8,58 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            background-color: #f0f6ff;
         }
         .reel {
             width: 100px;
             height: 100px;
             display: inline-block;
             margin: 0 10px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .symbol {
             width: 100px;
             height: 100px;
+            object-fit: contain;
+            border-radius: 6px;
         }
         #stats {
             margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
         }
         #paytable {
             margin-top: 20px;
             text-align: left;
             display: inline-block;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         button {
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 15px 30px;
+            font-size: 18px;
             cursor: pointer;
+            background-color: #238636;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            margin: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button:hover {
+            background-color: #2ea043;
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+        h1 {
+            color: #24292f;
+            margin-bottom: 30px;
         }
     </style>
 </head>
@@ -60,9 +89,9 @@
     </div>
     <script>
         const symbols = {
-            'Original': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAySURBVHhe7dAxAQAwDMCw7L8vN7AAmRAAERABERABERABERABERABERABERABERABERABERABeywLpgM7x1gAAAAASUVORK5CYII=',
-            'Octobiwan': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAySURBVHhe7dAxAQAwDMCw7L+vD7AAGhAAERABERABERABERABERABERABERABERABERABERABey0LpwO9w1gAAAAASUVORK5CYII=',
-            'Surftocat': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAySURBVHhe7dAxAQAwDMCw7L+3A7AAGBAAERABERABERABERABERABERABERABERABERABERABey4LpwPdw1gAAAAASUVORK5CYII='
+            'Original': 'https://octodx.github.io/images/original.png',
+            'Octobiwan': 'https://octodx.github.io/images/octobiwan.jpg',
+            'Surftocat': 'https://octodx.github.io/images/surftocat.png'
         };
 
         const reelStops = [
@@ -71,7 +100,7 @@
             'Surftocat', 'Surftocat'
         ];
 
-        const fallbackImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAySURBVHhe7dAxAQAwDMCw7L8vN7AAmRAAERABERABERABERABERABERABERABERABERABERABeywLpgM7x1gAAAAASUVORK5CYII=';
+        const fallbackImage = 'https://octodx.github.io/images/original.png';
 
         let credits = 500;
         let bet = 10;
@@ -86,7 +115,7 @@
 
         function getSymbolImage(symbol) {
             const image = symbols[symbol] || fallbackImage;
-            console.log(`Getting image for ${symbol}: ${image.substring(0, 50)}...`);
+            console.log(`Getting image for ${symbol}: ${image}`);
             return image;
         }
 
@@ -113,7 +142,7 @@
             // Handle image load errors
             [img1, img2, img3].forEach((img, index) => {
                 img.onerror = () => {
-                    console.warn(`Failed to load image for reel ${index + 1}: ${img.src.substring(0, 50)}...`);
+                    console.warn(`Failed to load image for reel ${index + 1}: ${img.src}`);
                     if (img.src !== fallbackImage) {
                         img.src = fallbackImage;
                         console.log(`Applying fallback for reel ${index + 1}`);
