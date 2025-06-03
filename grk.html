@@ -37,9 +37,9 @@
 <body>
     <h1>OctoSlots</h1>
     <div id="reels">
-        <div id="reel1" class="reel"><img id="symbol1" src="" class="symbol" onerror="this.src='https://octodex.github.com/images/original.png';"></div>
-        <div id="reel2" class="reel"><img id="symbol2" src="" class="symbol" onerror="this.src='https://octodex.github.com/images/original.png';"></div>
-        <div id="reel3" class="reel"><img id="symbol3" src="" class="symbol" onerror="this.src='https://octodex.github.com/images/original.png';"></div>
+        <div id="reel1" class="reel"><img id="symbol1" src="" class="symbol" alt="Octocat"></div>
+        <div id="reel2" class="reel"><img id="symbol2" src="" class="symbol" alt="Octocat"></div>
+        <div id="reel3" class="reel"><img id="symbol3" src="" class="symbol" alt="Octocat"></div>
     </div>
     <div id="controls">
         <button id="spin">Spin</button>
@@ -61,15 +61,15 @@
     <script>
         const symbols = {
             'Original': 'https://octodex.github.com/images/original.png',
-            'Octobiwan': 'https://octodex.github.com/images/obiwan.png',
-            'Surftocat': 'https://octodex.github.com/images/surfocat.png',
-            'Dinotocat': 'https://octodex.github.com/images/dinocat.png',
-            'Spidertocat': 'https://octodex.github.com/images/spidey.png',
-            'Stormtroopocat': 'https://octodex.github.com/images/stormtrooper.png',
-            'IronCat': 'https://octodex.github.com/images/ironcat.png',
-            'Godotocat': 'https://octodex.github.com/images/godot.png',
-            'Labtocat': 'https://octodex.github.com/images/labcat.png',
-            'Fintechtocat': 'https://octodex.github.com/images/fintech.png'
+            'Octobiwan': 'https://octodex.github.com/images/obiwan-cat.png',
+            'Surftocat': 'https://octodex.github.com/images/surftocat.png',
+            'Dinotocat': 'https://octodex.github.com/images/dinotocat.png',
+            'Spidertocat': 'https://octodex.github.com/images/spidertocat.png',
+            'Stormtroopocat': 'https://octodex.github.com/images/stormtroopocat.png',
+            'Yaktocat': 'https://octodex.github.com/images/yaktocat.png',
+            'Grinchtocat': 'https://octodex.github.com/images/grinchtocat.png',
+            'Labtocat': 'https://octodex.github.com/images/labtocat.png',
+            'Mummytocat': 'https://octodex.github.com/images/mummytocat.png'
         };
 
         const reelStops = [
@@ -77,83 +77,4 @@
             'Octobiwan', 'Octobiwan',
             'Surftocat', 'Surftocat', 'Surftocat',
             'Dinotocat', 'Dinotocat',
-            'Spidertocat', 'Spidertocat',
-            'Stormtroopocat', 'Stormtroopocat',
-            'IronCat', 'IronCat',
-            'Godotocat', 'Godotocat',
-            'Labtocat', 'Labtocat',
-            'Fintechtocat', 'Fintechtocat'
-        ];
-
-        const fallbackImage = 'https://octodex.github.com/images/original.png';
-
-        let credits = 500;
-        let bet = 10;
-        let win = 0;
-
-        function updateDisplay() {
-            document.getElementById('credits').textContent = credits;
-            document.getElementById('bet').textContent = bet;
-            document.getElementById('win').textContent = win;
-        }
-
-        function getSymbolImage(symbol) {
-            return symbols[symbol] || fallbackImage;
-        }
-
-        function setSymbols(s1, s2, s3) {
-            const img1 = document.getElementById('symbol1');
-            const img2 = document.getElementById('symbol2');
-            const img3 = document.getElementById('symbol3');
-
-            img1.src = getSymbolImage(s1);
-            img2.src = getSymbolImage(s2);
-            img3.src = getSymbolImage(s3);
-
-            // Log failed loads for debugging
-            [img1, img2, img3].forEach((img, index) => {
-                img.onerror = () => {
-                    console.warn(`Failed to load image for reel ${index + 1}: ${img.src}`);
-                    img.src = fallbackImage;
-                };
-            });
-        }
-
-        function spin() {
-            if (credits < bet) {
-                alert('Not enough credits!');
-                return;
-            }
-            credits -= bet;
-            win = 0;
-
-            const index1 = Math.floor(Math.random() * reelStops.length);
-            const index2 = Math.floor(Math.random() * reelStops.length);
-            const index3 = Math.floor(Math.random() * reelStops.length);
-            const s1 = reelStops[index1];
-            const s2 = reelStops[index2];
-            const s3 = reelStops[index3];
-
-            setSymbols(s1, s2, s3);
-
-            if (s1 === s2 && s2 === s3) {
-                if (s1 === 'Original') win = 1000;
-                else if (s1 === 'Octobiwan') win = 500;
-                else win = 250;
-            } else if (s1 === s2 || s1 === s3 || s2 === s3) {
-                win = 50;
-            }
-
-            credits += win;
-            updateDisplay();
-        }
-
-        updateDisplay();
-        const initS1 = reelStops[Math.floor(Math.random() * reelStops.length)];
-        const initS2 = reelStops[Math.floor(Math.random() * reelStops.length)];
-        const initS3 = reelStops[Math.floor(Math.random() * reelStops.length)];
-        setSymbols(initS1, initS2, initS3);
-        document.getElementById('spin').addEventListener('click', spin);
-    </script>
-</body>
-</html>
+            'Spidert
