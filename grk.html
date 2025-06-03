@@ -37,9 +37,9 @@
 <body>
     <h1>OctoSlots</h1>
     <div id="reels">
-        <div id="reel1" class="reel"><img id="symbol1" src="" class="symbol" alt="Octocat"></div>
-        <div id="reel2" class="reel"><img id="symbol2" src="" class="symbol" alt="Octocat"></div>
-        <div id="reel3" class="reel"><img id="symbol3" src="" class="symbol" alt="Octocat"></div>
+        <div id="reel1" class="reel"><img id="symbol1" src="" class="symbol" alt="Reel 1"></div>
+        <div id="reel2" class="reel"><img id="symbol2" src="" class="symbol" alt="Reel 2"></div>
+        <div id="reel3" class="reel"><img id="symbol3" src="" class="symbol" alt="Reel 3"></div>
     </div>
     <div id="controls">
         <button id="spin">Spin</button>
@@ -60,9 +60,9 @@
     </div>
     <script>
         const symbols = {
-            'Original': 'https://octodex.github.com/images/original.png',
-            'Octobiwan': 'https://octodex.github.com/images/obiwan-cat.png',
-            'Surftocat': 'https://octodex.github.com/images/surftocat.png'
+            'Original': 'https://via.placeholder.com/100?text=Original',
+            'Octobiwan': 'https://via.placeholder.com/100?text=Octobiwan',
+            'Surftocat': 'https://via.placeholder.com/100?text=Surftocat'
         };
 
         const reelStops = [
@@ -71,11 +71,7 @@
             'Surftocat', 'Surftocat'
         ];
 
-        const fallbackImages = [
-            'https://octodex.github.com/images/original.png',
-            'https://octodex.github.com/images/surftocat.png',
-            'https://octodex.github.com/images/yaktocat.png'
-        ];
+        const fallbackImage = 'https://via.placeholder.com/100?text=Fallback';
 
         let credits = 500;
         let bet = 10;
@@ -89,9 +85,10 @@
         }
 
         function getSymbolImage(symbol) {
-            const image = symbols[symbol] || fallbackImages[0];
-            console.log(`Getting image for ${symbol}: ${image}`);
-            return image;
+            const image = symbols[symbol] || fallbackImage;
+            const uniqueImage = `${image}?t=${new Date().getTime()}`;
+            console.log(`Getting image for ${symbol}: ${uniqueImage}`);
+            return uniqueImage;
         }
 
         function setSymbols(s1, s2, s3) {
@@ -100,7 +97,7 @@
             const img2 = document.getElementById('symbol2');
             const img3 = document.getElementById('symbol3');
 
-            // Reset images to avoid caching issues
+            // Reset images to force reload
             img1.src = '';
             img2.src = '';
             img3.src = '';
@@ -109,19 +106,12 @@
             img2.src = getSymbolImage(s2);
             img3.src = getSymbolImage(s3);
 
-            // Handle image load errors with fallback queue
+            // Handle image load errors
             [img1, img2, img3].forEach((img, index) => {
-                let fallbackIndex = 0;
                 img.onerror = () => {
                     console.warn(`Failed to load image for reel ${index + 1}: ${img.src}`);
-                    if (fallbackIndex < fallbackImages.length) {
-                        img.src = fallbackImages[fallbackIndex];
-                        fallbackIndex++;
-                    } else {
-                        console.error(`All fallbacks failed for reel ${index + 1}`);
-                        img.src = fallbackImages[0]; // Final fallback
-                        img.onerror = null;
-                    }
+                    img.src = `${fallbackImage}?t=${new Date().getTime()}`;
+                    img.onerror = null; // Prevent infinite loop
                 };
                 img.onload = () => {
                     console.log(`Image loaded for reel ${index + 1}: ${img.src}`);
