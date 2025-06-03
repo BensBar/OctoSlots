@@ -60,9 +60,9 @@
     </div>
     <script>
         const symbols = {
-            'Original': 'https://via.placeholder.com/100?text=Original',
-            'Octobiwan': 'https://via.placeholder.com/100?text=Obiwan',
-            'Surftocat': 'https://via.placeholder.com/100?text=Surftocat'
+            'Original': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAySURBVHhe7dAxAQAwDMCw7L8vN7AAmRAAERABERABERABERABERABERABERABERABERABERABeywLpgM7x1gAAAAASUVORK5CYII=',
+            'Octobiwan': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAySURBVHhe7dAxAQAwDMCw7L+vD7AAGhAAERABERABERABERABERABERABERABERABERABERABey0LpwO9w1gAAAAASUVORK5CYII=',
+            'Surftocat': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAySURBVHhe7dAxAQAwDMCw7L+3A7AAGBAAERABERABERABERABERABERABERABERABERABERABey4LpwPdw1gAAAAASUVORK5CYII='
         };
 
         const reelStops = [
@@ -71,7 +71,7 @@
             'Surftocat', 'Surftocat'
         ];
 
-        const fallbackImage = 'https://via.placeholder.com/100?text=Original'; // Use known-working Original image
+        const fallbackImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAySURBVHhe7dAxAQAwDMCw7L8vN7AAmRAAERABERABERABERABERABERABERABERABERABERABeywLpgM7x1gAAAAASUVORK5CYII=';
 
         let credits = 500;
         let bet = 10;
@@ -86,9 +86,8 @@
 
         function getSymbolImage(symbol) {
             const image = symbols[symbol] || fallbackImage;
-            const uniqueImage = `${image}?t=${new Date().getTime()}`;
-            console.log(`Getting image for ${symbol}: ${uniqueImage}`);
-            return uniqueImage;
+            console.log(`Getting image for ${symbol}: ${image.substring(0, 50)}...`);
+            return image;
         }
 
         function setSymbols(s1, s2, s3) {
@@ -96,6 +95,11 @@
             const img1 = document.getElementById('symbol1');
             const img2 = document.getElementById('symbol2');
             const img3 = document.getElementById('symbol3');
+
+            if (!img1 || !img2 || !img3) {
+                console.error('Image elements not found!');
+                return;
+            }
 
             // Reset images to force reload
             img1.src = '';
@@ -109,15 +113,15 @@
             // Handle image load errors
             [img1, img2, img3].forEach((img, index) => {
                 img.onerror = () => {
-                    console.warn(`Failed to load image for reel ${index + 1}: ${img.src}`);
+                    console.warn(`Failed to load image for reel ${index + 1}: ${img.src.substring(0, 50)}...`);
                     if (img.src !== fallbackImage) {
-                        img.src = `${fallbackImage}?t=${new Date().getTime()}`;
-                        console.log(`Applying fallback for reel ${index + 1}: ${img.src}`);
+                        img.src = fallbackImage;
+                        console.log(`Applying fallback for reel ${index + 1}`);
                     }
                     img.onerror = null; // Prevent infinite loop
                 };
                 img.onload = () => {
-                    console.log(`Image loaded for reel ${index + 1}: ${img.src}`);
+                    console.log(`Image loaded for reel ${index + 1}`);
                 };
             });
         }
@@ -154,24 +158,26 @@
             updateDisplay();
         }
 
-        // Initialize game
-        console.log('Initializing game');
-        updateDisplay();
-        const initS1 = reelStops[Math.floor(Math.random() * reelStops.length)];
-        const initS2 = reelStops[Math.floor(Math.random() * reelStops.length)];
-        const initS3 = reelStops[Math.floor(Math.random() * reelStops.length)];
-        setSymbols(initS1, initS2, initS3);
+        // Initialize game after DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, initializing game');
+            updateDisplay();
+            const initS1 = reelStops[Math.floor(Math.random() * reelStops.length)];
+            const initS2 = reelStops[Math.floor(Math.random() * reelStops.length)];
+            const initS3 = reelStops[Math.floor(Math.random() * reelStops.length)];
+            setSymbols(initS1, initS2, initS3);
 
-        // Attach event listener
-        const spinButton = document.getElementById('spin');
-        if (spinButton) {
-            spinButton.addEventListener('click', () => {
-                console.log('Event listener triggered');
-                spin();
-            });
-        } else {
-            console.error('Spin button not found!');
-        }
+            // Attach event listener
+            const spinButton = document.getElementById('spin');
+            if (spinButton) {
+                spinButton.addEventListener('click', () => {
+                    console.log('Event listener triggered');
+                    spin();
+                });
+            } else {
+                console.error('Spin button not found!');
+            }
+        });
     </script>
 </body>
 </html>
