@@ -37,9 +37,9 @@
 <body>
     <h1>OctoSlots</h1>
     <div id="reels">
-        <div id="reel1" class="reel"><img id="symbol1" src="" class="symbol"></div>
-        <div id="reel2" class="reel"><img id="symbol2" src="" class="symbol"></div>
-        <div id="reel3" class="reel"><img id="symbol3" src="" class="symbol"></div>
+        <div id="reel1" class="reel"><img id="symbol1" src="" class="symbol" onerror="this.src='https://octodex.github.com/images/original.png';"></div>
+        <div id="reel2" class="reel"><img id="symbol2" src="" class="symbol" onerror="this.src='https://octodex.github.com/images/original.png';"></div>
+        <div id="reel3" class="reel"><img id="symbol3" src="" class="symbol" onerror="this.src='https://octodex.github.com/images/original.png';"></div>
     </div>
     <div id="controls">
         <button id="spin">Spin</button>
@@ -60,16 +60,16 @@
     </div>
     <script>
         const symbols = {
-            'Original': 'https://octodex.github.com/images/daftpunktocat.png',
-            'Octobiwan': 'https://octodex.github.com/images/octobiwan.png',
-            'Surftocat': 'https://octodex.github.com/images/surftocat.png',
-            'Dinotocat': 'https://octodex.github.com/images/dinotocat.png',
-            'Spidertocat': 'https://octodex.github.com/images/spidertocat.png',
-            'Stormtroopocat': 'https://octodex.github.com/images/stormtroopocat.png',
+            'Original': 'https://octodex.github.com/images/original.png',
+            'Octobiwan': 'https://octodex.github.com/images/obiwan.png',
+            'Surftocat': 'https://octodex.github.com/images/surfocat.png',
+            'Dinotocat': 'https://octodex.github.com/images/dinocat.png',
+            'Spidertocat': 'https://octodex.github.com/images/spidey.png',
+            'Stormtroopocat': 'https://octodex.github.com/images/stormtrooper.png',
             'IronCat': 'https://octodex.github.com/images/ironcat.png',
-            'Godotocat': 'https://octodex.github.com/images/godotocat.png',
-            'Labtocat': 'https://octodex.github.com/images/labtocat.png',
-            'Fintechtocat': 'https://octodex.github.com/images/fintechtocat.png'
+            'Godotocat': 'https://octodex.github.com/images/godot.png',
+            'Labtocat': 'https://octodex.github.com/images/labcat.png',
+            'Fintechtocat': 'https://octodex.github.com/images/fintech.png'
         };
 
         const reelStops = [
@@ -85,6 +85,8 @@
             'Fintechtocat', 'Fintechtocat'
         ];
 
+        const fallbackImage = 'https://octodex.github.com/images/original.png';
+
         let credits = 500;
         let bet = 10;
         let win = 0;
@@ -96,13 +98,25 @@
         }
 
         function getSymbolImage(symbol) {
-            return symbols[symbol];
+            return symbols[symbol] || fallbackImage;
         }
 
         function setSymbols(s1, s2, s3) {
-            document.getElementById('symbol1').src = getSymbolImage(s1);
-            document.getElementById('symbol2').src = getSymbolImage(s2);
-            document.getElementById('symbol3').src = getSymbolImage(s3);
+            const img1 = document.getElementById('symbol1');
+            const img2 = document.getElementById('symbol2');
+            const img3 = document.getElementById('symbol3');
+
+            img1.src = getSymbolImage(s1);
+            img2.src = getSymbolImage(s2);
+            img3.src = getSymbolImage(s3);
+
+            // Log failed loads for debugging
+            [img1, img2, img3].forEach((img, index) => {
+                img.onerror = () => {
+                    console.warn(`Failed to load image for reel ${index + 1}: ${img.src}`);
+                    img.src = fallbackImage;
+                };
+            });
         }
 
         function spin() {
