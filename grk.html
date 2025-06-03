@@ -61,7 +61,7 @@
     <script>
         const symbols = {
             'Original': 'https://via.placeholder.com/100?text=Original',
-            'Octobiwan': 'https://via.placeholder.com/100?text=Octobiwan',
+            'Octobiwan': 'https://via.placeholder.com/100?text=Obiwan',
             'Surftocat': 'https://via.placeholder.com/100?text=Surftocat'
         };
 
@@ -71,7 +71,7 @@
             'Surftocat', 'Surftocat'
         ];
 
-        const fallbackImage = 'https://via.placeholder.com/100?text=Fallback';
+        const fallbackImage = 'https://via.placeholder.com/100?text=Original'; // Use known-working Original image
 
         let credits = 500;
         let bet = 10;
@@ -110,7 +110,10 @@
             [img1, img2, img3].forEach((img, index) => {
                 img.onerror = () => {
                     console.warn(`Failed to load image for reel ${index + 1}: ${img.src}`);
-                    img.src = `${fallbackImage}?t=${new Date().getTime()}`;
+                    if (img.src !== fallbackImage) {
+                        img.src = `${fallbackImage}?t=${new Date().getTime()}`;
+                        console.log(`Applying fallback for reel ${index + 1}: ${img.src}`);
+                    }
                     img.onerror = null; // Prevent infinite loop
                 };
                 img.onload = () => {
