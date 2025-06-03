@@ -14,10 +14,18 @@
             height: 100px;
             display: inline-block;
             margin: 0 10px;
+            padding: 5px;
+            border: 1px solid #d1d9e0;
+            border-radius: 8px;
+            background-color: #ffffff;
         }
         .symbol {
             width: 100px;
             height: 100px;
+            object-fit: contain;
+            border: 2px solid #30363d;
+            border-radius: 8px;
+            background-color: #f6f8fa;
         }
         #stats {
             margin-top: 20px;
@@ -60,9 +68,9 @@
     </div>
     <script>
         const symbols = {
-            'Original': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAySURBVHhe7dAxAQAwDMCw7L8vN7AAmRAAERABERABERABERABERABERABERABERABERABERABeywLpgM7x1gAAAAASUVORK5CYII=',
-            'Octobiwan': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAySURBVHhe7dAxAQAwDMCw7L+vD7AAGhAAERABERABERABERABERABERABERABERABERABERABey0LpwO9w1gAAAAASUVORK5CYII=',
-            'Surftocat': 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAySURBVHhe7dAxAQAwDMCw7L+3A7AAGBAAERABERABERABERABERABERABERABERABERABERABey4LpwPdw1gAAAAASUVORK5CYII='
+            'Original': 'https://octodex.github.com/images/original.png',
+            'Octobiwan': 'https://octodex.github.com/images/octobiwan.jpg',
+            'Surftocat': 'https://octodex.github.com/images/surftocat.png'
         };
 
         const reelStops = [
@@ -71,7 +79,7 @@
             'Surftocat', 'Surftocat'
         ];
 
-        const fallbackImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAySURBVHhe7dAxAQAwDMCw7L8vN7AAmRAAERABERABERABERABERABERABERABERABERABERABeywLpgM7x1gAAAAASUVORK5CYII=';
+        const fallbackImage = 'https://octodex.github.com/images/original.png';
 
         let credits = 500;
         let bet = 10;
