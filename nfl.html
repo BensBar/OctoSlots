@@ -78,6 +78,8 @@
             background: var(--primary-bg);
             padding: 20px;
             border-radius: 10px;
+            position: relative;
+            z-index: 1;
         }
 
         .reel {
@@ -97,6 +99,7 @@
             justify-content: center;
             position: absolute;
             transition: transform 0.1s ease-out;
+            background: var(--secondary-bg);
         }
 
         .symbol img {
@@ -105,14 +108,14 @@
             object-fit: contain;
         }
 
-        .wild-symbol img {
+        .wild-symbol {
             animation: wild-pulse 2s infinite;
         }
 
         @keyframes wild-pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.1); filter: brightness(1.2); }
+            100% { transform: scale(1); filter: brightness(1); }
         }
 
         .controls {
@@ -168,7 +171,7 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            z-index: 100;
+            z-index: 1000;
             min-width: 300px;
         }
 
@@ -212,6 +215,7 @@
             color: var(--gold-color);
             opacity: 0;
             transition: opacity 0.3s ease;
+            z-index: 1000;
         }
 
         .win-overlay.visible {
@@ -364,6 +368,14 @@
             const win3Sound = document.getElementById('win3-sound');
             const loseSound = document.getElementById('lose-sound');
 
+            function playSound(sound) {
+                try {
+                    if (sound) sound.play().catch(() => {});
+                } catch (e) {
+                    console.log('Sound playback failed');
+                }
+            }
+
             const reels = [
                 document.getElementById('reel1'),
                 document.getElementById('reel2'),
@@ -391,6 +403,13 @@
 
             function getRandomSymbol() {
                 return teams[Math.floor(Math.random() * teams.length)];
+            }
+
+            function initializeReels() {
+                reels.forEach((reel, i) => {
+                    const symbol = getRandomSymbol();
+                    setSymbol(i, symbol);
+                });
             }
 
             function calculateWin(symbols) {
@@ -451,11 +470,11 @@
                 winOverlay.classList.add('visible');
                 
                 if (type === 'jackpot') {
-                    win3Sound.play();
+                    playSound(win3Sound);
                 } else if (type === 'premium') {
-                    win2Sound.play();
+                    playSound(win2Sound);
                 } else if (type === 'three-match' || type === 'two-match') {
-                    winSound.play();
+                    playSound(winSound);
                 }
                 
                 setTimeout(() => {
@@ -468,7 +487,7 @@
                 
                 spinning = true;
                 spinButton.disabled = true;
-                spinSound.play();
+                playSound(spinSound);
                 
                 // Reset symbols
                 winOverlay.classList.remove('visible');
@@ -484,7 +503,7 @@
                             
                             if (spins >= duration) {
                                 clearInterval(interval);
-                                stopSound.play();
+                                playSound(stopSound);
                                 resolve();
                             }
                         }, 100);
@@ -499,7 +518,7 @@
                 if (result.win > 0) {
                     showWin(result.win, result.type);
                 } else {
-                    loseSound.play();
+                    playSound(loseSound);
                 }
                 
                 spinning = false;
@@ -507,7 +526,7 @@
             }
 
             // Initialize with random symbols
-            reels.forEach((reel, i) => setSymbol(i, getRandomSymbol()));
+            initializeReels();
 
             // Event Listeners
             spinButton.addEventListener('click', spin);
