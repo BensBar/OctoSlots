@@ -89,6 +89,16 @@
             position: relative;
         }
 
+        .reel.spinning {
+            animation: reel-shake 0.1s infinite;
+        }
+
+        @keyframes reel-shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-1px); }
+            75% { transform: translateX(1px); }
+        }
+
         .symbol {
             width: 100%;
             height: 100%;
@@ -96,13 +106,19 @@
             align-items: center;
             justify-content: center;
             position: absolute;
-            transition: transform 0.1s ease-out;
+            transition: all 0.2s ease-out;
+            background: var(--secondary-bg);
         }
 
         .symbol img {
             max-width: 90%;
             max-height: 90%;
             object-fit: contain;
+            transition: transform 0.2s ease;
+        }
+
+        .symbol:hover img {
+            transform: scale(1.05);
         }
 
         .wild-symbol img {
@@ -168,7 +184,7 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            z-index: 100;
+            z-index: 1000;
             min-width: 300px;
         }
 
@@ -251,13 +267,12 @@
     <header class="app-header">
         <div class="user-info">Welcome, BensBar</div>
         <div class="game-title">NFL Slots</div>
-        <div class="date-info">2025-06-04 14:59:12</div>
+        <div class="date-info">2025-06-04 15:25:34</div>
     </header>
     
     <audio id="spin-sound" src="sounds/spin.wav" preload="auto"></audio>
     <audio id="stop-sound" src="sounds/stop.wav" preload="auto"></audio>
     <audio id="win-sound" src="sounds/win.wav" preload="auto"></audio>
-    <audio id="win2-sound" src="sounds/win2.wav" preload="auto"></audio>
     <audio id="win3-sound" src="sounds/win3.wav" preload="auto"></audio>
     <audio id="lose-sound" src="sounds/lose.wav" preload="auto"></audio>
     
@@ -312,6 +327,137 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Audio context for better sound control
+            const audioContext = {
+                context: null,
+                initialized: false,
+                soundsLoaded: false,
+                sounds: {
+                    spin: null,
+                    stop: null,
+                    win: null,
+                    win3: null,
+                    lose: null
+                },
+                volumes: {
+                    spin: 1.0,
+                    stop: 1.0,
+                    win: 1.0,
+                    win3: 1.0,
+                    lose: 1.0
+                }
+            };
+            
+            // Fallback HTML5 Audio elements
+            const fallbackAudio = {
+                spin: document.getElementById('spin-sound'),
+                stop: document.getElementById('stop-sound'),
+                win: document.getElementById('win-sound'),
+                win3: document.getElementById('win3-sound'),
+                lose: document.getElementById('lose-sound')
+            };
+            
+            // Set all audio elements to full volume
+            Object.values(fallbackAudio).forEach(audio => {
+                if (audio) audio.volume = 1.0;
+            });
+            
+            // Initialize Web Audio API for better control
+            function initAudio() {
+                try {
+                    if (audioContext.initialized) return true;
+                    
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioContext) return false;
+                    
+                    audioContext.context = new AudioContext();
+                    
+                    const sounds = [
+                        { name: 'spin', url: 'sounds/spin.wav' },
+                        { name: 'stop', url: 'sounds/stop.wav' },
+                        { name: 'win', url: 'sounds/win.wav' },
+                        { name: 'win3', url: 'sounds/win3.wav' },
+                        { name: 'lose', url: 'sounds/lose.wav' }
+                    ];
+                    
+                    sounds.forEach(sound => loadSound(sound.name, sound.url));
+                    
+                    audioContext.initialized = true;
+                    return true;
+                } catch (e) {
+                    console.error('Failed to initialize audio:', e);
+                    return false;
+                }
+            }
+            
+            function loadSound(name, url) {
+                try {
+                    fetch(url)
+                        .then(response => response.arrayBuffer())
+                        .then(arrayBuffer => audioContext.context.decodeAudioData(arrayBuffer))
+                        .then(audioBuffer => {
+                            audioContext.sounds[name] = audioBuffer;
+                        })
+                        .catch(e => console.error(`Error loading sound ${name}:`, e));
+                } catch (e) {
+                    console.error(`Error in loadSound ${name}:`, e);
+                }
+            }
+            
+            function playSound(name) {
+                try {
+                    if (audioContext.initialized && audioContext.sounds[name]) {
+                        const source = audioContext.context.createBufferSource();
+                        source.buffer = audioContext.sounds[name];
+                        
+                        const gainNode = audioContext.context.createGain();
+                        gainNode.gain.value = audioContext.volumes[name];
+                        
+                        source.connect(gainNode);
+                        gainNode.connect(audioContext.context.destination);
+                        source.start(0);
+                    } else if (fallbackAudio[name]) {
+                        fallbackAudio[name].currentTime = 0;
+                        fallbackAudio[name].play().catch(e => console.error('Audio play failed:', e));
+                    }
+                } catch (e) {
+                    console.error('Error playing sound:', e);
+                    if (fallbackAudio[name]) {
+                        fallbackAudio[name].currentTime = 0;
+                        fallbackAudio[name].play().catch(err => console.error('Fallback also failed:', err));
+                    }
+                }
+            }
+            
+            // Unlock audio on first user interaction
+            function unlockAudio() {
+                if (initAudio()) {
+                    const silentBuffer = audioContext.context.createBuffer(1, 1, 22050);
+                    const source = audioContext.context.createBufferSource();
+                    source.buffer = silentBuffer;
+                    source.connect(audioContext.context.destination);
+                    source.start(0);
+                }
+                
+                Object.values(fallbackAudio).forEach(audio => {
+                    if (audio) {
+                        audio.volume = 0.01;
+                        audio.play().then(() => {
+                            audio.pause();
+                            audio.currentTime = 0;
+                            audio.volume = 1.0;
+                        }).catch(() => {});
+                    }
+                });
+                
+                document.removeEventListener('click', unlockAudio);
+                document.removeEventListener('touchstart', unlockAudio);
+            }
+            
+            // Add event listeners for audio unlock
+            document.addEventListener('click', unlockAudio);
+            document.addEventListener('touchstart', unlockAudio);
+            
             const teams = [
                 // Wild Symbol
                 { name: 'NFL Shield', image: 'https://static.www.nfl.com/image/private/f_auto/league/q1xmlt1n6v3ufnfh8dob', value: 15, isWild: true },
@@ -353,16 +499,9 @@
                 // NFC West
                 { name: '49ers', image: 'https://static.www.nfl.com/image/private/f_auto/league/dxibuyxbk0b9ua5ih9om', value: 10 },
                 { name: 'Cardinals', image: 'https://static.www.nfl.com/image/private/f_auto/league/fgbn8acp4opvwxdhpipi', value: 5 },
-                { name: 'Rams', image: 'https://static.www.nfl.com/image/private/f_auto/league/ayvwcmluj2ohkdlbiegi', value: 8 },
+                { name: 'Rams', image: 'https://static.www.nfl.com/image/private/f_auto/league/2rmfm2c1pzsq4wokqctf', value: 8 },
                 { name: 'Seahawks', image: 'https://static.www.nfl.com/image/private/f_auto/league/qhtlhvqwzwkqud3twpnt', value: 8 }
             ];
-
-            const spinSound = document.getElementById('spin-sound');
-            const stopSound = document.getElementById('stop-sound');
-            const winSound = document.getElementById('win-sound');
-            const win2Sound = document.getElementById('win2-sound');
-            const win3Sound = document.getElementById('win3-sound');
-            const loseSound = document.getElementById('lose-sound');
 
             const reels = [
                 document.getElementById('reel1'),
@@ -451,11 +590,11 @@
                 winOverlay.classList.add('visible');
                 
                 if (type === 'jackpot') {
-                    win3Sound.play();
+                    playSound('win3');
                 } else if (type === 'premium') {
-                    win2Sound.play();
+                    playSound('win3');
                 } else if (type === 'three-match' || type === 'two-match') {
-                    winSound.play();
+                    playSound('win');
                 }
                 
                 setTimeout(() => {
@@ -468,10 +607,11 @@
                 
                 spinning = true;
                 spinButton.disabled = true;
-                spinSound.play();
+                playSound('spin');
                 
-                // Reset symbols
+                // Reset symbols and add spinning animation
                 winOverlay.classList.remove('visible');
+                reels.forEach(reel => reel.classList.add('spinning'));
                 
                 // Spin animation
                 const spinDurations = [20, 25, 30];
@@ -484,7 +624,8 @@
                             
                             if (spins >= duration) {
                                 clearInterval(interval);
-                                stopSound.play();
+                                reels[i].classList.remove('spinning');
+                                playSound('stop');
                                 resolve();
                             }
                         }, 100);
@@ -497,9 +638,13 @@
                 // Calculate and show wins
                 const result = calculateWin(currentSymbols);
                 if (result.win > 0) {
-                    showWin(result.win, result.type);
+                    setTimeout(() => {
+                        showWin(result.win, result.type);
+                    }, 500);
                 } else {
-                    loseSound.play();
+                    setTimeout(() => {
+                        playSound('lose');
+                    }, 400);
                 }
                 
                 spinning = false;
