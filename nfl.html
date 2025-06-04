@@ -320,12 +320,12 @@
                 // AFC East
                 { name: 'Bills', image: 'https://static.www.nfl.com/image/private/f_auto/league/giphcy6ie9mxbnldntsf', value: 8 },
                 { name: 'Dolphins', image: 'https://static.www.nfl.com/image/private/f_auto/league/lits6p8ycthy9to70bnt', value: 8 },
-                { name: 'Patriots', image: 'https://static.www.nfl.com/image/private/f_auto/league/bz22t9rt7xkvqkggeqkh', value: 10 },
+                { name: 'Patriots', image: 'https://res.cloudinary.com/nflleague/image/private/f_auto/league/uwrxqkmkyeffguygvlfr', value: 10 },
                 { name: 'Jets', image: 'https://static.www.nfl.com/image/private/f_auto/league/ekijosiae96gektbo4iw', value: 5 },
                 // AFC North
-                { name: 'Ravens', image: 'https://static.www.nfl.com/image/private/f_auto/league/ucsdijrvxoe2u0t1y1lg', value: 8 },
+                { name: 'Ravens', image: 'https://res.cloudinary.com/nflleague/image/private/f_auto/league/qk3whikxnzxhxei2wmdd', value: 8 },
                 { name: 'Bengals', image: 'https://static.www.nfl.com/image/private/f_auto/league/okxpteoliyayufypqalq', value: 8 },
-                { name: 'Browns', image: 'https://static.www.nfl.com/image/private/f_auto/league/jg8u9k3ga8ip7fyqkvnc', value: 5 },
+                { name: 'Browns', image: 'https://res.cloudinary.com/nflleague/image/private/f_auto/league/ie73v7ywruaydpqmyxqt', value: 5 },
                 { name: 'Steelers', image: 'https://static.www.nfl.com/image/private/f_auto/league/xujg9t3t4u5nmjgr54wx', value: 10 },
                 // AFC South
                 { name: 'Texans', image: 'https://static.www.nfl.com/image/private/f_auto/league/bpx88i8nw4nnabuq0oob', value: 5 },
@@ -341,8 +341,157 @@
                 { name: 'Cowboys', image: 'https://static.www.nfl.com/image/private/f_auto/league/ieid8hoygzdlmzo0tnf6', value: 10 },
                 { name: 'Giants', image: 'https://static.www.nfl.com/image/private/f_auto/league/t6mhdmgizi6qhndh8b9p', value: 8 },
                 { name: 'Eagles', image: 'https://static.www.nfl.com/image/private/f_auto/league/puhrqgj71gobgdkdo6uq', value: 10 },
-                { name: 'Commanders', image: 'https://static.www.nfl.com/image/private/f_auto/league/xymxwrxtyj9fwhepelap', value: 5 },
+                { name: 'Commanders', image: 'https://res.cloudinary.com/nflleague/image/private/f_auto/league/eonqxewnyli6rhcpqbxn', value: 5 },
                 // NFC North
                 { name: 'Bears', image: 'https://static.www.nfl.com/image/private/f_auto/league/ra0poq2ivwyahbaq86d2', value: 8 },
                 { name: 'Lions', image: 'https://static.www.nfl.com/image/private/f_auto/league/ocvxwnapdvwevupe4tpr', value: 5 },
-                { name: 'Packers', image: 'https://static.www.nfl.com/image/private/
+                { name: 'Packers', image: 'https://res.cloudinary.com/nflleague/image/private/f_auto/league/gppfvr7n8gljgjgjaqux2x', value: 10 },
+                { name: 'Vikings', image: 'https://static.www.nfl.com/image/private/f_auto/league/teguylrnqqmfcwxvcmmz', value: 8 },
+                // NFC South
+                { name: 'Falcons', image: 'https://static.www.nfl.com/image/private/f_auto/league/d8m7hzpk6j7kk1c0ydrf', value: 5 },
+                { name: 'Panthers', image: 'https://static.www.nfl.com/image/private/f_auto/league/ervfzgrqdqoji6jhdcea', value: 5 },
+                { name: 'Saints', image: 'https://static.www.nfl.com/image/private/f_auto/league/k594albppltp8p9thc14', value: 8 },
+                { name: 'Buccaneers', image: 'https://static.www.nfl.com/image/private/f_auto/league/v8uqiualryypwqgvwcih', value: 8 },
+                // NFC West
+                { name: 'Cardinals', image: 'https://res.cloudinary.com/nflleague/image/private/f_auto/league/qxc6ns1hqey9rpydrdmz', value: 5 },
+                { name: '49ers', image: 'https://static.www.nfl.com/image/private/f_auto/league/dxibuyxbk0b9ua5ih9hn', value: 10 },
+                { name: 'Seahawks', image: 'https://res.cloudinary.com/nflleague/image/private/f_auto/league/dhfidqc2tpxwppzmlnki', value: 8 },
+                { name: 'Rams', image: 'https://static.www.nfl.com/image/private/f_auto/league/ayvwcmluj2ohkdlbiegi', value: 8 }
+            ];
+
+            let state = {
+                spinning: false,
+                credits: 100,
+                bet: 10,
+                lastWin: 0
+            };
+
+            function getRandomTeam() {
+                return teams[Math.floor(Math.random() * teams.length)];
+            }
+
+            function displaySymbol(reelId, team) {
+                const reel = document.getElementById(reelId);
+                const symbol = reel.querySelector('.symbol');
+                
+                // Clear previous content
+                symbol.innerHTML = '';
+                
+                // Create team logo
+                const img = document.createElement('img');
+                img.src = team.image;
+                img.alt = team.name;
+                img.style.width = '80px';
+                img.style.height = '80px';
+                img.style.objectFit = 'contain';
+                
+                symbol.appendChild(img);
+                
+                // Add wild indicator if applicable
+                if (team.isWild) {
+                    symbol.classList.add('wild');
+                } else {
+                    symbol.classList.remove('wild');
+                }
+            }
+
+            function spin() {
+                if (state.spinning) return;
+                
+                if (state.credits < state.bet) {
+                    alert('Not enough credits!');
+                    return;
+                }
+                
+                state.spinning = true;
+                state.credits -= state.bet;
+                
+                const spinButton = document.querySelector('.spin-button');
+                spinButton.disabled = true;
+                spinButton.textContent = 'SPINNING...';
+                
+                // Get random teams for each reel
+                const team1 = getRandomTeam();
+                const team2 = getRandomTeam();
+                const team3 = getRandomTeam();
+                
+                // Display symbols with animation
+                setTimeout(() => {
+                    displaySymbol('reel1', team1);
+                }, 500);
+                
+                setTimeout(() => {
+                    displaySymbol('reel2', team2);
+                }, 1000);
+                
+                setTimeout(() => {
+                    displaySymbol('reel3', team3);
+                    
+                    // Check for wins
+                    checkWin(team1, team2, team3);
+                    
+                    // Re-enable spin button
+                    state.spinning = false;
+                    spinButton.disabled = false;
+                    spinButton.textContent = 'SPIN';
+                }, 1500);
+            }
+
+            function checkWin(team1, team2, team3) {
+                let winAmount = 0;
+                
+                // Check for three of a kind
+                if (team1.name === team2.name && team2.name === team3.name) {
+                    winAmount = team1.value * state.bet;
+                }
+                // Check for wild combinations
+                else if (team1.isWild || team2.isWild || team3.isWild) {
+                    // Two matching + wild
+                    if ((team1.name === team2.name) || (team1.name === team3.name) || (team2.name === team3.name)) {
+                        const nonWildTeam = team1.isWild ? (team2.isWild ? team3 : team2) : team1;
+                        winAmount = nonWildTeam.value * state.bet * 0.5; // Half payout for wild combinations
+                    }
+                }
+                
+                if (winAmount > 0) {
+                    state.credits += winAmount;
+                    state.lastWin = winAmount;
+                    
+                    // Show win animation
+                    const overlay = document.querySelector('.win-overlay');
+                    overlay.innerHTML = `<div style="font-size: 24px; color: var(--win-color); text-align: center; padding: 20px;">WIN! +${winAmount} credits!</div>`;
+                    overlay.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        overlay.style.display = 'none';
+                    }, 2000);
+                }
+                
+                updateDisplay();
+            }
+
+            function updateDisplay() {
+                // This function would update credits display if we had one
+                console.log(`Credits: ${state.credits}, Last Win: ${state.lastWin}`);
+            }
+
+            // Initialize game
+            function initGame() {
+                // Display initial symbols
+                displaySymbol('reel1', getRandomTeam());
+                displaySymbol('reel2', getRandomTeam());
+                displaySymbol('reel3', getRandomTeam());
+                
+                // Attach spin button event
+                const spinButton = document.querySelector('.spin-button');
+                spinButton.addEventListener('click', spin);
+                
+                updateDisplay();
+            }
+
+            // Start the game
+            initGame();
+        });
+    </script>
+</body>
+</html>
