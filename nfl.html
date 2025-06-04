@@ -78,6 +78,8 @@
             background: var(--primary-bg);
             padding: 20px;
             border-radius: 10px;
+            position: relative;
+            z-index: 1;
         }
 
         .reel {
@@ -97,6 +99,7 @@
             justify-content: center;
             position: absolute;
             transition: transform 0.1s ease-out;
+            background: var(--secondary-bg);
         }
 
         .symbol img {
@@ -105,14 +108,14 @@
             object-fit: contain;
         }
 
-        .wild-symbol img {
+        .wild-symbol {
             animation: wild-pulse 2s infinite;
         }
 
         @keyframes wild-pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.1); filter: brightness(1.2); }
+            100% { transform: scale(1); filter: brightness(1); }
         }
 
         .controls {
@@ -120,6 +123,8 @@
             justify-content: center;
             gap: 20px;
             margin-top: 20px;
+            position: relative;
+            z-index: 2;
         }
 
         .spin-button {
@@ -156,6 +161,7 @@
             border: none;
             cursor: pointer;
             font-weight: bold;
+            z-index: 3;
         }
 
         .paytable {
@@ -168,7 +174,7 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            z-index: 100;
+            z-index: 1000;
             min-width: 300px;
         }
 
@@ -212,6 +218,8 @@
             color: var(--gold-color);
             opacity: 0;
             transition: opacity 0.3s ease;
+            z-index: 100;
+            pointer-events: none;
         }
 
         .win-overlay.visible {
@@ -251,15 +259,8 @@
     <header class="app-header">
         <div class="user-info">Welcome, BensBar</div>
         <div class="game-title">NFL Slots</div>
-        <div class="date-info">2025-06-04 14:59:12</div>
+        <div class="date-info">2025-06-04 15:25:34</div>
     </header>
-    
-    <audio id="spin-sound" src="sounds/spin.wav" preload="auto"></audio>
-    <audio id="stop-sound" src="sounds/stop.wav" preload="auto"></audio>
-    <audio id="win-sound" src="sounds/win.wav" preload="auto"></audio>
-    <audio id="win2-sound" src="sounds/win2.wav" preload="auto"></audio>
-    <audio id="win3-sound" src="sounds/win3.wav" preload="auto"></audio>
-    <audio id="lose-sound" src="sounds/lose.wav" preload="auto"></audio>
     
     <div class="slot-machine-container">
         <div class="slot-machine">
@@ -357,13 +358,6 @@
                 { name: 'Seahawks', image: 'https://static.www.nfl.com/image/private/f_auto/league/qhtlhvqwzwkqud3twpnt', value: 8 }
             ];
 
-            const spinSound = document.getElementById('spin-sound');
-            const stopSound = document.getElementById('stop-sound');
-            const winSound = document.getElementById('win-sound');
-            const win2Sound = document.getElementById('win2-sound');
-            const win3Sound = document.getElementById('win3-sound');
-            const loseSound = document.getElementById('lose-sound');
-
             const reels = [
                 document.getElementById('reel1'),
                 document.getElementById('reel2'),
@@ -377,6 +371,15 @@
 
             let spinning = false;
             let currentSymbols = [null, null, null];
+
+            function playSound(name) {
+                try {
+                    const sound = new Audio(`sounds/${name}.wav`);
+                    sound.play().catch(() => {});
+                } catch (e) {
+                    console.log('Sound playback failed');
+                }
+            }
 
             function setSymbol(reelIndex, symbol) {
                 const symbolElement = reels[reelIndex].querySelector('.symbol');
@@ -396,20 +399,16 @@
             function calculateWin(symbols) {
                 const wildCount = symbols.filter(s => s.isWild).length;
                 
-                // Check for 3 NFL Shields (Jackpot)
                 if (wildCount === 3) {
                     return { win: 2000, type: 'jackpot' };
                 }
 
-                // Get non-wild symbols
                 const nonWildSymbols = symbols.filter(s => !s.isWild);
                 
                 if (wildCount > 0) {
-                    // Find the highest value symbol that appears
                     const mostValuableSymbol = nonWildSymbols.reduce((a, b) => 
                         (a.value > b.value) ? a : b, nonWildSymbols[0]);
                         
-                    // Count how many of this symbol we have (including wilds)
                     const totalMatches = nonWildSymbols.filter(s => 
                         s.name === mostValuableSymbol.name).length + wildCount;
                         
@@ -424,7 +423,6 @@
                     }
                 }
 
-                // Check for regular matches
                 const matches = new Map();
                 nonWildSymbols.forEach(s => {
                     matches.set(s.name, (matches.get(s.name) || 0) + 1);
@@ -451,11 +449,11 @@
                 winOverlay.classList.add('visible');
                 
                 if (type === 'jackpot') {
-                    win3Sound.play();
+                    playSound('win3');
                 } else if (type === 'premium') {
-                    win2Sound.play();
+                    playSound('win2');
                 } else if (type === 'three-match' || type === 'two-match') {
-                    winSound.play();
+                    playSound('win');
                 }
                 
                 setTimeout(() => {
@@ -468,12 +466,10 @@
                 
                 spinning = true;
                 spinButton.disabled = true;
-                spinSound.play();
+                playSound('spin');
                 
-                // Reset symbols
                 winOverlay.classList.remove('visible');
                 
-                // Spin animation
                 const spinDurations = [20, 25, 30];
                 const spinResults = spinDurations.map((duration, i) => {
                     return new Promise(resolve => {
@@ -484,22 +480,20 @@
                             
                             if (spins >= duration) {
                                 clearInterval(interval);
-                                stopSound.play();
+                                playSound('stop');
                                 resolve();
                             }
                         }, 100);
                     });
                 });
                 
-                // Wait for all reels to stop
                 await Promise.all(spinResults);
                 
-                // Calculate and show wins
                 const result = calculateWin(currentSymbols);
                 if (result.win > 0) {
                     showWin(result.win, result.type);
                 } else {
-                    loseSound.play();
+                    playSound('lose');
                 }
                 
                 spinning = false;
