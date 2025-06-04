@@ -23,37 +23,504 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             user-select: none;
         }
-        
-        [Previous CSS remains exactly the same until line 486]
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            height: var(--header-height);
+            background-color: var(--secondary-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+        }
+
+        .user-info, .date-info {
+            font-size: 14px;
+            color: #8b949e;
+        }
+
+        .game-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--gold-color);
+        }
+
+        .slot-machine-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - var(--header-height));
+            width: 100vw;
+            padding: 20px;
+            margin-top: var(--header-height);
+        }
+
+        .slot-machine {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--secondary-bg);
+            border-radius: 20px;
+            border: 3px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
+                        inset 0 0 10px rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .machine-top {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-bottom: 2px solid var(--border-color);
+            position: relative;
+        }
+
+        .jackpot-display {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-weight: bold;
+            color: var(--gold-color);
+            text-shadow: 0 0 10px rgba(255, 182, 18, 0.5);
+        }
+
+        .flashing-lights {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .light {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #444;
+        }
+
+        .light.on {
+            background-color: var(--highlight-color);
+            box-shadow: 0 0 10px var(--highlight-color);
+        }
+
+        .reels-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .reel {
+            position: relative;
+            flex: 1;
+            height: clamp(150px, 30vh, 300px);
+            background-color: var(--primary-bg);
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .slot-item {
+            position: absolute;
+            width: 100%;
+            height: 33.33%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: top 0.5s ease-out;
+        }
+
+        .slot-item.top {
+            top: 0;
+        }
+
+        .slot-item.middle {
+            top: 33.33%;
+        }
+
+        .slot-item.bottom {
+            top: 66.66%;
+        }
+
+        .slot-item img {
+            max-width: 70%;
+            max-height: 70%;
+            object-fit: contain;
+        }
+
+        .spinning .slot-item {
+            animation: spin-blur 0.1s infinite linear;
+        }
+
+        @keyframes spin-blur {
+            0%, 100% { filter: blur(1px); }
+            50% { filter: blur(2px); }
+        }
+
+        .win-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 6px;
+            background-color: red;
+            transform: translateY(-50%);
+            z-index: 5;
+            pointer-events: none;
+            border: 1px solid white;
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
+            opacity: 0.6;
+        }
+
+        .win-line.highlight {
+            background-color: lime;
+            box-shadow: 0 0 10px lime;
+            opacity: 0.8;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .score-display {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .score-card {
+            background-color: var(--primary-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px 15px;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .score-card h3 {
+            font-size: 12px;
+            color: var(--gold-color);
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .spin-button {
+            background: linear-gradient(45deg, var(--highlight-color), #FF6B6B);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(213, 10, 10, 0.3);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .spin-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(213, 10, 10, 0.4);
+        }
+
+        .spin-button:active {
+            transform: translateY(0);
+        }
+
+        .spin-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .win-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, var(--win-color), #4CAF50);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .win-message.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .win-message h2 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .win-message p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .win-message button {
+            background-color: white;
+            color: var(--win-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .win-message button:hover {
+            transform: scale(1.05);
+        }
+
+        .paytable-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--highlight-color);
+            color: var(--text-color);
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .paytable {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--secondary-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 100;
+            min-width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .paytable.visible {
+            display: block;
+        }
+
+        .paytable h3 {
+            color: var(--gold-color);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .paytable-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 5px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
+
+        .paytable-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .premium-teams {
+            font-size: 12px;
+            color: var(--gold-color);
+            margin-top: 5px;
+        }
+
+        .wild-info {
+            background: rgba(255,182,18,0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .wild-symbol {
+            position: relative;
+        }
+
+        .wild-symbol::after {
+            content: "WILD";
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gold-color);
+            color: var(--primary-bg);
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .lever-container {
+            position: absolute;
+            right: -60px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .lever-base {
+            width: 40px;
+            height: 60px;
+            background: linear-gradient(135deg, #666, #333);
+            border-radius: 20px;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .lever {
+            width: 20px;
+            height: 80px;
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            border-radius: 10px;
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .lever:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .lever.pulled {
+            transform: translateX(-50%) rotateZ(15deg);
+        }
+
+        @media (max-width: 768px) {
+            .slot-machine-container {
+                padding: 10px;
+            }
+            
+            .slot-machine {
+                padding: 15px;
+            }
+            
+            .score-display {
+                gap: 10px;
+            }
+            
+            .score-card {
+                min-width: 70px;
+                padding: 8px 12px;
+            }
+            
+            .spin-button {
+                padding: 12px 30px;
+                font-size: 18px;
+            }
+            
+            .lever-container {
+                display: none;
+            }
+            
+            .paytable {
+                width: 90vw;
+                max-width: 350px;
+            }
+        }
     </style>
 </head>
 <body>
     <header class="app-header">
         <div class="user-info">Welcome, BensBar</div>
         <div class="game-title">NFL Slots</div>
-        <div class="date-info">2025-06-04 14:43:31 UTC</div>
+        <div class="date-info">2024-12-19 15:08:00 UTC</div>
     </header>
     
-    <!-- Audio elements embedded in the page -->
+    <!-- Audio elements -->
     <audio id="spin-sound" src="sounds/spin.wav" preload="auto"></audio>
     <audio id="stop-sound" src="sounds/stop.wav" preload="auto"></audio>
     <audio id="win-sound" src="sounds/win.wav" preload="auto"></audio>
-    <audio id="win2-sound" src="sounds/win2.wav" preload="auto"></audio>
+    <audio id="win2-sound" src="sounds/win3.wav" preload="auto"></audio>
     <audio id="win3-sound" src="sounds/win3.wav" preload="auto"></audio>
     <audio id="lose-sound" src="sounds/lose.wav" preload="auto"></audio>
     
     <div class="slot-machine-container">
         <div class="slot-machine">
+            <div class="flashing-lights">
+                <div class="light"></div>
+                <div class="light"></div>
+                <div class="light"></div>
+                <div class="light"></div>
+                <div class="light"></div>
+                <div class="light"></div>
+                <div class="light"></div>
+                <div class="light"></div>
+                <div class="light"></div>
+                <div class="light"></div>
+            </div>
+            
+            <div class="machine-top">
+                <div class="jackpot-display">NFL SLOTS</div>
+            </div>
+            
             <button class="paytable-button">?</button>
             <div class="paytable">
                 <h3>Pay Table</h3>
                 <div class="paytable-item">
-                    <img src="https://static.www.nfl.com/image/private/f_auto/league/ujshjqvmnxce8m4obmvs" alt="Chiefs">
-                    <span>x3: 1000 pts</span>
+                    <img src="https://static.www.nfl.com/image/private/f_auto/league/q1xmlt1n6v3ufnfh8dob" alt="NFL Shield">
+                    <span>x3: 2000 pts (JACKPOT!)</span>
                 </div>
                 <div class="paytable-item">
-                    <img src="https://static.www.nfl.com/image/private/f_auto/league/moyfxx3dq5pio4ahtclt" alt="Patriots">
-                    <span>x3: 500 pts</span>
+                    <span>Premium Teams x3: 1000 pts</span>
+                    <div class="premium-teams">
+                        (Chiefs, Cowboys, 49ers, Eagles, Packers)
+                    </div>
                 </div>
                 <div class="paytable-item">
                     <span>Any 3 matching: 250 pts</span>
@@ -61,38 +528,746 @@
                 <div class="paytable-item">
                     <span>Any 2 matching: 50 pts</span>
                 </div>
+                <div class="paytable-item wild-info">
+                    <img src="https://static.www.nfl.com/image/private/f_auto/league/q1xmlt1n6v3ufnfh8dob" alt="NFL Shield">
+                    <span>NFL Shield is WILD!</span>
+                    <div>Matches any team logo</div>
+                </div>
             </div>
             
-            [Previous HTML remains exactly the same until line 590]
+            <div class="reels-container">
+                <div id="reel1" class="reel">
+                    <div class="slot-item top" id="reel1-top"></div>
+                    <div class="slot-item middle" id="reel1-middle"></div>
+                    <div class="slot-item bottom" id="reel1-bottom"></div>
+                </div>
+                
+                <div id="reel2" class="reel">
+                    <div class="slot-item top" id="reel2-top"></div>
+                    <div class="slot-item middle" id="reel2-middle"></div>
+                    <div class="slot-item bottom" id="reel2-bottom"></div>
+                </div>
+                
+                <div id="reel3" class="reel">
+                    <div class="slot-item top" id="reel3-top"></div>
+                    <div class="slot-item middle" id="reel3-middle"></div>
+                    <div class="slot-item bottom" id="reel3-bottom"></div>
+                </div>
+                
+                <div id="win-line" class="win-line"></div>
+            </div>
+            
+            <div class="controls">
+                <div class="score-display">
+                    <div class="score-card">
+                        <h3>CREDITS</h3>
+                        <div class="score-value" id="credits">500</div>
+                    </div>
+                    <div class="score-card">
+                        <h3>BET</h3>
+                        <div class="score-value" id="bet-amount">10</div>
+                    </div>
+                    <div class="score-card">
+                        <h3>WIN</h3>
+                        <div class="score-value" id="win-amount">0</div>
+                    </div>
+                </div>
+                <button class="spin-button" id="spin-button">SPIN</button>
+            </div>
+            
+            <div class="win-message" id="win-message">
+                <h2>WINNER!</h2>
+                <p>You won <span id="win-value">250</span> credits!</p>
+                <button id="continue-button">CONTINUE</button>
+            </div>
+            
+            <div class="lever-container">
+                <div class="lever-base">
+                    <div class="lever" id="lever"></div>
+                </div>
+            </div>
         </div>
     </div>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Audio system configuration remains the same...
-            
-            // Game configuration remains the same...
-            
-            // Collection of NFL teams
+            // Audio system
+            const audioContext = {
+                initialized: false,
+                context: null,
+                soundsLoaded: false,
+                sounds: {
+                    spin: null,
+                    stop: null,
+                    win: null,
+                    win2: null,
+                    win3: null,
+                    lose: null
+                },
+                volumes: {
+                    spin: 1.0,
+                    stop: 1.0,
+                    win: 1.0,
+                    win2: 1.0,
+                    win3: 1.0,
+                    lose: 1.0
+                }
+            };
+
+            // Simple HTML5 Audio backup for browsers without Web Audio API
+            const fallbackAudio = {
+                spin: document.getElementById('spin-sound'),
+                stop: document.getElementById('stop-sound'),
+                win: document.getElementById('win-sound'),
+                win2: document.getElementById('win2-sound'),
+                win3: document.getElementById('win3-sound'),
+                lose: document.getElementById('lose-sound')
+            };
+
+            // Set all audio elements to full volume
+            Object.values(fallbackAudio).forEach(audio => {
+                if (audio) audio.volume = 1.0;
+            });
+
+            // Initialize Web Audio API for better control
+            function initAudio() {
+                try {
+                    // Only initialize once
+                    if (audioContext.initialized) return true;
+                    
+                    // Create audio context
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioContext) return false;
+                    
+                    audioContext.context = new AudioContext();
+                    
+                    // Load all sound files
+                    const sounds = [
+                        { name: 'spin', url: 'sounds/spin.wav' },
+                        { name: 'stop', url: 'sounds/stop.wav' },
+                        { name: 'win', url: 'sounds/win.wav' },
+                        { name: 'win2', url: 'sounds/win3.wav' },
+                        { name: 'win3', url: 'sounds/win3.wav' },
+                        { name: 'lose', url: 'sounds/lose.wav' }
+                    ];
+                    
+                    sounds.forEach(sound => loadSound(sound.name, sound.url));
+                    
+                    audioContext.initialized = true;
+                    console.log('Audio system initialized successfully');
+                    return true;
+                } catch (e) {
+                    console.error('Failed to initialize audio:', e);
+                    return false;
+                }
+            }
+
+            // Load a sound file
+            function loadSound(name, url) {
+                try {
+                    fetch(url)
+                        .then(response => response.arrayBuffer())
+                        .then(arrayBuffer => audioContext.context.decodeAudioData(arrayBuffer))
+                        .then(audioBuffer => {
+                            audioContext.sounds[name] = audioBuffer;
+                            console.log(`Loaded sound: ${name}`);
+                            
+                            // Check if all sounds are loaded
+                            const allSoundsLoaded = Object.values(audioContext.sounds).every(sound => sound !== null);
+                            if (allSoundsLoaded) {
+                                audioContext.soundsLoaded = true;
+                                console.log('All sounds loaded successfully');
+                            }
+                        })
+                        .catch(e => {
+                            console.error(`Error loading sound ${name}:`, e);
+                            // If loading fails, we'll fall back to HTML5 Audio
+                        });
+                } catch (e) {
+                    console.error(`Error in loadSound ${name}:`, e);
+                }
+            }
+
+            // Play a sound - tries Web Audio API first, falls back to HTML5 Audio
+            function playSound(name) {
+                try {
+                    // If Web Audio is initialized and the sound is loaded, use it
+                    if (audioContext.initialized && audioContext.sounds[name]) {
+                        const source = audioContext.context.createBufferSource();
+                        source.buffer = audioContext.sounds[name];
+                        
+                        // Create gain node for volume control
+                        const gainNode = audioContext.context.createGain();
+                        gainNode.gain.value = audioContext.volumes[name];
+                        
+                        // Connect nodes
+                        source.connect(gainNode);
+                        gainNode.connect(audioContext.context.destination);
+                        
+                        // Play the sound
+                        source.start(0);
+                        return source;
+                    } 
+                    // Otherwise fall back to HTML5 Audio
+                    else if (fallbackAudio[name]) {
+                        fallbackAudio[name].currentTime = 0;
+                        fallbackAudio[name].volume = 1.0; // Ensure full volume
+                        const promise = fallbackAudio[name].play();
+                        
+                        if (promise !== undefined) {
+                            promise.catch(e => {
+                                console.error(`Error playing sound ${name}:`, e);
+                            });
+                        }
+                        
+                        return fallbackAudio[name];
+                    }
+                } catch (e) {
+                    console.error(`Error in playSound ${name}:`, e);
+                    return null;
+                }
+            }
+
+            // Stop a sound
+            function stopSound(source) {
+                if (!source) return;
+                
+                try {
+                    // If it's a Web Audio source
+                    if (source.stop) {
+                        source.stop(0);
+                    } 
+                    // If it's an HTML5 Audio element
+                    else if (source.pause) {
+                        source.pause();
+                        source.currentTime = 0;
+                    }
+                } catch (e) {
+                    console.error('Error stopping sound:', e);
+                }
+            }
+
+            // Unlock audio on first user interaction
+            function unlockAudio() {
+                if (!audioContext.initialized) {
+                    initAudio();
+                }
+                
+                // Resume audio context if it's suspended
+                if (audioContext.context && audioContext.context.state === 'suspended') {
+                    audioContext.context.resume();
+                }
+            }
+
+            // Game configuration
+            const config = {
+                spinCost: 10,
+                defaultCredits: 500,
+                spinDuration: 2000,
+                stopDelay: 500,
+                prizes: {
+                    jackpot: 2000,      // 3 NFL Shields
+                    premium: 1000,      // 3 Premium teams
+                    threeMatching: 250, // 3 matching teams
+                    twoMatching: 50     // 2 matching teams
+                }
+            };
+
+            // Game state
+            const state = {
+                credits: config.defaultCredits,
+                spinning: false,
+                currentSymbols: [null, null, null],
+                bet: config.spinCost,
+                lastWin: 0,
+                canPull: true
+            };
+
+            // Collection of NFL teams with NFL Shield as wild
             const teams = [
-                { name: 'Cowboys', image: 'https://static.www.nfl.com/image/private/f_auto/league/ieid8hoygzdlmzo0tnf6', value: 10 },
+                // Wild Symbol
+                { name: 'NFL Shield', image: 'https://static.www.nfl.com/image/private/f_auto/league/q1xmlt1n6v3ufnfh8dob', value: 15, isWild: true },
+                // AFC East
+                { name: 'Bills', image: 'https://static.www.nfl.com/image/private/f_auto/league/giphcy6ie9mxbnldntsf', value: 8 },
+                { name: 'Dolphins', image: 'https://static.www.nfl.com/image/private/f_auto/league/lits6p8ycthy9to70bnt', value: 8 },
                 { name: 'Patriots', image: 'https://static.www.nfl.com/image/private/f_auto/league/moyfxx3dq5pio4ahtclt', value: 10 },
-                { name: '49ers', image: 'https://static.www.nfl.com/image/private/f_auto/league/dxibuyxbk0b9ua5ih9om', value: 8 },
-                { name: 'Packers', image: 'https://static.www.nfl.com/image/private/f_auto/league/q1qzp9omdewrm8dunczq', value: 8 },
-                { name: 'Chiefs', image: 'https://static.www.nfl.com/image/private/f_auto/league/ujshjqvmnxce8m4obmvs', value: 10 },
-                { name: 'Eagles', image: 'https://static.www.nfl.com/image/private/f_auto/league/puhrqgj71gobgdkdo6uq', value: 8 },
+                { name: 'Jets', image: 'https://static.www.nfl.com/image/private/f_auto/league/ekijosiae96gektbo4iw', value: 5 },
+                // AFC North
+                { name: 'Ravens', image: 'https://static.www.nfl.com/image/private/f_auto/league/ucsdijrvxoe2u0t1y1lg', value: 8 },
+                { name: 'Bengals', image: 'https://static.www.nfl.com/image/private/f_auto/league/okxpteoliyayufypqalq', value: 8 },
+                { name: 'Browns', image: 'https://static.www.nfl.com/image/private/f_auto/league/jg8u9k3ga8ip7fyqkvnc', value: 5 },
                 { name: 'Steelers', image: 'https://static.www.nfl.com/image/private/f_auto/league/xujg9t3t4u5nmjgr54wx', value: 8 },
-                { name: 'Raiders', image: 'https://static.www.nfl.com/image/private/f_auto/league/gzcojbzcyjgubgyb6xf2', value: 5 },
-                { name: 'Bears', image: 'https://static.www.nfl.com/image/private/f_auto/league/ra0poq2ivwyahbaq86d2', value: 5 },
-                { name: 'Giants', image: 'https://static.www.nfl.com/image/private/f_auto/league/t6mhdmgizi6qhndh8b9p', value: 5 },
-                { name: 'Ravens', image: 'https://static.www.nfl.com/image/private/f_auto/league/ucsdijrvxoe2u0t1y1lg', value: 5 },
-                { name: 'Broncos', image: 'https://static.www.nfl.com/image/private/f_auto/league/u9fltoslqdsyao8cpm0k', value: 5 }
+                // AFC South
+                { name: 'Texans', image: 'https://static.www.nfl.com/image/private/f_auto/league/bpx2n1nuyqgxbml9dqw4', value: 5 },
+                { name: 'Colts', image: 'https://static.www.nfl.com/image/private/f_auto/league/keenoy6x3vgahk68a8tc', value: 8 },
+                { name: 'Jaguars', image: 'https://static.www.nfl.com/image/private/f_auto/league/qycch4edrlp5py16t7jb', value: 5 },
+                { name: 'Titans', image: 'https://static.www.nfl.com/image/private/f_auto/league/pln44vuzrjgrvg4x4d6u', value: 5 },
+                // AFC West
+                { name: 'Broncos', image: 'https://static.www.nfl.com/image/private/f_auto/league/u9fltoslqdsyao8cpm0k', value: 8 },
+                { name: 'Chiefs', image: 'https://static.www.nfl.com/image/private/f_auto/league/ujshjqvmnxce8m4obmvs', value: 10 },
+                { name: 'Raiders', image: 'https://static.www.nfl.com/image/private/f_auto/league/gzcojbzcyjgubgyb6xf2', value: 8 },
+                { name: 'Chargers', image: 'https://static.www.nfl.com/image/private/f_auto/league/ayvwcmluj2ohkdlbiegi', value: 8 },
+                // NFC East
+                { name: 'Cowboys', image: 'https://static.www.nfl.com/image/private/f_auto/league/ieid8hoygzdlmzo0tnf6', value: 10 },
+                { name: 'Giants', image: 'https://static.www.nfl.com/image/private/f_auto/league/t6mhdmgizi6qhndh8b9p', value: 8 },
+                { name: 'Eagles', image: 'https://static.www.nfl.com/image/private/f_auto/league/puhrqgj71gobgdkdo6uq', value: 10 },
+                { name: 'Commanders', image: 'https://static.www.nfl.com/image/private/f_auto/league/xymxwrxtyj9fwhepelap', value: 5 },
+                // NFC North
+                { name: 'Bears', image: 'https://static.www.nfl.com/image/private/f_auto/league/ra0poq2ivwyahbaq86d2', value: 8 },
+                { name: 'Lions', image: 'https://static.www.nfl.com/image/private/f_auto/league/ocvxwnapdvwevupe4tpr', value: 5 },
+                { name: 'Packers', image: 'https://static.www.nfl.com/image/private/f_auto/league/q1qzp9omdewrm8dunczq', value: 10 },
+                { name: 'Vikings', image: 'https://static.www.nfl.com/image/private/f_auto/league/teguylrnqqmfcwxvcmmz', value: 8 },
+                // NFC South
+                { name: 'Falcons', image: 'https://static.www.nfl.com/image/private/f_auto/league/d8m7hzpsbrl6pnqht8op', value: 5 },
+                { name: 'Panthers', image: 'https://static.www.nfl.com/image/private/f_auto/league/ervfzgrqdux8iqxqxjr6', value: 5 },
+                { name: 'Saints', image: 'https://static.www.nfl.com/image/private/f_auto/league/pk1xzhzi3sr8kwtb7b1a', value: 8 },
+                { name: 'Buccaneers', image: 'https://static.www.nfl.com/image/private/f_auto/league/v8uqiualryypwqgvwcih', value: 8 },
+                // NFC West
+                { name: 'Cardinals', image: 'https://static.www.nfl.com/image/private/f_auto/league/u132u7gp3bqxb8zew5dy', value: 5 },
+                { name: '49ers', image: 'https://static.www.nfl.com/image/private/f_auto/league/dxibuyxbk0b9ua5ih9om', value: 10 },
+                { name: 'Seahawks', image: 'https://static.www.nfl.com/image/private/f_auto/league/gcqzio6kfcmxb2g7v3xg', value: 8 },
+                { name: 'Rams', image: 'https://static.www.nfl.com/image/private/f_auto/league/2ycjceownjzad3dnjb7k', value: 8 }
             ];
-            
-            // Rest of the JavaScript code remains the same, just replace 'octocats' with 'teams'
-            // in setRandomSymbol, setSymbol, and other relevant functions
-            
-            [Rest of JavaScript remains exactly the same, with 'octocats' replaced by 'teams']
+
+            // DOM Elements
+            const elements = {
+                reels: [
+                    document.getElementById('reel1'),
+                    document.getElementById('reel2'),
+                    document.getElementById('reel3')
+                ],
+                slotItems: {
+                    top: [
+                        document.getElementById('reel1-top'),
+                        document.getElementById('reel2-top'),
+                        document.getElementById('reel3-top')
+                    ],
+                    middle: [
+                        document.getElementById('reel1-middle'),
+                        document.getElementById('reel2-middle'),
+                        document.getElementById('reel3-middle')
+                    ],
+                    bottom: [
+                        document.getElementById('reel1-bottom'),
+                        document.getElementById('reel2-bottom'),
+                        document.getElementById('reel3-bottom')
+                    ]
+                },
+                spinButton: document.getElementById('spin-button'),
+                creditsDisplay: document.getElementById('credits'),
+                betDisplay: document.getElementById('bet-amount'),
+                winDisplay: document.getElementById('win-amount'),
+                winLine: document.getElementById('win-line'),
+                winMessage: document.getElementById('win-message'),
+                winValue: document.getElementById('win-value'),
+                continueButton: document.getElementById('continue-button'),
+                paytableButton: document.querySelector('.paytable-button'),
+                paytable: document.querySelector('.paytable'),
+                lights: document.querySelectorAll('.light'),
+                lever: document.getElementById('lever')
+            };
+
+            // Set a random symbol in a slot item
+            function setRandomSymbol(slotItem) {
+                const randomTeam = teams[Math.floor(Math.random() * teams.length)];
+                slotItem.innerHTML = `<img src="${randomTeam.image}" alt="${randomTeam.name}">`;
+                slotItem.dataset.name = randomTeam.name;
+                slotItem.dataset.isWild = randomTeam.isWild || false;
+                if (randomTeam.isWild) {
+                    slotItem.classList.add('wild-symbol');
+                } else {
+                    slotItem.classList.remove('wild-symbol');
+                }
+                return randomTeam;
+            }
+
+            // Set a specific symbol in a slot item
+            function setSymbol(slotItem, symbolName) {
+                const team = teams.find(t => t.name === symbolName) || teams[0];
+                slotItem.innerHTML = `<img src="${team.image}" alt="${team.name}">`;
+                slotItem.dataset.name = team.name;
+                slotItem.dataset.isWild = team.isWild || false;
+                if (team.isWild) {
+                    slotItem.classList.add('wild-symbol');
+                } else {
+                    slotItem.classList.remove('wild-symbol');
+                }
+                return team;
+            }
+
+            // Initialize all slot items with random symbols
+            function initializeSlots() {
+                // Set random symbols in all positions
+                for (let i = 0; i < 3; i++) {
+                    setRandomSymbol(elements.slotItems.top[i]);
+                    const middleSymbol = setRandomSymbol(elements.slotItems.middle[i]);
+                    setRandomSymbol(elements.slotItems.bottom[i]);
+                    
+                    // Store the middle symbol as the current symbol for this reel
+                    state.currentSymbols[i] = middleSymbol.name;
+                }
+            }
+
+            // Update the display with current values
+            function updateDisplay() {
+                elements.creditsDisplay.textContent = state.credits;
+                elements.betDisplay.textContent = state.bet;
+                elements.winDisplay.textContent = state.lastWin;
+            }
+
+            // Generate symbols for a spin with controlled randomness
+            function generateSpinSymbols() {
+                const randomValue = Math.random();
+                let symbols;
+                
+                // 10% chance for 3 matching symbols (includes premium teams and wilds)
+                if (randomValue < 0.1) {
+                    const symbolName = teams[Math.floor(Math.random() * teams.length)].name;
+                    symbols = [symbolName, symbolName, symbolName];
+                } 
+                // 20% chance for 2 matching symbols
+                else if (randomValue < 0.3) {
+                    const symbolName1 = teams[Math.floor(Math.random() * teams.length)].name;
+                    let symbolName2;
+                    do {
+                        symbolName2 = teams[Math.floor(Math.random() * teams.length)].name;
+                    } while (symbolName2 === symbolName1);
+                    
+                    symbols = [symbolName1, symbolName1, symbolName2];
+                    // Shuffle to make it less predictable
+                    symbols.sort(() => Math.random() - 0.5);
+                } 
+                else {
+                    // Random symbols
+                    symbols = [
+                        teams[Math.floor(Math.random() * teams.length)].name,
+                        teams[Math.floor(Math.random() * teams.length)].name,
+                        teams[Math.floor(Math.random() * teams.length)].name
+                    ];
+                }
+                
+                return symbols;
+            }
+
+            // Calculate win with wild symbol support
+            function calculateWin(symbols) {
+                // Get the team objects for the symbols
+                const teamSymbols = symbols.map(name => teams.find(t => t.name === name));
+                const wildCount = teamSymbols.filter(t => t.isWild).length;
+                
+                // Check for 3 NFL Shields (Jackpot)
+                if (wildCount === 3) {
+                    return { win: config.prizes.jackpot, type: 'jackpot' };
+                }
+
+                // Get non-wild symbols
+                const nonWildSymbols = teamSymbols.filter(t => !t.isWild);
+                
+                if (wildCount > 0) {
+                    // Find the highest value symbol that appears
+                    if (nonWildSymbols.length > 0) {
+                        const mostValuableSymbol = nonWildSymbols.reduce((a, b) => 
+                            (a.value > b.value) ? a : b, nonWildSymbols[0]);
+                            
+                        // Count how many of this symbol we have (including wilds)
+                        const totalMatches = nonWildSymbols.filter(t => 
+                            t.name === mostValuableSymbol.name).length + wildCount;
+                            
+                        if (totalMatches === 3) {
+                            if (['Chiefs', 'Cowboys', '49ers', 'Eagles', 'Packers'].includes(mostValuableSymbol.name)) {
+                                return { win: config.prizes.premium, type: 'premium' };
+                            }
+                            return { win: config.prizes.threeMatching, type: 'three-match' };
+                        }
+                        if (totalMatches === 2) {
+                            return { win: config.prizes.twoMatching, type: 'two-match' };
+                        }
+                    }
+                }
+
+                // Check for regular matches (no wilds)
+                const counts = {};
+                nonWildSymbols.forEach(t => {
+                    counts[t.name] = (counts[t.name] || 0) + 1;
+                });
+                
+                const maxMatches = Math.max(...Object.values(counts), 0);
+                if (maxMatches === 3) {
+                    const matchedTeamName = Object.keys(counts).find(name => counts[name] === 3);
+                    if (['Chiefs', 'Cowboys', '49ers', 'Eagles', 'Packers'].includes(matchedTeamName)) {
+                        return { win: config.prizes.premium, type: 'premium' };
+                    }
+                    return { win: config.prizes.threeMatching, type: 'three-match' };
+                }
+                if (maxMatches === 2) {
+                    return { win: config.prizes.twoMatching, type: 'two-match' };
+                }
+                
+                return { win: 0, type: 'no-win' };
+            }
+
+            // Spin all reels
+            async function spinAllReels() {
+                // Unlock audio again (some browsers need this on each interaction)
+                unlockAudio();
+                
+                if (state.spinning) return;
+                
+                // Check if player has enough credits
+                if (state.credits < state.bet) {
+                    alert('Not enough credits!');
+                    return;
+                }
+                
+                // Hide win message if it's visible before starting a new spin
+                if (elements.winMessage.classList.contains('show')) {
+                    elements.winMessage.classList.remove('show');
+                    stopLights();
+                }
+                
+                // Play spin sound
+                const spinSoundInstance = playSound('spin');
+                
+                // Deduct bet amount
+                state.credits -= state.bet;
+                updateDisplay();
+                
+                // Reset state
+                state.spinning = true;
+                state.lastWin = 0;
+                elements.spinButton.disabled = true;
+                elements.winLine.classList.remove('highlight');
+                
+                // Start flashing lights
+                startLights();
+                
+                // Generate final symbols
+                const finalSymbols = generateSpinSymbols();
+                
+                // Add spinning class for visual effect
+                elements.reels.forEach(reel => reel.classList.add('spinning'));
+                
+                // Spin each reel
+                const reelPromises = [];
+                for (let i = 0; i < 3; i++) {
+                    reelPromises.push(new Promise(resolve => {
+                        setTimeout(() => {
+                            // Stop this reel
+                            elements.reels[i].classList.remove('spinning');
+                            
+                            // Generate symbols for this reel (top and bottom are random, middle is our target)
+                            const otherSymbol1 = teams[Math.floor(Math.random() * teams.length)].name;
+                            const otherSymbol2 = teams[Math.floor(Math.random() * teams.length)].name;
+                            
+                            // Set the symbols
+                            setSymbol(elements.slotItems.top[i], otherSymbol1);
+                            setSymbol(elements.slotItems.middle[i], finalSymbols[i]);
+                            setSymbol(elements.slotItems.bottom[i], otherSymbol2);
+                            
+                            // Store the middle symbol as the current symbol for this reel
+                            state.currentSymbols[i] = finalSymbols[i];
+                            
+                            // Play stop sound
+                            playSound('stop');
+                            
+                            // If this is the last reel, stop spin sound
+                            if (i === 2) {
+                                stopSound(spinSoundInstance);
+                            }
+                            
+                            resolve();
+                        }, config.spinDuration + (i * config.stopDelay));
+                    }));
+                }
+                
+                // Wait for all reels to stop
+                await Promise.all(reelPromises);
+                
+                // Check for wins
+                await checkWin();
+                
+                // Reset game state
+                state.spinning = false;
+                elements.spinButton.disabled = false;
+            }
+
+            // Check for winning combinations
+            async function checkWin() {
+                // Get the symbols from the middle row
+                const symbols = [...state.currentSymbols];
+                
+                // Calculate win
+                const result = calculateWin(symbols);
+                
+                if (result.win > 0) {
+                    // Player won!
+                    state.credits += result.win;
+                    state.lastWin = result.win;
+                    updateDisplay();
+                    
+                    // Highlight win line
+                    elements.winLine.classList.add('highlight');
+                    
+                    // Play appropriate win sound
+                    if (result.type === 'jackpot') {
+                        playSound('win3');
+                    } else if (result.type === 'premium') {
+                        playSound('win2');
+                    } else {
+                        playSound('win');
+                    }
+                    
+                    // Show win message
+                    showWinMessage(result.win);
+                    
+                    return true;
+                } else {
+                    // Player lost
+                    setTimeout(() => {
+                        try {
+                            // Use lose sound directly with fallback audio for better control
+                            const loseAudio = fallbackAudio.lose;
+                            
+                            // Start the audio at 0.2 seconds in to skip the intro part of the sound
+                            loseAudio.currentTime = 0.2;
+                            
+                            loseAudio.play().catch(err => {
+                                console.error("Error playing lose sound:", err);
+                                // Fallback to original method if setting currentTime fails
+                                playSound('lose');
+                            });
+                        } catch (e) {
+                            console.error("Exception trying to play lose sound:", e);
+                            // Fallback to original method
+                            playSound('lose');
+                        }
+                    }, 400);
+                    
+                    stopLights();
+                    return false;
+                }
+            }
+
+            // Show win message and celebrate
+            function showWinMessage(amount) {
+                // Flash lights more intensely
+                const lightInterval = setInterval(() => {
+                    elements.lights.forEach(light => {
+                        light.classList.toggle('on');
+                    });
+                }, 100);
+                
+                // Store the interval ID in the win message element's dataset
+                elements.winMessage.dataset.lightIntervalId = lightInterval;
+                
+                // Update win display
+                elements.winDisplay.textContent = amount;
+                elements.winValue.textContent = amount;
+                
+                // Show win message
+                elements.winMessage.classList.add('show');
+            }
+
+            // Start flashing lights
+            function startLights() {
+                const lightInterval = setInterval(() => {
+                    elements.lights.forEach((light, index) => {
+                        setTimeout(() => {
+                            light.classList.add('on');
+                            setTimeout(() => light.classList.remove('on'), 150);
+                        }, index * 50);
+                    });
+                }, 500);
+                
+                // Store interval for cleanup
+                elements.winMessage.dataset.lightIntervalId = lightInterval;
+            }
+
+            // Stop flashing lights
+            function stopLights() {
+                const lightIntervalId = elements.winMessage.dataset.lightIntervalId;
+                if (lightIntervalId) {
+                    clearInterval(parseInt(lightIntervalId));
+                    elements.winMessage.dataset.lightIntervalId = '';
+                }
+                
+                // Turn off all lights
+                elements.lights.forEach(light => light.classList.remove('on'));
+            }
+
+            // Setup event listeners
+            function setupEventListeners() {
+                // Spin button
+                elements.spinButton.addEventListener('click', () => {
+                    if (!state.spinning) {
+                        // Added a small delay to ensure any previous sounds can complete
+                        setTimeout(() => {
+                            spinAllReels();
+                        }, 50);
+                    }
+                });
+                
+                // Paytable button
+                elements.paytableButton.addEventListener('click', () => {
+                    elements.paytable.classList.toggle('visible');
+                });
+                
+                // Continue button (after win)
+                elements.continueButton.addEventListener('click', () => {
+                    elements.winMessage.classList.remove('show');
+                    
+                    // Get light interval from win message
+                    const lightIntervalId = elements.winMessage.dataset.lightIntervalId;
+                    if (lightIntervalId) {
+                        clearInterval(parseInt(lightIntervalId));
+                    }
+                    stopLights();
+                });
+                
+                // Lever pull
+                if (elements.lever) {
+                    elements.lever.addEventListener('click', () => {
+                        if (!state.spinning && state.canPull) {
+                            state.canPull = false;
+                            elements.lever.classList.add('pulled');
+                            
+                            // Animate lever return after pull
+                            setTimeout(() => {
+                                elements.lever.classList.remove('pulled');
+                                state.canPull = true;
+                            }, 300);
+                            
+                            // Trigger spin
+                            setTimeout(() => {
+                                spinAllReels();
+                            }, 100);
+                        }
+                    });
+                }
+                
+                // Close paytable when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!elements.paytable.contains(e.target) && !elements.paytableButton.contains(e.target)) {
+                        elements.paytable.classList.remove('visible');
+                    }
+                });
+            }
+
+            // Initialize the game
+            function initGame() {
+                initializeSlots();
+                updateDisplay();
+                setupEventListeners();
+                
+                // Initialize audio on first user interaction
+                document.addEventListener('click', unlockAudio, { once: true });
+                document.addEventListener('touchstart', unlockAudio, { once: true });
+                
+                console.log('NFL Slots game initialized!');
+            }
+
+            // Start the game
+            initGame();
         });
     </script>
 </body>
