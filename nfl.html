@@ -259,12 +259,12 @@
     <header class="app-header">
         <div class="user-info">Welcome, BensBar</div>
         <div class="game-title">NFL Slots</div>
-        <div class="date-info">2025-06-04 15:25:34</div>
+        <div class="date-info">2025-06-04 15:29:50</div>
     </header>
     
     <div class="slot-machine-container">
         <div class="slot-machine">
-            <button class="paytable-button">?</button>
+            <button class="paytable-button" type="button">?</button>
             <div class="paytable">
                 <h3>Pay Table</h3>
                 <div class="paytable-item">
@@ -306,20 +306,21 @@
             <div class="win-overlay"></div>
             
             <div class="controls">
-                <button class="spin-button">SPIN</button>
+                <button class="spin-button" type="button">SPIN</button>
             </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // Make sure DOM is loaded before running any code
+        window.addEventListener('DOMContentLoaded', function() {
             const teams = [
                 // Wild Symbol
                 { name: 'NFL Shield', image: 'https://static.www.nfl.com/image/private/f_auto/league/q1xmlt1n6v3ufnfh8dob', value: 15, isWild: true },
                 // AFC East
                 { name: 'Bills', image: 'https://static.www.nfl.com/image/private/f_auto/league/giphcy6ie9mxbnldntsf', value: 8 },
                 { name: 'Dolphins', image: 'https://static.www.nfl.com/image/private/f_auto/league/lits6p8ycthy9to70bnt', value: 8 },
-                { name: 'Patriots', image: 'https://static.www.nfl.com/image/private/f_auto/league/moyfxx3dq5pio4ahtclt', value: 10 },
+                { name: 'Patriots', image: 'https://static.www.nfl.com/image/private/f_auto/league/bz22t9rt7xkvqkggeqkh', value: 10 },
                 { name: 'Jets', image: 'https://static.www.nfl.com/image/private/f_auto/league/ekijosiae96gektbo4iw', value: 5 },
                 // AFC North
                 { name: 'Ravens', image: 'https://static.www.nfl.com/image/private/f_auto/league/ucsdijrvxoe2u0t1y1lg', value: 8 },
@@ -354,7 +355,7 @@
                 // NFC West
                 { name: '49ers', image: 'https://static.www.nfl.com/image/private/f_auto/league/dxibuyxbk0b9ua5ih9om', value: 10 },
                 { name: 'Cardinals', image: 'https://static.www.nfl.com/image/private/f_auto/league/fgbn8acp4opvwxdhpipi', value: 5 },
-                { name: 'Rams', image: 'https://static.www.nfl.com/image/private/f_auto/league/ayvwcmluj2ohkdlbiegi', value: 8 },
+                { name: 'Rams', image: 'https://static.www.nfl.com/image/private/f_auto/league/wpx3qfxo4oiiwwi6spun', value: 8 },
                 { name: 'Seahawks', image: 'https://static.www.nfl.com/image/private/f_auto/league/qhtlhvqwzwkqud3twpnt', value: 8 }
             ];
 
