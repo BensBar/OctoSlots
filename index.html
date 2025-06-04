@@ -489,7 +489,7 @@
 <body>
   <header class="app-header">
     <div class="user-info">Welcome, BensBar</div>
-    <div class="game-title">OctoSlots</div>
+    <div class="game-title">NFL Slots</div>
     <div class="date-info">2025-06-01 15:13:45 UTC</div>
   </header>
   
@@ -507,11 +507,11 @@
       <div class="paytable">
         <h3>Pay Table</h3>
         <div class="paytable-item">
-          <img src="https://octodex.github.com/images/original.png" alt="Original">
+          <img src="https://static.www.nfl.com/image/private/f_auto/league/ujshjqvmnxce8m4obmvs" alt="Chiefs">
           <span>x3: 1000 pts</span>
         </div>
         <div class="paytable-item">
-          <img src="https://octodex.github.com/images/octobiwan.jpg" alt="Octobiwan">
+          <img src="https://static.www.nfl.com/image/private/f_auto/league/moyfxx3dq5pio4ahtclt" alt="Patriots">
           <span>x3: 500 pts</span>
         </div>
         <div class="paytable-item">
@@ -820,23 +820,20 @@
         canPull: true
       };
       
-      // Collection of Octocats
-      const octocats = [
-        { name: 'Original', image: 'https://octodex.github.com/images/original.png', value: 10 },
-        { name: 'Surftocat', image: 'https://octodex.github.com/images/surftocat.png', value: 5 },
-        { name: 'Yogitocat', image: 'https://octodex.github.com/images/yogitocat.png', value: 5 },
-        { name: 'Hulatocat', image: 'https://octodex.github.com/images/hula_loop_octodex03.gif', value: 5 },
-        { name: 'Dinotocat', image: 'https://octodex.github.com/images/dinotocat.png', value: 5 },
-        { name: 'Labtocat', image: 'https://octodex.github.com/images/labtocat.png', value: 5 },
-        { name: 'Octobiwan', image: 'https://octodex.github.com/images/octobiwan.jpg', value: 8 },
-        { name: 'Inspectocat', image: 'https://octodex.github.com/images/inspectocat.jpg', value: 5 },
-        { name: 'Spectrocat', image: 'https://octodex.github.com/images/spectrocat.png', value: 5 },
-        { name: 'Minion', image: 'https://octodex.github.com/images/minion.png', value: 5 },
-        { name: 'Droidtocat', image: 'https://octodex.github.com/images/droidtocat.png', value: 5 },
-        { name: 'Ironcat', image: 'https://octodex.github.com/images/ironcat.jpg', value: 5 },
-        { name: 'Grinchtocat', image: 'https://octodex.github.com/images/grinchtocat.gif', value: 5 },
-        { name: 'Megacat', image: 'https://octodex.github.com/images/megacat.jpg', value: 5 },
-        { name: 'Repo', image: 'https://octodex.github.com/images/repo.png', value: 5 }
+      // Collection of NFL Teams
+      const teams = [
+        { name: 'Cowboys', image: 'https://static.www.nfl.com/image/private/f_auto/league/ieid8hoygzdlmzo0tnf6', value: 10 },
+        { name: 'Patriots', image: 'https://static.www.nfl.com/image/private/f_auto/league/moyfxx3dq5pio4ahtclt', value: 10 },
+        { name: '49ers', image: 'https://static.www.nfl.com/image/private/f_auto/league/dxibuyxbk0b9ua5ih9om', value: 8 },
+        { name: 'Packers', image: 'https://static.www.nfl.com/image/private/f_auto/league/q1qzp9omdewrm8dunczq', value: 8 },
+        { name: 'Chiefs', image: 'https://static.www.nfl.com/image/private/f_auto/league/ujshjqvmnxce8m4obmvs', value: 10 },
+        { name: 'Eagles', image: 'https://static.www.nfl.com/image/private/f_auto/league/puhrqgj71gobgdkdo6uq', value: 8 },
+        { name: 'Steelers', image: 'https://static.www.nfl.com/image/private/f_auto/league/xujg9t3t4u5nmjgr54wx', value: 8 },
+        { name: 'Raiders', image: 'https://static.www.nfl.com/image/private/f_auto/league/gzcojbzcyjgubgyb6xf2', value: 5 },
+        { name: 'Bears', image: 'https://static.www.nfl.com/image/private/f_auto/league/ra0poq2ivwyahbaq86d2', value: 5 },
+        { name: 'Giants', image: 'https://static.www.nfl.com/image/private/f_auto/league/t6mhdmgizi6qhndh8b9p', value: 5 },
+        { name: 'Ravens', image: 'https://static.www.nfl.com/image/private/f_auto/league/ucsdijrvxoe2u0t1y1lg', value: 5 },
+        { name: 'Broncos', image: 'https://static.www.nfl.com/image/private/f_auto/league/u9fltoslqdsyao8cpm0k', value: 5 }
       ];
       
       // DOM Elements
@@ -879,18 +876,18 @@
       
       // Set a random symbol in a slot item
       function setRandomSymbol(slotItem) {
-        const randomOctocat = octocats[Math.floor(Math.random() * octocats.length)];
-        slotItem.innerHTML = `<img src="${randomOctocat.image}" alt="${randomOctocat.name}">`;
-        slotItem.dataset.name = randomOctocat.name;
-        return randomOctocat;
+        const randomTeam = teams[Math.floor(Math.random() * teams.length)];
+        slotItem.innerHTML = `<img src="${randomTeam.image}" alt="${randomTeam.name}">`;
+        slotItem.dataset.name = randomTeam.name;
+        return randomTeam;
       }
       
       // Set a specific symbol in a slot item
       function setSymbol(slotItem, symbolName) {
-        const octocat = octocats.find(o => o.name === symbolName) || octocats[0];
-        slotItem.innerHTML = `<img src="${octocat.image}" alt="${octocat.name}">`;
-        slotItem.dataset.name = octocat.name;
-        return octocat;
+        const team = teams.find(t => t.name === symbolName) || teams[0];
+        slotItem.innerHTML = `<img src="${team.image}" alt="${team.name}">`;
+        slotItem.dataset.name = team.name;
+        return team;
       }
       
       // Initialize all slot items with random symbols
@@ -911,14 +908,14 @@
         
         if (randomValue < 0.1) {
           // 10% chance for 3 matching symbols
-          const symbolName = octocats[Math.floor(Math.random() * octocats.length)].name;
+          const symbolName = teams[Math.floor(Math.random() * teams.length)].name;
           symbols = [symbolName, symbolName, symbolName];
         } else if (randomValue < 0.3) {
           // 20% chance for 2 matching symbols
-          const symbolName1 = octocats[Math.floor(Math.random() * octocats.length)].name;
+          const symbolName1 = teams[Math.floor(Math.random() * teams.length)].name;
           let symbolName2;
           do {
-            symbolName2 = octocats[Math.floor(Math.random() * octocats.length)].name;
+            symbolName2 = teams[Math.floor(Math.random() * teams.length)].name;
           } while (symbolName2 === symbolName1);
           
           symbols = [symbolName1, symbolName1, symbolName2];
@@ -927,9 +924,9 @@
         } else {
           // Random symbols
           symbols = [
-            octocats[Math.floor(Math.random() * octocats.length)].name,
-            octocats[Math.floor(Math.random() * octocats.length)].name,
-            octocats[Math.floor(Math.random() * octocats.length)].name
+            teams[Math.floor(Math.random() * teams.length)].name,
+            teams[Math.floor(Math.random() * teams.length)].name,
+            teams[Math.floor(Math.random() * teams.length)].name
           ];
         }
         
@@ -1003,8 +1000,8 @@
               
               // Set final symbols for this reel
               // Generate a different symbol for top and bottom
-              const otherSymbol1 = octocats[Math.floor(Math.random() * octocats.length)].name;
-              const otherSymbol2 = octocats[Math.floor(Math.random() * octocats.length)].name;
+              const otherSymbol1 = teams[Math.floor(Math.random() * teams.length)].name;
+              const otherSymbol2 = teams[Math.floor(Math.random() * teams.length)].name;
               
               // Set the symbols
               setSymbol(elements.slotItems.top[i], otherSymbol1);
