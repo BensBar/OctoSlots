@@ -6,13 +6,13 @@
     <title>NFL Slots - NFL Team Logo Slot Machine</title>
     <style>
         :root {
-            --primary-bg: #013369;        /* NFL Navy Blue */
-            --secondary-bg: #014A8C;      /* Lighter NFL Blue */
-            --border-color: #013369;      /* NFL Navy Blue */
-            --text-color: #FFFFFF;        /* White */
-            --highlight-color: #D50A0A;   /* NFL Red */
-            --gold-color: #FFB612;        /* NFL Gold */
-            --win-color: #00B140;         /* NFL Green */
+            --primary-bg: #013369;
+            --secondary-bg: #014A8C;
+            --border-color: #013369;
+            --text-color: #FFFFFF;
+            --highlight-color: #D50A0A;
+            --gold-color: #FFB612;
+            --win-color: #00B140;
             --header-height: 60px;
         }
         
@@ -259,12 +259,12 @@
     <header class="app-header">
         <div class="user-info">Welcome, BensBar</div>
         <div class="game-title">NFL Slots</div>
-        <div class="date-info">2025-06-04 15:25:34</div>
+        <div class="date-info">2025-06-04 15:31:15</div>
     </header>
     
     <div class="slot-machine-container">
         <div class="slot-machine">
-            <button class="paytable-button">?</button>
+            <button class="paytable-button" type="button">?</button>
             <div class="paytable">
                 <h3>Pay Table</h3>
                 <div class="paytable-item">
@@ -306,20 +306,21 @@
             <div class="win-overlay"></div>
             
             <div class="controls">
-                <button class="spin-button">SPIN</button>
+                <button class="spin-button" type="button">SPIN</button>
             </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // Make sure DOM is loaded before running any code
+        window.addEventListener('DOMContentLoaded', function() {
             const teams = [
                 // Wild Symbol
                 { name: 'NFL Shield', image: 'https://static.www.nfl.com/image/private/f_auto/league/q1xmlt1n6v3ufnfh8dob', value: 15, isWild: true },
                 // AFC East
                 { name: 'Bills', image: 'https://static.www.nfl.com/image/private/f_auto/league/giphcy6ie9mxbnldntsf', value: 8 },
                 { name: 'Dolphins', image: 'https://static.www.nfl.com/image/private/f_auto/league/lits6p8ycthy9to70bnt', value: 8 },
-                { name: 'Patriots', image: 'https://static.www.nfl.com/image/private/f_auto/league/moyfxx3dq5pio4ahtclt', value: 10 },
+                { name: 'Patriots', image: 'https://static.www.nfl.com/image/private/f_auto/league/bz22t9rt7xkvqkggeqkh', value: 10 },
                 { name: 'Jets', image: 'https://static.www.nfl.com/image/private/f_auto/league/ekijosiae96gektbo4iw', value: 5 },
                 // AFC North
                 { name: 'Ravens', image: 'https://static.www.nfl.com/image/private/f_auto/league/ucsdijrvxoe2u0t1y1lg', value: 8 },
@@ -344,178 +345,4 @@
                 // NFC North
                 { name: 'Bears', image: 'https://static.www.nfl.com/image/private/f_auto/league/ra0poq2ivwyahbaq86d2', value: 8 },
                 { name: 'Lions', image: 'https://static.www.nfl.com/image/private/f_auto/league/ocvxwnapdvwevupe4tpr', value: 5 },
-                { name: 'Packers', image: 'https://static.www.nfl.com/image/private/f_auto/league/q1qzp9omdewrm8dunczq', value: 10 },
-                { name: 'Vikings', image: 'https://static.www.nfl.com/image/private/f_auto/league/teguylrnqqmfcwxvcmmz', value: 8 },
-                // NFC South
-                { name: 'Falcons', image: 'https://static.www.nfl.com/image/private/f_auto/league/d8m7hzpsbrl6pnqht8op', value: 5 },
-                { name: 'Panthers', image: 'https://static.www.nfl.com/image/private/f_auto/league/ervfzgrqdpnc7lh5gqwq', value: 5 },
-                { name: 'Saints', image: 'https://static.www.nfl.com/image/private/f_auto/league/grhjkahghjksk5un47fa', value: 8 },
-                { name: 'Buccaneers', image: 'https://static.www.nfl.com/image/private/f_auto/league/v8uqiualryypwqgvwcih', value: 8 },
-                // NFC West
-                { name: '49ers', image: 'https://static.www.nfl.com/image/private/f_auto/league/dxibuyxbk0b9ua5ih9om', value: 10 },
-                { name: 'Cardinals', image: 'https://static.www.nfl.com/image/private/f_auto/league/fgbn8acp4opvwxdhpipi', value: 5 },
-                { name: 'Rams', image: 'https://static.www.nfl.com/image/private/f_auto/league/ayvwcmluj2ohkdlbiegi', value: 8 },
-                { name: 'Seahawks', image: 'https://static.www.nfl.com/image/private/f_auto/league/qhtlhvqwzwkqud3twpnt', value: 8 }
-            ];
-
-            const reels = [
-                document.getElementById('reel1'),
-                document.getElementById('reel2'),
-                document.getElementById('reel3')
-            ];
-
-            const spinButton = document.querySelector('.spin-button');
-            const paytableButton = document.querySelector('.paytable-button');
-            const paytable = document.querySelector('.paytable');
-            const winOverlay = document.querySelector('.win-overlay');
-
-            let spinning = false;
-            let currentSymbols = [null, null, null];
-
-            function playSound(name) {
-                try {
-                    const sound = new Audio(`sounds/${name}.wav`);
-                    sound.play().catch(() => {});
-                } catch (e) {
-                    console.log('Sound playback failed');
-                }
-            }
-
-            function setSymbol(reelIndex, symbol) {
-                const symbolElement = reels[reelIndex].querySelector('.symbol');
-                symbolElement.innerHTML = `<img src="${symbol.image}" alt="${symbol.name}">`;
-                if (symbol.isWild) {
-                    symbolElement.classList.add('wild-symbol');
-                } else {
-                    symbolElement.classList.remove('wild-symbol');
-                }
-                currentSymbols[reelIndex] = symbol;
-            }
-
-            function getRandomSymbol() {
-                return teams[Math.floor(Math.random() * teams.length)];
-            }
-
-            function calculateWin(symbols) {
-                const wildCount = symbols.filter(s => s.isWild).length;
-                
-                if (wildCount === 3) {
-                    return { win: 2000, type: 'jackpot' };
-                }
-
-                const nonWildSymbols = symbols.filter(s => !s.isWild);
-                
-                if (wildCount > 0) {
-                    const mostValuableSymbol = nonWildSymbols.reduce((a, b) => 
-                        (a.value > b.value) ? a : b, nonWildSymbols[0]);
-                        
-                    const totalMatches = nonWildSymbols.filter(s => 
-                        s.name === mostValuableSymbol.name).length + wildCount;
-                        
-                    if (totalMatches === 3) {
-                        if (['Chiefs', 'Cowboys', '49ers', 'Eagles', 'Packers'].includes(mostValuableSymbol.name)) {
-                            return { win: 1000, type: 'premium' };
-                        }
-                        return { win: 250, type: 'three-match' };
-                    }
-                    if (totalMatches === 2) {
-                        return { win: 50, type: 'two-match' };
-                    }
-                }
-
-                const matches = new Map();
-                nonWildSymbols.forEach(s => {
-                    matches.set(s.name, (matches.get(s.name) || 0) + 1);
-                });
-                
-                const maxMatches = Math.max(...matches.values());
-                if (maxMatches === 3) {
-                    const matchedTeam = nonWildSymbols.find(s => 
-                        matches.get(s.name) === 3);
-                    if (['Chiefs', 'Cowboys', '49ers', 'Eagles', 'Packers'].includes(matchedTeam.name)) {
-                        return { win: 1000, type: 'premium' };
-                    }
-                    return { win: 250, type: 'three-match' };
-                }
-                if (maxMatches === 2) {
-                    return { win: 50, type: 'two-match' };
-                }
-                
-                return { win: 0, type: 'no-win' };
-            }
-
-            function showWin(amount, type) {
-                winOverlay.textContent = `WIN ${amount} POINTS!`;
-                winOverlay.classList.add('visible');
-                
-                if (type === 'jackpot') {
-                    playSound('win3');
-                } else if (type === 'premium') {
-                    playSound('win2');
-                } else if (type === 'three-match' || type === 'two-match') {
-                    playSound('win');
-                }
-                
-                setTimeout(() => {
-                    winOverlay.classList.remove('visible');
-                }, 2000);
-            }
-
-            async function spin() {
-                if (spinning) return;
-                
-                spinning = true;
-                spinButton.disabled = true;
-                playSound('spin');
-                
-                winOverlay.classList.remove('visible');
-                
-                const spinDurations = [20, 25, 30];
-                const spinResults = spinDurations.map((duration, i) => {
-                    return new Promise(resolve => {
-                        let spins = 0;
-                        const interval = setInterval(() => {
-                            setSymbol(i, getRandomSymbol());
-                            spins++;
-                            
-                            if (spins >= duration) {
-                                clearInterval(interval);
-                                playSound('stop');
-                                resolve();
-                            }
-                        }, 100);
-                    });
-                });
-                
-                await Promise.all(spinResults);
-                
-                const result = calculateWin(currentSymbols);
-                if (result.win > 0) {
-                    showWin(result.win, result.type);
-                } else {
-                    playSound('lose');
-                }
-                
-                spinning = false;
-                spinButton.disabled = false;
-            }
-
-            // Initialize with random symbols
-            reels.forEach((reel, i) => setSymbol(i, getRandomSymbol()));
-
-            // Event Listeners
-            spinButton.addEventListener('click', spin);
-            
-            paytableButton.addEventListener('click', () => {
-                paytable.classList.toggle('visible');
-            });
-
-            document.addEventListener('click', (e) => {
-                if (!paytable.contains(e.target) && e.target !== paytableButton) {
-                    paytable.classList.remove('visible');
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+                { name: 'Packers', image: 'https://static.www.nfl.com/image/private/
