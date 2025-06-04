@@ -506,12 +506,12 @@
 
         async function spin() {
             if (spinning) return;
-            if (credits < 100) {
+            if (credits < 25) {
                 alert("Not enough credits!");
                 return;
             }
 
-            credits -= 100;
+            credits -= 25;
             document.getElementById('credits').textContent = `Credits: ${credits}`;
             spinning = true;
             spinButton.disabled = true;
