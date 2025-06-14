@@ -30,6 +30,24 @@
     body.light-mode .paytable-button {
       box-shadow: 0 2px 8px rgba(0,0,0,0.07), 0 1.5px 3px rgba(31,111,235,0.04);
     }
+    body.light-mode .win-message {
+      background-color: rgba(255,255,255,0.96) !important;
+      color: var(--text-color) !important;
+      box-shadow: 0 0 30px rgba(0,0,0,0.07);
+    }
+    body.light-mode .win-message h2 {
+      color: var(--gold-color) !important;
+    }
+    body.light-mode .paytable {
+      background-color: var(--secondary-bg) !important;
+      color: var(--text-color) !important;
+      border: 1px solid var(--border-color) !important;
+    }
+    body.light-mode .paytable-button {
+      background-color: var(--secondary-bg) !important;
+      color: var(--highlight-color) !important;
+      border: 1px solid var(--border-color) !important;
+    }
     * {
       margin: 0;
       padding: 0;
@@ -63,12 +81,14 @@
     .user-info, .date-info {
       font-size: 14px;
       color: #8b949e;
+      white-space: nowrap;
     }
     .game-title {
       font-size: 18px;
       font-weight: bold;
       color: var(--highlight-color);
       margin: 0 10px;
+      flex-shrink: 0;
     }
     #theme-toggle {
       background: none;
@@ -80,6 +100,7 @@
       align-items: center;
       outline: none;
       transition: background 0.2s;
+      margin: 0 10px;
     }
     #theme-toggle:focus {
       background: rgba(100,100,100,0.08);
