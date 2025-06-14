@@ -190,7 +190,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      transition: top 0.5s ease-out;
+      transition: top 0.5s cubic-bezier(.4,2,.6,.8);
     }
     .slot-item.top { top: 0; }
     .slot-item.middle { top: 33.33%; }
@@ -199,7 +199,6 @@
       max-width: 95%;
       max-height: 95%;
       object-fit: contain;
-      /* Let JS add transform for wobble */
       transition: transform 0.3s cubic-bezier(.4,2,.6,.8);
     }
     .spinning .slot-item {
@@ -759,11 +758,24 @@
         { name: 'Repo', image: 'https://octodex.github.com/images/repo.png', value: 5 }
       ];
 
-      // --- WOBBLE LOGIC FOR REALISTIC SYMBOLS ---
-      function randomWobble() {
-        const rotate = Math.floor(Math.random() * 15 - 7); // -7deg to +7deg
-        const translate = Math.floor(Math.random() * 18 - 9); // -9px to +9px
-        return `transform: rotate(${rotate}deg) translateX(${translate}px);`;
+      // --- STRAIGHT SYMBOLS ---
+      function setRandomSymbol(slotItem) {
+        const randomOctocat = octocats[Math.floor(Math.random() * octocats.length)];
+        slotItem.innerHTML = `<img src="${randomOctocat.image}" alt="${randomOctocat.name}">`;
+        slotItem.dataset.name = randomOctocat.name;
+        return randomOctocat;
+      }
+      function setSymbol(slotItem, symbolName) {
+        const octocat = octocats.find(o => o.name === symbolName) || octocats[0];
+        slotItem.innerHTML = `<img src="${octocat.image}" alt="${octocat.name}">`;
+        slotItem.dataset.name = octocat.name;
+        return octocat;
+      }
+
+      // --- REEL STAGGER (not perfectly aligned) ---
+      function randomReelOffset() {
+        // offset between -12px and +12px
+        return Math.floor(Math.random() * 25) - 12;
       }
 
       const elements = {
@@ -803,19 +815,6 @@
         lever: document.getElementById('lever')
       };
 
-      // --- MODIFIED SETTERS FOR WOBBLE ---
-      function setRandomSymbol(slotItem) {
-        const randomOctocat = octocats[Math.floor(Math.random() * octocats.length)];
-        slotItem.innerHTML = `<img src="${randomOctocat.image}" alt="${randomOctocat.name}" style="${randomWobble()}">`;
-        slotItem.dataset.name = randomOctocat.name;
-        return randomOctocat;
-      }
-      function setSymbol(slotItem, symbolName) {
-        const octocat = octocats.find(o => o.name === symbolName) || octocats[0];
-        slotItem.innerHTML = `<img src="${octocat.image}" alt="${octocat.name}" style="${randomWobble()}">`;
-        slotItem.dataset.name = octocat.name;
-        return octocat;
-      }
       function initializeSlots() {
         for (let i = 0; i < 3; i++) {
           setRandomSymbol(elements.slotItems.top[i]);
@@ -823,6 +822,7 @@
           setRandomSymbol(elements.slotItems.bottom[i]);
         }
       }
+
       function determineWinningSymbols() {
         const randomValue = Math.random();
         let symbols = [];
@@ -846,6 +846,7 @@
         }
         return symbols;
       }
+
       async function spinAllReels() {
         if (state.spinning) return;
         if (state.credits < state.bet) {
@@ -869,6 +870,12 @@
         elements.spinButton.disabled = true;
         elements.winLine.classList.remove('highlight');
         startLights();
+
+        // Reset all rows to perfectly aligned before spin
+        elements.slotItems.middle.forEach(item => item.style.top = '33.33%');
+        elements.slotItems.top.forEach(item => item.style.top = '0');
+        elements.slotItems.bottom.forEach(item => item.style.top = '66.66%');
+
         const finalSymbols = determineWinningSymbols();
         elements.reels.forEach(reel => reel.classList.add('spinning'));
         const spinningIntervals = elements.reels.map((reel, reelIndex) => {
@@ -899,6 +906,16 @@
         ];
         const win = evaluateWin(state.currentSymbols);
         state.lastWin = win.amount;
+
+        // --- Apply "stagger" effect to middle row after stopping ---
+        elements.slotItems.middle.forEach((item, i) => {
+          const offset = randomReelOffset();
+          item.style.top = `calc(33.33% + ${offset}px)`;
+        });
+        // Top and bottom stay at fixed positions
+        elements.slotItems.top.forEach(item => item.style.top = '0');
+        elements.slotItems.bottom.forEach(item => item.style.top = '66.66%');
+
         if (win.amount > 0) {
           state.credits += win.amount;
           elements.winValue.textContent = win.amount;
@@ -916,6 +933,7 @@
           elements.spinButton.disabled = false;
         }, 500);
       }
+
       function evaluateWin(symbols) {
         if (symbols[0] === 'Original' && symbols[1] === 'Original' && symbols[2] === 'Original') {
           return { amount: config.prizes.jackpot, sound: 'win3' };
@@ -931,6 +949,7 @@
         }
         return { amount: 0, sound: 'lose' };
       }
+
       function updateDisplay() {
         elements.creditsDisplay.textContent = state.credits;
         elements.betDisplay.textContent = state.bet;
