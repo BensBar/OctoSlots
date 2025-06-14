@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>OctoSlots - GitHub Octocat Slot Machine</title>
   <style>
     :root {
@@ -12,23 +12,57 @@
       --text-color: #c9d1d9;
       --highlight-color: #58a6ff;
       --gold-color: #f1e05a;
+      --win-color: #3fb950;
       --header-height: 60px;
     }
     body.light-mode {
       --primary-bg: #f3f7f9;
-      --secondary-bg: #fff;
+      --secondary-bg: #e6edf3;
       --border-color: #b6bec6;
       --text-color: #161b22;
       --highlight-color: #1f6feb;
       --gold-color: #ffdf5d;
+      --win-color: #22863a;
     }
-    body, html {
-      height: 100%;
+    body.light-mode .app-header,
+    body.light-mode .slot-machine,
+    body.light-mode .paytable,
+    body.light-mode .paytable-button {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07), 0 1.5px 3px rgba(31,111,235,0.04);
+    }
+    body.light-mode .win-message {
+      background-color: rgba(255,255,255,0.96) !important;
+      color: var(--text-color) !important;
+      box-shadow: 0 0 30px rgba(0,0,0,0.07);
+    }
+    body.light-mode .win-message h2 {
+      color: var(--gold-color) !important;
+    }
+    body.light-mode .paytable {
+      background-color: var(--secondary-bg) !important;
+      color: var(--text-color) !important;
+      border: 1px solid var(--border-color) !important;
+    }
+    body.light-mode .paytable-button {
+      background-color: var(--secondary-bg) !important;
+      color: var(--highlight-color) !important;
+      border: 1px solid var(--border-color) !important;
+    }
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: var(--primary-bg);
+      user-select: none;
+    }
+    body {
+      background-color: var(--primary-bg);
       color: var(--text-color);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
     }
     .app-header {
       display: flex;
@@ -43,6 +77,11 @@
       left: 0;
       right: 0;
       z-index: 10;
+    }
+    .user-info, .date-info {
+      font-size: 14px;
+      color: #8b949e;
+      white-space: nowrap;
     }
     .game-title {
       font-size: 18px;
@@ -138,12 +177,11 @@
       position: relative;
       flex: 1;
       height: clamp(150px, 30vh, 300px);
-      background-color: var(--secondary-bg);
+      background-color: var(--primary-bg);
       border-radius: 10px;
       border: 2px solid var(--border-color);
       overflow: hidden;
       box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
-      transition: background 0.3s;
     }
     .slot-item {
       position: absolute;
@@ -162,9 +200,6 @@
       max-height: 95%;
       object-fit: contain;
       transition: transform 0.3s cubic-bezier(.4,2,.6,.8);
-      /* Subtle shadow for transparent images */
-      box-shadow: 0 1px 8px rgba(60,60,60,0.10);
-      border-radius: 8px;
     }
     .spinning .slot-item {
       animation: spin-blur 0.1s infinite linear;
@@ -408,6 +443,12 @@
       .score-value { font-size: 18px; }
       .lever-container { display: none; }
     }
+    @media (max-height: 600px) {
+      .machine-top { margin-bottom: 10px; padding: 5px; }
+      .jackpot-display { font-size: 1.2rem; }
+      .controls { padding: 5px; }
+      .score-display { margin-bottom: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -417,10 +458,10 @@
     <button id="theme-toggle" title="Toggle light/dark mode">
       <span id="theme-icon">🌙</span>
     </button>
-    <div class="date-info">2025-06-14 18:03:20 UTC</div>
+    <div class="date-info">2025-06-01 15:13:45 UTC</div>
   </header>
   
-  <!-- Audio elements -->
+  <!-- Audio elements embedded in the page -->
   <audio id="spin-sound" src="sounds/spin.wav" preload="auto"></audio>
   <audio id="stop-sound" src="sounds/stop.wav" preload="auto"></audio>
   <audio id="win-sound" src="sounds/win.wav" preload="auto"></audio>
@@ -438,7 +479,7 @@
           <span>x3: 1000 pts</span>
         </div>
         <div class="paytable-item">
-          <img src="https://octodex.github.com/images/dinotocat.png" alt="Dinotocat">
+          <img src="https://octodex.github.com/images/octobiwan.jpg" alt="Octobiwan">
           <span>x3: 500 pts</span>
         </div>
         <div class="paytable-item">
@@ -448,6 +489,7 @@
           <span>Any 2 matching: 50 pts</span>
         </div>
       </div>
+      
       <div class="machine-top">
         <div class="flashing-lights">
           <div class="light"></div>
@@ -461,6 +503,7 @@
         </div>
         <div class="jackpot-display">JACKPOT: 1000</div>
       </div>
+      
       <div class="reels-container">
         <div id="reel1" class="reel">
           <div class="slot-item top" id="reel1-top"></div>
@@ -479,6 +522,7 @@
         </div>
         <div id="win-line" class="win-line"></div>
       </div>
+      
       <div class="controls">
         <div class="score-display">
           <div class="score-card">
@@ -496,11 +540,13 @@
         </div>
         <button class="spin-button" id="spin-button">SPIN</button>
       </div>
+      
       <div class="win-message" id="win-message">
         <h2>WINNER!</h2>
         <p>You won <span id="win-value">250</span> credits!</p>
         <button id="continue-button">CONTINUE</button>
       </div>
+      
       <div class="lever-container">
         <div class="lever-base">
           <div class="lever" id="lever"></div>
@@ -508,70 +554,22 @@
       </div>
     </div>
   </div>
+  
   <script>
-    // Octocats: WhiteBG for light, transparent for dark
-    const whiteBgOctocats = [
-      { name: 'Surftocat',   image: 'https://octodex.github.com/images/surftocat.png',   value: 5 },
-      { name: 'Yogitocat',   image: 'https://octodex.github.com/images/yogitocat.png',   value: 5 },
-      { name: 'Dinotocat',   image: 'https://octodex.github.com/images/dinotocat.png',   value: 5 },
-      { name: 'Labtocat',    image: 'https://octodex.github.com/images/labtocat.png',    value: 5 },
-      { name: 'Octoliberty', image: 'https://octodex.github.com/images/octoliberty.png', value: 8 },
-      { name: 'Linktocat',   image: 'https://octodex.github.com/images/linktocat.png',   value: 5 },
-      { name: 'Mummytocat',  image: 'https://octodex.github.com/images/mummytocat.png',  value: 5 },
-      { name: 'Stachetocat', image: 'https://octodex.github.com/images/stachetocat.png', value: 5 },
-      { name: 'Spectrocat',  image: 'https://octodex.github.com/images/spectrocat.png',  value: 5 },
-      { name: 'Minion',      image: 'https://octodex.github.com/images/minion.png',      value: 5 },
-      { name: 'Repo',        image: 'https://octodex.github.com/images/repo.png',        value: 5 }
-    ];
-    const darkBgOctocats = [
-      { name: 'Original',    image: 'https://octodex.github.com/images/original.png',    value: 10 },
-      { name: 'Labtocat',    image: 'https://octodex.github.com/images/labtocat.png',    value: 5 },
-      { name: 'Dinotocat',   image: 'https://octodex.github.com/images/dinotocat.png',   value: 5 },
-      { name: 'Mummytocat',  image: 'https://octodex.github.com/images/mummytocat.png',  value: 5 },
-      { name: 'Stachetocat', image: 'https://octodex.github.com/images/stachetocat.png', value: 5 },
-      { name: 'Spectrocat',  image: 'https://octodex.github.com/images/spectrocat.png',  value: 5 },
-      { name: 'Minion',      image: 'https://octodex.github.com/images/minion.png',      value: 5 },
-      { name: 'Repo',        image: 'https://octodex.github.com/images/repo.png',        value: 5 },
-      { name: 'Octogatos',   image: 'https://octodex.github.com/images/Octogatos.png',   value: 5 },
-      { name: 'Scubatocat',  image: 'https://octodex.github.com/images/scubatocat.png',  value: 5 },
-      { name: 'Filmtocat',   image: 'https://octodex.github.com/images/filmtocat.png',   value: 5 }
-    ];
-    let octocats = whiteBgOctocats;
-
-    // Theme logic
+    // THEME TOGGLE LOGIC
     const themeToggleBtn = document.getElementById('theme-toggle');
     const themeIcon = document.getElementById('theme-icon');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    function setOctocatsForTheme(theme) {
-      if (theme === 'light') {
-        octocats = whiteBgOctocats;
-        document.querySelectorAll('.reel').forEach(reel => reel.style.backgroundColor = '#fff');
-      } else {
-        octocats = darkBgOctocats;
-        document.querySelectorAll('.reel').forEach(reel => reel.style.backgroundColor = '#161b22');
-      }
-    }
-    function refreshSlots() {
-      for (let i = 0; i < 3; i++) {
-        setRandomSymbol(elements.slotItems.top[i]);
-        setRandomSymbol(elements.slotItems.middle[i]);
-        setRandomSymbol(elements.slotItems.bottom[i]);
-      }
-    }
     function setTheme(mode) {
       if (mode === 'light') {
         document.body.classList.add('light-mode');
         themeIcon.textContent = '🌞';
         localStorage.setItem('octoslots-theme', 'light');
-        setOctocatsForTheme('light');
       } else {
         document.body.classList.remove('light-mode');
         themeIcon.textContent = '🌙';
         localStorage.setItem('octoslots-theme', 'dark');
-        setOctocatsForTheme('dark');
       }
-      refreshSlots();
     }
     function toggleTheme() {
       const isLight = document.body.classList.contains('light-mode');
@@ -589,12 +587,178 @@
       }
     })();
 
-    // Slot Machine Game logic
+    // --- Slot Machine Game logic ---
     document.addEventListener('DOMContentLoaded', function() {
-      // Audio system (same as before, omitted for brevity - paste your own or request full)
-      // ...
+      // Audio system
+      const audioContext = {
+        initialized: false,
+        context: null,
+        soundsLoaded: false,
+        sounds: {
+          spin: null,
+          stop: null,
+          win: null,
+          win2: null,
+          win3: null,
+          lose: null
+        },
+        volumes: {
+          spin: 1.0,
+          stop: 1.0,
+          win: 1.0,
+          win2: 1.0,
+          win3: 1.0,
+          lose: 1.0
+        }
+      };
+      const fallbackAudio = {
+        spin: document.getElementById('spin-sound'),
+        stop: document.getElementById('stop-sound'),
+        win: document.getElementById('win-sound'),
+        win2: document.getElementById('win2-sound'),
+        win3: document.getElementById('win3-sound'),
+        lose: document.getElementById('lose-sound')
+      };
+      Object.values(fallbackAudio).forEach(audio => {
+        if (audio) audio.volume = 1.0;
+      });
+      function initAudio() {
+        try {
+          if (audioContext.initialized) return true;
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return false;
+          audioContext.context = new AudioContext();
+          const sounds = [
+            { name: 'spin', url: 'sounds/spin.wav' },
+            { name: 'stop', url: 'sounds/stop.wav' },
+            { name: 'win', url: 'sounds/win.wav' },
+            { name: 'win2', url: 'sounds/win2.wav' },
+            { name: 'win3', url: 'sounds/win3.wav' },
+            { name: 'lose', url: 'sounds/lose.wav' }
+          ];
+          sounds.forEach(sound => loadSound(sound.name, sound.url));
+          audioContext.initialized = true;
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+      function loadSound(name, url) {
+        try {
+          fetch(url)
+            .then(response => response.arrayBuffer())
+            .then(arrayBuffer => audioContext.context.decodeAudioData(arrayBuffer))
+            .then(audioBuffer => {
+              audioContext.sounds[name] = audioBuffer;
+              const allSoundsLoaded = Object.values(audioContext.sounds).every(sound => sound !== null);
+              if (allSoundsLoaded) {
+                audioContext.soundsLoaded = true;
+              }
+            })
+            .catch(e => {});
+        } catch (e) {}
+      }
+      function playSound(name) {
+        try {
+          if (audioContext.initialized && audioContext.sounds[name]) {
+            const source = audioContext.context.createBufferSource();
+            source.buffer = audioContext.sounds[name];
+            const gainNode = audioContext.context.createGain();
+            gainNode.gain.value = audioContext.volumes[name];
+            source.connect(gainNode);
+            gainNode.connect(audioContext.context.destination);
+            source.start(0);
+            return source;
+          } else if (fallbackAudio[name]) {
+            fallbackAudio[name].currentTime = 0;
+            fallbackAudio[name].volume = 1.0;
+            const promise = fallbackAudio[name].play();
+            if (promise !== undefined) {
+              promise.catch(e => {});
+            }
+            return fallbackAudio[name];
+          }
+        } catch (e) {
+          return null;
+        }
+      }
+      function stopSound(source) {
+        if (!source) return;
+        try {
+          if (source.stop) source.stop(0);
+          else if (source.pause) {
+            source.pause();
+            source.currentTime = 0;
+          }
+        } catch (e) {}
+      }
+      function unlockAudio() {
+        if (initAudio()) {
+          const silentBuffer = audioContext.context.createBuffer(1, 1, 22050);
+          const source = audioContext.context.createBufferSource();
+          source.buffer = silentBuffer;
+          source.connect(audioContext.context.destination);
+          source.start(0);
+        }
+        Object.values(fallbackAudio).forEach(audio => {
+          if (audio) {
+            audio.volume = 0.01;
+            audio.play().then(() => {
+              audio.pause();
+              audio.currentTime = 0;
+              audio.volume = 1.0;
+            }).catch(e => {});
+          }
+        });
+        document.removeEventListener('click', unlockAudio);
+        document.removeEventListener('touchstart', unlockAudio);
+        document.removeEventListener('keydown', unlockAudio);
+      }
+      document.addEventListener('click', unlockAudio);
+      document.addEventListener('touchstart', unlockAudio);
+      document.addEventListener('keydown', unlockAudio);
 
-      // STRAIGHT SYMBOLS
+      let spinSoundInstance = null;
+      const config = {
+        spinCost: 10,
+        defaultCredits: 500,
+        spinDuration: 2000,
+        stopDelay: 500,
+        prizes: {
+          jackpot: 1000,
+          threeOriginal: 1000,
+          threeOctobiwan: 500,
+          threeMatching: 250,
+          twoMatching: 50
+        }
+      };
+      const state = {
+        credits: config.defaultCredits,
+        spinning: false,
+        currentSymbols: [null, null, null],
+        bet: config.spinCost,
+        lastWin: 0,
+        canPull: true
+      };
+      const octocats = [
+        { name: 'Original', image: 'https://octodex.github.com/images/original.png', value: 10 },
+        { name: 'Surftocat', image: 'https://octodex.github.com/images/surftocat.png', value: 5 },
+        { name: 'Yogitocat', image: 'https://octodex.github.com/images/yogitocat.png', value: 5 },
+        { name: 'Hulatocat', image: 'https://octodex.github.com/images/hula_loop_octodex03.gif', value: 5 },
+        { name: 'Dinotocat', image: 'https://octodex.github.com/images/dinotocat.png', value: 5 },
+        { name: 'Labtocat', image: 'https://octodex.github.com/images/labtocat.png', value: 5 },
+        { name: 'Octobiwan', image: 'https://octodex.github.com/images/octobiwan.jpg', value: 8 },
+        { name: 'Inspectocat', image: 'https://octodex.github.com/images/inspectocat.jpg', value: 5 },
+        { name: 'Spectrocat', image: 'https://octodex.github.com/images/spectrocat.png', value: 5 },
+        { name: 'Minion', image: 'https://octodex.github.com/images/minion.png', value: 5 },
+        { name: 'Droidtocat', image: 'https://octodex.github.com/images/droidtocat.png', value: 5 },
+        { name: 'Ironcat', image: 'https://octodex.github.com/images/ironcat.jpg', value: 5 },
+        { name: 'Grinchtocat', image: 'https://octodex.github.com/images/grinchtocat.gif', value: 5 },
+        { name: 'Megacat', image: 'https://octodex.github.com/images/megacat.jpg', value: 5 },
+        { name: 'Repo', image: 'https://octodex.github.com/images/repo.png', value: 5 }
+      ];
+
+      // --- STRAIGHT SYMBOLS ---
       function setRandomSymbol(slotItem) {
         const randomOctocat = octocats[Math.floor(Math.random() * octocats.length)];
         slotItem.innerHTML = `<img src="${randomOctocat.image}" alt="${randomOctocat.name}">`;
@@ -607,9 +771,13 @@
         slotItem.dataset.name = octocat.name;
         return octocat;
       }
+
+      // --- REEL STAGGER (not perfectly aligned) ---
       function randomReelOffset() {
+        // offset between -12px and +12px
         return Math.floor(Math.random() * 25) - 12;
       }
+
       const elements = {
         reels: [
           document.getElementById('reel1'),
@@ -646,6 +814,7 @@
         lights: document.querySelectorAll('.light'),
         lever: document.getElementById('lever')
       };
+
       function initializeSlots() {
         for (let i = 0; i < 3; i++) {
           setRandomSymbol(elements.slotItems.top[i]);
@@ -653,6 +822,7 @@
           setRandomSymbol(elements.slotItems.bottom[i]);
         }
       }
+
       function determineWinningSymbols() {
         const randomValue = Math.random();
         let symbols = [];
@@ -676,6 +846,7 @@
         }
         return symbols;
       }
+
       async function spinAllReels() {
         if (state.spinning) return;
         if (state.credits < state.bet) {
@@ -683,9 +854,15 @@
           return;
         }
         if (elements.winMessage.classList.contains('show')) {
+          const lightIntervalId = elements.winMessage.dataset.lightIntervalId;
+          if (lightIntervalId) {
+            clearInterval(parseInt(lightIntervalId));
+          }
           elements.winMessage.classList.remove('show');
           stopLights();
         }
+        unlockAudio();
+        spinSoundInstance = playSound('spin');
         state.credits -= state.bet;
         updateDisplay();
         state.spinning = true;
@@ -716,10 +893,12 @@
               setSymbol(elements.slotItems.middle[i], finalSymbols[i]);
               setSymbol(elements.slotItems.bottom[i], octocats[Math.floor(Math.random() * octocats.length)].name);
               elements.reels[i].classList.remove('spinning');
+              playSound('stop');
               resolve();
-            }, 1200 + i * 400);
+            }, config.spinDuration + i * config.stopDelay);
           });
         }
+        stopSound(spinSoundInstance);
         state.currentSymbols = [
           elements.slotItems.middle[0].dataset.name,
           elements.slotItems.middle[1].dataset.name,
@@ -742,8 +921,10 @@
           elements.winValue.textContent = win.amount;
           elements.winMessage.classList.add('show');
           elements.winLine.classList.add('highlight');
+          playSound(win.sound);
           startLights(true);
         } else {
+          playSound('lose');
           stopLights();
         }
         updateDisplay();
@@ -752,21 +933,23 @@
           elements.spinButton.disabled = false;
         }, 500);
       }
+
       function evaluateWin(symbols) {
         if (symbols[0] === 'Original' && symbols[1] === 'Original' && symbols[2] === 'Original') {
-          return { amount: 1000 };
+          return { amount: config.prizes.jackpot, sound: 'win3' };
         }
-        if (symbols[0] === 'Dinotocat' && symbols[1] === 'Dinotocat' && symbols[2] === 'Dinotocat') {
-          return { amount: 500 };
+        if (symbols[0] === 'Octobiwan' && symbols[1] === 'Octobiwan' && symbols[2] === 'Octobiwan') {
+          return { amount: config.prizes.threeOctobiwan, sound: 'win2' };
         }
         if (symbols[0] === symbols[1] && symbols[1] === symbols[2]) {
-          return { amount: 250 };
+          return { amount: config.prizes.threeMatching, sound: 'win' };
         }
         if (symbols[0] === symbols[1] || symbols[1] === symbols[2] || symbols[0] === symbols[2]) {
-          return { amount: 50 };
+          return { amount: config.prizes.twoMatching, sound: 'win' };
         }
-        return { amount: 0 };
+        return { amount: 0, sound: 'lose' };
       }
+
       function updateDisplay() {
         elements.creditsDisplay.textContent = state.credits;
         elements.betDisplay.textContent = state.bet;
@@ -815,15 +998,6 @@
           }
         });
       }
-      // Game state
-      const state = {
-        credits: 500,
-        spinning: false,
-        currentSymbols: [null, null, null],
-        bet: 10,
-        lastWin: 0,
-        canPull: true
-      };
       initializeSlots();
       updateDisplay();
     });
