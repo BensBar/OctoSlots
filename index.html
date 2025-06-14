@@ -196,9 +196,11 @@
     .slot-item.middle { top: 33.33%; }
     .slot-item.bottom { top: 66.66%; }
     .slot-item img {
-      max-width: 70%;
-      max-height: 70%;
+      max-width: 95%;
+      max-height: 95%;
       object-fit: contain;
+      /* Let JS add transform for wobble */
+      transition: transform 0.3s cubic-bezier(.4,2,.6,.8);
     }
     .spinning .slot-item {
       animation: spin-blur 0.1s infinite linear;
@@ -756,6 +758,14 @@
         { name: 'Megacat', image: 'https://octodex.github.com/images/megacat.jpg', value: 5 },
         { name: 'Repo', image: 'https://octodex.github.com/images/repo.png', value: 5 }
       ];
+
+      // --- WOBBLE LOGIC FOR REALISTIC SYMBOLS ---
+      function randomWobble() {
+        const rotate = Math.floor(Math.random() * 15 - 7); // -7deg to +7deg
+        const translate = Math.floor(Math.random() * 18 - 9); // -9px to +9px
+        return `transform: rotate(${rotate}deg) translateX(${translate}px);`;
+      }
+
       const elements = {
         reels: [
           document.getElementById('reel1'),
@@ -792,15 +802,17 @@
         lights: document.querySelectorAll('.light'),
         lever: document.getElementById('lever')
       };
+
+      // --- MODIFIED SETTERS FOR WOBBLE ---
       function setRandomSymbol(slotItem) {
         const randomOctocat = octocats[Math.floor(Math.random() * octocats.length)];
-        slotItem.innerHTML = `<img src="${randomOctocat.image}" alt="${randomOctocat.name}">`;
+        slotItem.innerHTML = `<img src="${randomOctocat.image}" alt="${randomOctocat.name}" style="${randomWobble()}">`;
         slotItem.dataset.name = randomOctocat.name;
         return randomOctocat;
       }
       function setSymbol(slotItem, symbolName) {
         const octocat = octocats.find(o => o.name === symbolName) || octocats[0];
-        slotItem.innerHTML = `<img src="${octocat.image}" alt="${octocat.name}">`;
+        slotItem.innerHTML = `<img src="${octocat.image}" alt="${octocat.name}" style="${randomWobble()}">`;
         slotItem.dataset.name = octocat.name;
         return octocat;
       }
