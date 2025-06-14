@@ -15,7 +15,21 @@
       --win-color: #3fb950;
       --header-height: 60px;
     }
-    
+    body.light-mode {
+      --primary-bg: #f3f7f9;
+      --secondary-bg: #e6edf3;
+      --border-color: #b6bec6;
+      --text-color: #161b22;
+      --highlight-color: #1f6feb;
+      --gold-color: #ffdf5d;
+      --win-color: #22863a;
+    }
+    body.light-mode .app-header,
+    body.light-mode .slot-machine,
+    body.light-mode .paytable,
+    body.light-mode .paytable-button {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07), 0 1.5px 3px rgba(31,111,235,0.04);
+    }
     * {
       margin: 0;
       padding: 0;
@@ -23,7 +37,6 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       user-select: none;
     }
-    
     body {
       background-color: var(--primary-bg);
       color: var(--text-color);
@@ -33,7 +46,6 @@
       display: flex;
       flex-direction: column;
     }
-    
     .app-header {
       display: flex;
       justify-content: space-between;
@@ -48,18 +60,37 @@
       right: 0;
       z-index: 10;
     }
-    
     .user-info, .date-info {
       font-size: 14px;
       color: #8b949e;
     }
-    
     .game-title {
       font-size: 18px;
       font-weight: bold;
       color: var(--highlight-color);
+      margin: 0 10px;
     }
-    
+    #theme-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 22px;
+      padding: 5px 10px;
+      display: flex;
+      align-items: center;
+      outline: none;
+      transition: background 0.2s;
+    }
+    #theme-toggle:focus {
+      background: rgba(100,100,100,0.08);
+      border-radius: 50%;
+    }
+    #theme-icon {
+      transition: transform 0.2s;
+    }
+    #theme-toggle:active #theme-icon {
+      transform: rotate(-30deg) scale(1.15);
+    }
     .slot-machine-container {
       display: flex;
       flex-direction: column;
@@ -70,7 +101,6 @@
       padding: 20px;
       margin-top: var(--header-height);
     }
-    
     .slot-machine {
       position: relative;
       width: 100%;
@@ -83,7 +113,6 @@
       padding: 20px;
       overflow: hidden;
     }
-    
     .machine-top {
       text-align: center;
       margin-bottom: 20px;
@@ -91,14 +120,12 @@
       border-bottom: 2px solid var(--border-color);
       position: relative;
     }
-    
     .jackpot-display {
       font-size: clamp(1.5rem, 5vw, 2.5rem);
       font-weight: bold;
       color: var(--gold-color);
       text-shadow: 0 0 10px rgba(241, 224, 90, 0.5);
     }
-    
     .flashing-lights {
       position: absolute;
       top: 0;
@@ -108,19 +135,16 @@
       display: flex;
       justify-content: space-around;
     }
-    
     .light {
       width: 10px;
       height: 10px;
       border-radius: 50%;
       background-color: #444;
     }
-    
     .light.on {
       background-color: var(--highlight-color);
       box-shadow: 0 0 10px var(--highlight-color);
     }
-    
     .reels-container {
       display: flex;
       justify-content: space-between;
@@ -128,7 +152,6 @@
       margin-bottom: 20px;
       position: relative;
     }
-    
     .reel {
       position: relative;
       flex: 1;
@@ -139,7 +162,6 @@
       overflow: hidden;
       box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
     }
-    
     .slot-item {
       position: absolute;
       width: 100%;
@@ -149,34 +171,21 @@
       align-items: center;
       transition: top 0.5s ease-out;
     }
-    
-    .slot-item.top {
-      top: 0;
-    }
-    
-    .slot-item.middle {
-      top: 33.33%;
-    }
-    
-    .slot-item.bottom {
-      top: 66.66%;
-    }
-    
+    .slot-item.top { top: 0; }
+    .slot-item.middle { top: 33.33%; }
+    .slot-item.bottom { top: 66.66%; }
     .slot-item img {
       max-width: 70%;
       max-height: 70%;
       object-fit: contain;
     }
-    
     .spinning .slot-item {
       animation: spin-blur 0.1s infinite linear;
     }
-    
     @keyframes spin-blur {
       0%, 100% { filter: blur(1px); }
       50% { filter: blur(2px); }
     }
-    
     .win-line {
       position: absolute;
       left: 0;
@@ -191,20 +200,17 @@
       box-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
       opacity: 0.6;
     }
-    
     .win-line.highlight {
       background-color: lime;
       box-shadow: 0 0 10px lime;
       opacity: 0.8;
       animation: pulse 1s infinite;
     }
-    
     @keyframes pulse {
       0% { opacity: 0.5; }
       50% { opacity: 0.8; }
       100% { opacity: 0.5; }
     }
-    
     .controls {
       display: flex;
       flex-direction: column;
@@ -212,14 +218,12 @@
       padding: 10px;
       border-top: 2px solid var(--border-color);
     }
-    
     .score-display {
       display: flex;
       justify-content: space-between;
       width: 100%;
       margin-bottom: 20px;
     }
-    
     .score-card {
       background-color: var(--primary-bg);
       padding: 10px 15px;
@@ -228,19 +232,16 @@
       text-align: center;
       min-width: 120px;
     }
-    
     .score-card h3 {
       font-size: 14px;
       margin-bottom: 5px;
       color: #8b949e;
     }
-    
     .score-value {
       font-size: 22px;
       font-weight: bold;
       color: var(--highlight-color);
     }
-    
     .spin-button {
       background: linear-gradient(to bottom, #1f6feb, #1158c7);
       color: white;
@@ -255,24 +256,20 @@
       position: relative;
       overflow: hidden;
     }
-    
     .spin-button:hover {
       transform: translateY(-2px);
       box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
     }
-    
     .spin-button:active {
       transform: translateY(1px);
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
     }
-    
     .spin-button:disabled {
       background: linear-gradient(to bottom, #2b3442, #1d2430);
       color: #4d5566;
       cursor: not-allowed;
       box-shadow: none;
     }
-    
     .spin-button::after {
       content: '';
       position: absolute;
@@ -283,7 +280,6 @@
       background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0));
       pointer-events: none;
     }
-    
     .win-message {
       position: absolute;
       top: 50%;
@@ -299,24 +295,20 @@
       visibility: hidden;
       transition: all 0.3s ease;
     }
-    
     .win-message.show {
       opacity: 1;
       visibility: visible;
     }
-    
     .win-message h2 {
       color: var(--gold-color);
       font-size: 28px;
       margin-bottom: 10px;
     }
-    
     .win-message p {
       color: var(--text-color);
       font-size: 18px;
       margin-bottom: 15px;
     }
-    
     .win-message button {
       background-color: var(--highlight-color);
       color: white;
@@ -326,7 +318,6 @@
       font-size: 16px;
       cursor: pointer;
     }
-    
     .paytable {
       position: absolute;
       top: 20px;
@@ -341,7 +332,6 @@
       transform-origin: top right;
       transition: transform 0.3s ease;
     }
-    
     .paytable-button {
       position: absolute;
       top: 10px;
@@ -359,28 +349,23 @@
       cursor: pointer;
       z-index: 31;
     }
-    
     .paytable.show {
       transform: scale(1);
     }
-    
     .paytable h3 {
       color: var(--highlight-color);
       margin-bottom: 5px;
     }
-    
     .paytable-item {
       display: flex;
       align-items: center;
       margin-bottom: 5px;
     }
-    
     .paytable-item img {
       width: 30px;
       height: 30px;
       margin-right: 10px;
     }
-    
     .lever-container {
       position: absolute;
       right: -40px;
@@ -391,7 +376,6 @@
       flex-direction: column;
       align-items: center;
     }
-    
     .lever-base {
       width: 40px;
       height: 80px;
@@ -399,7 +383,6 @@
       border-radius: 10px 10px 0 0;
       position: relative;
     }
-    
     .lever {
       width: 20px;
       height: 120px;
@@ -413,7 +396,6 @@
       transition: transform 0.3s ease;
       cursor: pointer;
     }
-    
     .lever::after {
       content: '';
       position: absolute;
@@ -424,65 +406,26 @@
       background-color: #c0392b;
       border-radius: 50%;
     }
-    
     .lever.pulled {
       transform: rotate(60deg);
     }
-
-    /* Audio elements for sounds */
     audio {
       display: none;
     }
-    
     @media (max-width: 767px) {
-      .reels-container {
-        gap: 5px;
-      }
-      
-      .reel {
-        height: clamp(100px, 20vh, 200px);
-      }
-      
-      .slot-machine {
-        padding: 10px;
-      }
-      
-      .spin-button {
-        padding: 10px 30px;
-        font-size: 20px;
-      }
-      
-      .score-card {
-        min-width: 80px;
-        padding: 8px;
-      }
-      
-      .score-value {
-        font-size: 18px;
-      }
-      
-      .lever-container {
-        display: none; /* Hide lever on mobile */
-      }
+      .reels-container { gap: 5px; }
+      .reel { height: clamp(100px, 20vh, 200px); }
+      .slot-machine { padding: 10px; }
+      .spin-button { padding: 10px 30px; font-size: 20px; }
+      .score-card { min-width: 80px; padding: 8px; }
+      .score-value { font-size: 18px; }
+      .lever-container { display: none; }
     }
-    
     @media (max-height: 600px) {
-      .machine-top {
-        margin-bottom: 10px;
-        padding: 5px;
-      }
-      
-      .jackpot-display {
-        font-size: 1.2rem;
-      }
-      
-      .controls {
-        padding: 5px;
-      }
-      
-      .score-display {
-        margin-bottom: 10px;
-      }
+      .machine-top { margin-bottom: 10px; padding: 5px; }
+      .jackpot-display { font-size: 1.2rem; }
+      .controls { padding: 5px; }
+      .score-display { margin-bottom: 10px; }
     }
   </style>
 </head>
@@ -490,6 +433,9 @@
   <header class="app-header">
     <div class="user-info">Welcome, BensBar</div>
     <div class="game-title">OctoSlots</div>
+    <button id="theme-toggle" title="Toggle light/dark mode">
+      <span id="theme-icon">🌙</span>
+    </button>
     <div class="date-info">2025-06-01 15:13:45 UTC</div>
   </header>
   
@@ -552,7 +498,6 @@
           <div class="slot-item middle" id="reel3-middle"></div>
           <div class="slot-item bottom" id="reel3-bottom"></div>
         </div>
-        
         <div id="win-line" class="win-line"></div>
       </div>
       
@@ -589,6 +534,38 @@
   </div>
   
   <script>
+    // THEME TOGGLE LOGIC
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    function setTheme(mode) {
+      if (mode === 'light') {
+        document.body.classList.add('light-mode');
+        themeIcon.textContent = '🌞';
+        localStorage.setItem('octoslots-theme', 'light');
+      } else {
+        document.body.classList.remove('light-mode');
+        themeIcon.textContent = '🌙';
+        localStorage.setItem('octoslots-theme', 'dark');
+      }
+    }
+    function toggleTheme() {
+      const isLight = document.body.classList.contains('light-mode');
+      setTheme(isLight ? 'dark' : 'light');
+    }
+    themeToggleBtn.addEventListener('click', toggleTheme);
+    (function() {
+      const saved = localStorage.getItem('octoslots-theme');
+      if (saved === 'light') {
+        setTheme('light');
+      } else if (saved === 'dark') {
+        setTheme('dark');
+      } else {
+        setTheme(prefersDark ? 'dark' : 'light');
+      }
+    })();
+
+    // --- Slot Machine Game logic ---
     document.addEventListener('DOMContentLoaded', function() {
       // Audio system
       const audioContext = {
@@ -612,8 +589,6 @@
           lose: 1.0
         }
       };
-      
-      // Simple HTML5 Audio backup for browsers without Web Audio API
       const fallbackAudio = {
         spin: document.getElementById('spin-sound'),
         stop: document.getElementById('stop-sound'),
@@ -622,25 +597,15 @@
         win3: document.getElementById('win3-sound'),
         lose: document.getElementById('lose-sound')
       };
-      
-      // Set all audio elements to full volume
       Object.values(fallbackAudio).forEach(audio => {
         if (audio) audio.volume = 1.0;
       });
-      
-      // Initialize Web Audio API for better control
       function initAudio() {
         try {
-          // Only initialize once
           if (audioContext.initialized) return true;
-          
-          // Create audio context
           const AudioContext = window.AudioContext || window.webkitAudioContext;
           if (!AudioContext) return false;
-          
           audioContext.context = new AudioContext();
-          
-          // Load all sound files
           const sounds = [
             { name: 'spin', url: 'sounds/spin.wav' },
             { name: 'stop', url: 'sounds/stop.wav' },
@@ -649,19 +614,13 @@
             { name: 'win3', url: 'sounds/win3.wav' },
             { name: 'lose', url: 'sounds/lose.wav' }
           ];
-          
           sounds.forEach(sound => loadSound(sound.name, sound.url));
-          
           audioContext.initialized = true;
-          console.log('Audio system initialized successfully');
           return true;
         } catch (e) {
-          console.error('Failed to initialize audio:', e);
           return false;
         }
       }
-      
-      // Load a sound file
       function loadSound(name, url) {
         try {
           fetch(url)
@@ -669,105 +628,56 @@
             .then(arrayBuffer => audioContext.context.decodeAudioData(arrayBuffer))
             .then(audioBuffer => {
               audioContext.sounds[name] = audioBuffer;
-              console.log(`Loaded sound: ${name}`);
-              
-              // Check if all sounds are loaded
               const allSoundsLoaded = Object.values(audioContext.sounds).every(sound => sound !== null);
               if (allSoundsLoaded) {
                 audioContext.soundsLoaded = true;
-                console.log('All sounds loaded successfully');
               }
             })
-            .catch(e => {
-              console.error(`Error loading sound ${name}:`, e);
-              // If loading fails, we'll fall back to HTML5 Audio
-            });
-        } catch (e) {
-          console.error(`Error in loadSound ${name}:`, e);
-        }
+            .catch(e => {});
+        } catch (e) {}
       }
-      
-      // Play a sound - tries Web Audio API first, falls back to HTML5 Audio
       function playSound(name) {
         try {
-          // If Web Audio is initialized and the sound is loaded, use it
           if (audioContext.initialized && audioContext.sounds[name]) {
             const source = audioContext.context.createBufferSource();
             source.buffer = audioContext.sounds[name];
-            
-            // Create gain node for volume control
             const gainNode = audioContext.context.createGain();
             gainNode.gain.value = audioContext.volumes[name];
-            
-            // Connect nodes
             source.connect(gainNode);
             gainNode.connect(audioContext.context.destination);
-            
-            // Play the sound
             source.start(0);
             return source;
-          } 
-          // Otherwise fall back to HTML5 Audio
-          else if (fallbackAudio[name]) {
+          } else if (fallbackAudio[name]) {
             fallbackAudio[name].currentTime = 0;
-            fallbackAudio[name].volume = 1.0; // Ensure full volume
+            fallbackAudio[name].volume = 1.0;
             const promise = fallbackAudio[name].play();
-            
             if (promise !== undefined) {
-              promise.catch(e => {
-                console.error(`Error playing sound ${name}:`, e);
-                // Try alternate method if HTML5 Audio fails
-                if (name === 'spin') {
-                  // For spin sound, try creating a new Audio element
-                  const newAudio = new Audio('sounds/spin.wav');
-                  newAudio.volume = 1.0;
-                  newAudio.play().catch(e => console.log(`Even new audio failed for ${name}:`, e));
-                }
-              });
+              promise.catch(e => {});
             }
-            
             return fallbackAudio[name];
           }
         } catch (e) {
-          console.error(`Error in playSound ${name}:`, e);
           return null;
         }
       }
-      
-      // Stop a sound
       function stopSound(source) {
         if (!source) return;
-        
         try {
-          // If it's a Web Audio source
-          if (source.stop) {
-            source.stop(0);
-          } 
-          // If it's an HTML5 Audio element
+          if (source.stop) source.stop(0);
           else if (source.pause) {
             source.pause();
             source.currentTime = 0;
           }
-        } catch (e) {
-          console.error('Error stopping sound:', e);
-        }
+        } catch (e) {}
       }
-      
-      // Unlock audio on first user interaction
       function unlockAudio() {
-        console.log('Unlocking audio...');
-        
-        // Try to initialize Web Audio API
         if (initAudio()) {
-          // Play a silent sound to unlock the audio context
           const silentBuffer = audioContext.context.createBuffer(1, 1, 22050);
           const source = audioContext.context.createBufferSource();
           source.buffer = silentBuffer;
           source.connect(audioContext.context.destination);
           source.start(0);
         }
-        
-        // Also try to unlock HTML5 Audio elements as a fallback
         Object.values(fallbackAudio).forEach(audio => {
           if (audio) {
             audio.volume = 0.01;
@@ -775,27 +685,18 @@
               audio.pause();
               audio.currentTime = 0;
               audio.volume = 1.0;
-            }).catch(e => {
-              console.log('Audio unlock for HTML5 failed, but that\'s okay:', e);
-            });
+            }).catch(e => {});
           }
         });
-        
-        // Remove the event listeners once we've tried to unlock
         document.removeEventListener('click', unlockAudio);
         document.removeEventListener('touchstart', unlockAudio);
         document.removeEventListener('keydown', unlockAudio);
       }
-      
-      // Add event listeners to unlock audio
       document.addEventListener('click', unlockAudio);
       document.addEventListener('touchstart', unlockAudio);
       document.addEventListener('keydown', unlockAudio);
-      
-      // Actively playing sounds
+
       let spinSoundInstance = null;
-      
-      // Game configuration
       const config = {
         spinCost: 10,
         defaultCredits: 500,
@@ -809,8 +710,6 @@
           twoMatching: 50
         }
       };
-      
-      // Game state
       const state = {
         credits: config.defaultCredits,
         spinning: false,
@@ -819,8 +718,6 @@
         lastWin: 0,
         canPull: true
       };
-      
-      // Collection of Octocats
       const octocats = [
         { name: 'Original', image: 'https://octodex.github.com/images/original.png', value: 10 },
         { name: 'Surftocat', image: 'https://octodex.github.com/images/surftocat.png', value: 5 },
@@ -838,8 +735,6 @@
         { name: 'Megacat', image: 'https://octodex.github.com/images/megacat.jpg', value: 5 },
         { name: 'Repo', image: 'https://octodex.github.com/images/repo.png', value: 5 }
       ];
-      
-      // DOM Elements
       const elements = {
         reels: [
           document.getElementById('reel1'),
@@ -876,79 +771,55 @@
         lights: document.querySelectorAll('.light'),
         lever: document.getElementById('lever')
       };
-      
-      // Set a random symbol in a slot item
       function setRandomSymbol(slotItem) {
         const randomOctocat = octocats[Math.floor(Math.random() * octocats.length)];
         slotItem.innerHTML = `<img src="${randomOctocat.image}" alt="${randomOctocat.name}">`;
         slotItem.dataset.name = randomOctocat.name;
         return randomOctocat;
       }
-      
-      // Set a specific symbol in a slot item
       function setSymbol(slotItem, symbolName) {
         const octocat = octocats.find(o => o.name === symbolName) || octocats[0];
         slotItem.innerHTML = `<img src="${octocat.image}" alt="${octocat.name}">`;
         slotItem.dataset.name = octocat.name;
         return octocat;
       }
-      
-      // Initialize all slot items with random symbols
       function initializeSlots() {
-        // Set random symbols in all positions
         for (let i = 0; i < 3; i++) {
           setRandomSymbol(elements.slotItems.top[i]);
           setRandomSymbol(elements.slotItems.middle[i]);
           setRandomSymbol(elements.slotItems.bottom[i]);
         }
       }
-      
-      // Determine the final symbols for each reel
       function determineWinningSymbols() {
-        // Decide if this spin should be a winner
         const randomValue = Math.random();
         let symbols = [];
-        
         if (randomValue < 0.1) {
-          // 10% chance for 3 matching symbols
           const symbolName = octocats[Math.floor(Math.random() * octocats.length)].name;
           symbols = [symbolName, symbolName, symbolName];
         } else if (randomValue < 0.3) {
-          // 20% chance for 2 matching symbols
           const symbolName1 = octocats[Math.floor(Math.random() * octocats.length)].name;
           let symbolName2;
           do {
             symbolName2 = octocats[Math.floor(Math.random() * octocats.length)].name;
           } while (symbolName2 === symbolName1);
-          
           symbols = [symbolName1, symbolName1, symbolName2];
-          // Shuffle to make it less predictable
           symbols.sort(() => Math.random() - 0.5);
         } else {
-          // Random symbols
           symbols = [
             octocats[Math.floor(Math.random() * octocats.length)].name,
             octocats[Math.floor(Math.random() * octocats.length)].name,
             octocats[Math.floor(Math.random() * octocats.length)].name
           ];
         }
-        
         return symbols;
       }
-      
-      // Spin all reels
       async function spinAllReels() {
         if (state.spinning) return;
-        
-        // Check if player has enough credits
         if (state.credits < state.bet) {
           alert('Not enough credits!');
           return;
         }
-        
-        // Hide win message if it's visible before starting a new spin
         if (elements.winMessage.classList.contains('show')) {
-          // Get light interval from win message
           const lightIntervalId = elements.winMessage.dataset.lightIntervalId;
           if (lightIntervalId) {
             clearInterval(parseInt(lightIntervalId));
@@ -956,33 +827,17 @@
           elements.winMessage.classList.remove('show');
           stopLights();
         }
-        
-        // Unlock audio again (some browsers need this on each interaction)
         unlockAudio();
-        
-        // Play spin sound
         spinSoundInstance = playSound('spin');
-        
-        // Deduct bet amount
         state.credits -= state.bet;
         updateDisplay();
-        
-        // Reset state
         state.spinning = true;
         state.lastWin = 0;
         elements.spinButton.disabled = true;
         elements.winLine.classList.remove('highlight');
-        
-        // Start flashing lights
         startLights();
-        
-        // Determine winning symbols
         const finalSymbols = determineWinningSymbols();
-        
-        // Add spinning class to all reels
         elements.reels.forEach(reel => reel.classList.add('spinning'));
-        
-        // Rapidly change symbols during spinning animation
         const spinningIntervals = elements.reels.map((reel, reelIndex) => {
           return setInterval(() => {
             setRandomSymbol(elements.slotItems.top[reelIndex]);
@@ -990,294 +845,109 @@
             setRandomSymbol(elements.slotItems.bottom[reelIndex]);
           }, 100);
         });
-        
-        // Stop reels one by one
         for (let i = 0; i < 3; i++) {
           await new Promise(resolve => {
             setTimeout(() => {
-              // Clear the spinning interval
               clearInterval(spinningIntervals[i]);
-              
-              // Remove spinning class
-              elements.reels[i].classList.remove('spinning');
-              
-              // Set final symbols for this reel
-              // Generate a different symbol for top and bottom
-              const otherSymbol1 = octocats[Math.floor(Math.random() * octocats.length)].name;
-              const otherSymbol2 = octocats[Math.floor(Math.random() * octocats.length)].name;
-              
-              // Set the symbols
-              setSymbol(elements.slotItems.top[i], otherSymbol1);
+              setSymbol(elements.slotItems.top[i], octocats[Math.floor(Math.random() * octocats.length)].name);
               setSymbol(elements.slotItems.middle[i], finalSymbols[i]);
-              setSymbol(elements.slotItems.bottom[i], otherSymbol2);
-              
-              // Store the middle symbol as the current symbol for this reel
-              state.currentSymbols[i] = finalSymbols[i];
-              
-              // Play stop sound
+              setSymbol(elements.slotItems.bottom[i], octocats[Math.floor(Math.random() * octocats.length)].name);
+              elements.reels[i].classList.remove('spinning');
               playSound('stop');
-              
-              // If this is the last reel, stop spin sound
-              if (i === 2) {
-                stopSound(spinSoundInstance);
-              }
-              
               resolve();
-            }, config.spinDuration + (i * config.stopDelay));
+            }, config.spinDuration + i * config.stopDelay);
           });
         }
-        
-        // Check for wins
-        await checkWin();
-        
-        // Reset game state
-        state.spinning = false;
-        elements.spinButton.disabled = false;
-      }
-      
-      // Check for winning combinations
-      async function checkWin() {
-        // Get the symbols from the middle row
-        const symbols = [...state.currentSymbols];
-        
-        // Count occurrences of each symbol
-        const counts = {};
-        symbols.forEach(s => {
-          counts[s] = (counts[s] || 0) + 1;
-        });
-        
-        let winAmount = 0;
-        let winType = '';
-        
-        // Check for 3 matching symbols
-        const threeMatch = Object.entries(counts).find(([symbol, count]) => count === 3);
-        if (threeMatch) {
-          const [symbol, _] = threeMatch;
-          winType = 'three';
-          
-          // Check for specific high-value combinations
-          if (symbol === 'Original') {
-            winAmount = config.prizes.threeOriginal;
-          } else if (symbol === 'Octobiwan') {
-            winAmount = config.prizes.threeOctobiwan;
-          } else {
-            // Generic three matching symbols
-            winAmount = config.prizes.threeMatching;
-          }
-        } 
-        // Check for 2 matching symbols
-        else {
-          const twoMatch = Object.entries(counts).find(([symbol, count]) => count === 2);
-          if (twoMatch) {
-            winAmount = config.prizes.twoMatching;
-            winType = 'two';
-          }
-        }
-        
-        if (winAmount > 0) {
+        stopSound(spinSoundInstance);
+        state.currentSymbols = [
+          elements.slotItems.middle[0].dataset.name,
+          elements.slotItems.middle[1].dataset.name,
+          elements.slotItems.middle[2].dataset.name
+        ];
+        const win = evaluateWin(state.currentSymbols);
+        state.lastWin = win.amount;
+        if (win.amount > 0) {
+          state.credits += win.amount;
+          elements.winValue.textContent = win.amount;
+          elements.winMessage.classList.add('show');
           elements.winLine.classList.add('highlight');
-          state.lastWin = winAmount;
-          state.credits += winAmount;
-          updateDisplay();
-          
-          // Small delay before playing win sound to ensure it's heard
-          setTimeout(() => {
-            // Force stop any currently playing sounds
-            stopSound(spinSoundInstance);
-            
-            // Play win sound using the most direct method possible
-            try {
-              // Create a new audio element for maximum reliability
-              const winAudio = new Audio('sounds/win.wav');
-              winAudio.volume = 1.0;
-              
-              // Log to help diagnose issues
-              console.log("Playing win sound...");
-              
-              // Use the play method and handle any errors
-              const playPromise = winAudio.play();
-              
-              if (playPromise !== undefined) {
-                playPromise.then(() => {
-                  console.log("Win sound played successfully");
-                }).catch(e => {
-                  console.error("Error playing win sound:", e);
-                  // Try an alternative approach if this fails
-                  fallbackAudio['win'].currentTime = 0;
-                  fallbackAudio['win'].volume = 1.0;
-                  fallbackAudio['win'].play().catch(err => console.error("Fallback also failed:", err));
-                });
-              }
-              
-              // Show win message after attempting to play sound
-              showWinMessage(winAmount);
-            } catch (e) {
-              console.error("Exception trying to play win sound:", e);
-              // Still show win message even if sound fails
-              showWinMessage(winAmount);
-            }
-          }, 500);
-          
-          return true;
+          playSound(win.sound);
+          startLights(true);
         } else {
-          // Play lose sound when there's no win
-          // Reduced delay from 800ms to 400ms to play faster
-          setTimeout(() => {
-            // Use a direct Audio element for more control over the lose sound
-            try {
-              const loseAudio = new Audio('sounds/lose.wav');
-              loseAudio.volume = 1.0;
-              
-              // Start the audio at 0.2 seconds in to skip the intro part of the sound
-              // This makes it feel more immediate after a losing spin
-              loseAudio.currentTime = 0.2;
-              
-              loseAudio.play().catch(err => {
-                console.error("Error playing lose sound:", err);
-                // Fallback to original method if setting currentTime fails
-                playSound('lose');
-              });
-            } catch (e) {
-              console.error("Exception trying to play lose sound:", e);
-              // Fallback to original method
-              playSound('lose');
-            }
-          }, 400);
-          
+          playSound('lose');
           stopLights();
-          return false;
         }
+        updateDisplay();
+        setTimeout(() => {
+          state.spinning = false;
+          elements.spinButton.disabled = false;
+        }, 500);
       }
-      
-      // Show win message and celebrate
-      function showWinMessage(amount) {
-        // Flash lights more intensely
-        const lightInterval = setInterval(() => {
-          elements.lights.forEach(light => {
-            light.classList.toggle('on');
-          });
-        }, 100);
-        
-        // Store the interval ID in the win message element's dataset
-        elements.winMessage.dataset.lightIntervalId = lightInterval;
-        
-        // Update win display
-        elements.winDisplay.textContent = amount;
-        
-        // Show win message
-        elements.winValue.textContent = amount;
-        elements.winMessage.classList.add('show');
-        
-        // Setup continue button
-        elements.continueButton.onclick = () => {
-          elements.winMessage.classList.remove('show');
-          clearInterval(lightInterval);
-          stopLights();
-        };
+      function evaluateWin(symbols) {
+        if (symbols[0] === 'Original' && symbols[1] === 'Original' && symbols[2] === 'Original') {
+          return { amount: config.prizes.jackpot, sound: 'win3' };
+        }
+        if (symbols[0] === 'Octobiwan' && symbols[1] === 'Octobiwan' && symbols[2] === 'Octobiwan') {
+          return { amount: config.prizes.threeOctobiwan, sound: 'win2' };
+        }
+        if (symbols[0] === symbols[1] && symbols[1] === symbols[2]) {
+          return { amount: config.prizes.threeMatching, sound: 'win' };
+        }
+        if (symbols[0] === symbols[1] || symbols[1] === symbols[2] || symbols[0] === symbols[2]) {
+          return { amount: config.prizes.twoMatching, sound: 'win' };
+        }
+        return { amount: 0, sound: 'lose' };
       }
-      
-      // Flash lights
-      function startLights() {
-        let lightIndex = 0;
-        
-        const lightSequence = setInterval(() => {
-          // Turn off all lights
-          elements.lights.forEach(light => light.classList.remove('on'));
-          
-          // Turn on current light
-          elements.lights[lightIndex].classList.add('on');
-          
-          // Move to next light
-          lightIndex = (lightIndex + 1) % elements.lights.length;
-          
-          // If not spinning anymore, stop the lights
-          if (!state.spinning) {
-            clearInterval(lightSequence);
-          }
-        }, 100);
-      }
-      
-      // Stop lights
-      function stopLights() {
-        elements.lights.forEach(light => light.classList.remove('on'));
-      }
-      
-      // Update displays
       function updateDisplay() {
         elements.creditsDisplay.textContent = state.credits;
         elements.betDisplay.textContent = state.bet;
         elements.winDisplay.textContent = state.lastWin;
       }
-      
-      // Setup event listeners
-      function setupEventListeners() {
-        // Spin button
-        elements.spinButton.addEventListener('click', () => {
-          if (!state.spinning) {
-            // Added a small delay to ensure any previous sounds can complete
-            setTimeout(() => {
-              spinAllReels();
-            }, 50);
-          }
-        });
-        
-        // Paytable button
-        elements.paytableButton.addEventListener('click', () => {
-          elements.paytable.classList.toggle('show');
-        });
-        
-        // Continue button (after win)
-        elements.continueButton.addEventListener('click', () => {
-          elements.winMessage.classList.remove('show');
-        });
-        
-        // Lever pull
-        if (elements.lever) {
-          elements.lever.addEventListener('click', () => {
-            if (!state.spinning && state.canPull) {
-              state.canPull = false;
-              elements.lever.classList.add('pulled');
-              
-              // Animate lever return after pull
-              setTimeout(() => {
-                elements.lever.classList.remove('pulled');
-                state.canPull = true;
-              }, 1000);
-              
-              // Start spin with a small delay to ensure audio doesn't get interrupted
-              setTimeout(() => {
-                spinAllReels();
-              }, 50);
-            }
+      let lightInterval = null;
+      function startLights(winning) {
+        if (lightInterval) clearInterval(lightInterval);
+        elements.lights.forEach(light => light.classList.remove('on'));
+        let idx = 0;
+        lightInterval = setInterval(() => {
+          elements.lights.forEach((light, i) => {
+            light.classList.toggle('on', winning ? Math.random() > 0.5 : i === idx % elements.lights.length);
           });
+          idx++;
+        }, 100);
+      }
+      function stopLights() {
+        if (lightInterval) clearInterval(lightInterval);
+        elements.lights.forEach(light => light.classList.remove('on'));
+      }
+      elements.spinButton.addEventListener('click', spinAllReels);
+      elements.continueButton.addEventListener('click', () => {
+        elements.winMessage.classList.remove('show');
+        elements.winLine.classList.remove('highlight');
+        stopLights();
+      });
+      elements.paytableButton.addEventListener('click', () => {
+        elements.paytable.classList.toggle('show');
+      });
+      document.addEventListener('click', function(e) {
+        if (!elements.paytable.contains(e.target) && !elements.paytableButton.contains(e.target)) {
+          elements.paytable.classList.remove('show');
         }
-        
-        // Keyboard controls
-        document.addEventListener('keydown', (e) => {
-          if (e.code === 'Space' && !state.spinning) {
-            e.preventDefault(); // Prevent page scrolling
-            
-            // Start spin with a small delay to ensure audio doesn't get interrupted
+      });
+      if (elements.lever) {
+        elements.lever.addEventListener('click', function() {
+          if (!state.spinning && state.canPull) {
+            state.canPull = false;
+            elements.lever.classList.add('pulled');
             setTimeout(() => {
+              elements.lever.classList.remove('pulled');
               spinAllReels();
-            }, 50);
+              setTimeout(() => { state.canPull = true; }, 800);
+            }, 400);
           }
         });
       }
-      
-      // Initialize game
-      function init() {
-        // Try to initialize audio right away
-        initAudio();
-        
-        // Set up the rest of the game
-        initializeSlots();
-        updateDisplay();
-        setupEventListeners();
-      }
-      
-      // Start the game
-      init();
+      initializeSlots();
+      updateDisplay();
     });
   </script>
 </body>
