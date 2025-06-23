@@ -49,12 +49,7 @@
       --win-color: #4CAF50;
     }
     
-    /* Dark Mode Body */
-    body {
-      background: radial-gradient(circle at center, #111111 0%, #000000 100%);
-    }
-    
-    /* Light Mode Body */
+    /* Light Mode Body - only applied when light-mode class is present */
     body.light-mode {
       background: radial-gradient(circle at center, #F5F5F5 0%, #FFFFFF 100%);
     }
@@ -324,7 +319,7 @@
     }
     
     body {
-      background: radial-gradient(circle at center, #111111 0%, #000000 100%);
+      background: #000000; /* Solid black background for dark mode */
       color: var(--text-color);
       overflow: hidden;
       height: 100vh;
@@ -445,7 +440,7 @@
       left: -20px;
       right: -20px;
       bottom: -20px;
-      background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+      background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.3) 0%, rgba(0, 0, 0, 0) 70%);
       border-radius: 50px;
       z-index: -1;
       animation: glow-pulse 3s ease-in-out infinite alternate;
