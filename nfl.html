@@ -3,157 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>NFL Slots - NFL Team Logo Slot Machine</title>
-  <style>
-    :root {
-      --primary-bg: #013369;
-      --secondary-bg: #014A8C;
-      --text-color: #FFFFFF;
-      --highlight-color: #D50A0A;
-      --gold-color: #FFB612;
-      --win-color: #00B140;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      user-select: none;
-    }
-
-    body {
-      background: var(--primary-bg);
-      color: var(--text-color);
-      min-height: 100vh;
-      padding-top: 60px;
-    }
-
-    .app-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      background: var(--secondary-bg);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 20px;
-      z-index: 1000;
-    }
-
-    .game-title {
-      font-size: 24px;
-      font-weight: bold;
-      color: var(--gold-color);
-    }
-
-    .slot-machine-container {
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 20px;
-    }
-
-    .slot-machine {
-      background: var(--secondary-bg);
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    }
-
-    .reels {
-      display: flex;
-      justify-content: space-between;
-      background: var(--primary-bg);
-      padding: 20px;
-      border-radius: 10px;
-    }
-
-    .reel {
-      width: 32%;
-      height: 210px;
-      background: var(--secondary-bg);
-      border-radius: 10px;
-      overflow: hidden;
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .symbol-track {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 9999px;
-      transition: transform 0.5s cubic-bezier(.45,1.8,.5,1);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .symbol-track img {
-      width: 100%;
-      height: 70px;
-      object-fit: contain;
-      background: #fff1;
-      border-bottom: 1px solid #01336933;
-    }
-
-    .symbol-track.spinning {
-      filter: blur(4px) brightness(1.2);
-    }
-
-    .symbol-track img.win {
-      box-shadow: 0 0 16px 6px var(--win-color), 0 0 4px 2px var(--gold-color);
-      z-index: 2;
-      border-radius: 8px;
-    }
-
-    .controls {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 20px;
-    }
-
-    .spin-button {
-      background: var(--highlight-color);
-      color: var(--text-color);
-      border: none;
-      padding: 15px 40px;
-      font-size: 20px;
-      border-radius: 30px;
-      cursor: pointer;
-    }
-
-    .spin-button:disabled {
-      background: #666;
-      cursor: not-allowed;
-    }
-
-    .win-overlay {
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      color: var(--gold-color);
-      margin-top: 20px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .win-overlay.visible {
-      opacity: 1;
-    }
-
-    .credits-display {
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      color: var(--gold-color);
-      margin-top: 20px;
-    }
-  </style>
+  <title>NFL Slots - Enhanced NFL Team Logo Slot Machine</title>
+  <link rel="stylesheet" href="nfl-styles.css">
 </head>
 <body>
   <header class="app-header">
@@ -164,121 +15,159 @@
 
   <div class="slot-machine-container">
     <div class="slot-machine">
-      <div class="reels">
-        <div class="reel" id="reel1"><div class="symbol-track"></div></div>
-        <div class="reel" id="reel2"><div class="symbol-track"></div></div>
-        <div class="reel" id="reel3"><div class="symbol-track"></div></div>
+      <!-- LED Strip -->
+      <div class="led-strip">
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
       </div>
+
+      <!-- Machine Header -->
+      <div class="machine-header">
+        <div class="machine-title">NFL Championship Slots</div>
+        <div class="machine-subtitle">Official NFL Team Slot Machine</div>
+      </div>
+
+      <!-- Display Panels -->
+      <div style="display: flex; justify-content: space-between; margin-bottom: 20px; gap: 15px;">
+        <div class="display-panel jackpot-display">
+          <div style="font-size: 16px; margin-bottom: 5px;">JACKPOT</div>
+          <div id="jackpot">50,000</div>
+        </div>
+        <div class="display-panel credits-display">
+          <div style="font-size: 16px; margin-bottom: 5px;">CREDITS</div>
+          <div id="credits">1000</div>
+        </div>
+        <div class="display-panel">
+          <div style="font-size: 16px; margin-bottom: 5px;">WIN</div>
+          <div id="win-amount">0</div>
+        </div>
+      </div>
+
+      <!-- Reels Container -->
+      <div class="reels-container">
+        <div class="reels">
+          <div class="reel" id="reel1">
+            <div class="symbol-track"></div>
+          </div>
+          <div class="reel" id="reel2">
+            <div class="symbol-track"></div>
+          </div>
+          <div class="reel" id="reel3">
+            <div class="symbol-track"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enhanced Controls -->
       <div class="controls">
+        <!-- Betting Controls -->
+        <div class="bet-controls">
+          <div class="bet-display">
+            <div style="font-size: 12px; margin-bottom: 2px;">BET</div>
+            <div id="bet-amount">25</div>
+          </div>
+          <div class="bet-buttons">
+            <button class="bet-button bet-down">-</button>
+            <button class="bet-button max-bet">MAX</button>
+            <button class="bet-button bet-up">+</button>
+          </div>
+        </div>
+
+        <!-- Main Spin Button -->
         <button class="spin-button">SPIN</button>
+
+        <!-- Autoplay Controls -->
+        <div class="autoplay-controls">
+          <button class="autoplay-button">Auto Play</button>
+          <button class="bet-button paytable-button">Paytable</button>
+        </div>
       </div>
+
+      <!-- Win Overlay -->
       <div class="win-overlay" id="winOverlay"></div>
     </div>
-    <div id="credits" class="credits-display">Credits: 1000</div>
+
+    <!-- Slot Machine Lever -->
+    <div class="slot-lever">
+      <div class="lever-base"></div>
+      <div class="lever-handle">
+        <div class="lever-knob"></div>
+      </div>
+    </div>
   </div>
 
-  <script>
-    let credits = 1000;
-    const teams = [
-      { name: 'NFL Shield', image: './logos/nfl.png', value: 15, isWild: true, isPremium: true },
-      { name: 'Trophy', image: './logos/trophy.png', value: 2000, isJackpot: true },
-      { name: 'AFC', image: './logos/afc.png', value: 1000, isPremium: true },
-      { name: 'NFC', image: './logos/nfc.png', value: 1000, isPremium: true },
-      { name: 'Falcons', image: './logos/falcons.png', value: 5 },
-      { name: 'Patriots', image: './logos/patriots.png', value: 10 },
-      { name: 'Packers', image: './logos/packers.png', value: 10, isPremium: true },
-    ];
+  <!-- Paytable Modal -->
+  <div class="paytable">
+    <h3>🏆 NFL Slots Paytable 🏆</h3>
+    
+    <div class="paytable-item">
+      <div style="display: flex; align-items: center;">
+        <img src="./logos/trophy.png" alt="Trophy">
+        <span>3x Trophy (Jackpot)</span>
+      </div>
+      <span style="color: var(--led-red); font-weight: bold;">50,000 Credits</span>
+    </div>
+    
+    <div class="paytable-item">
+      <div style="display: flex; align-items: center;">
+        <img src="./logos/nfl.png" alt="NFL Shield">
+        <span>3x NFL Shield (Wild)</span>
+      </div>
+      <span style="color: var(--led-gold); font-weight: bold;">Bet x 15</span>
+    </div>
+    
+    <div class="paytable-item">
+      <div style="display: flex; align-items: center;">
+        <img src="./logos/afc.png" alt="AFC">
+        <span>3x AFC Conference</span>
+      </div>
+      <span style="color: var(--led-green); font-weight: bold;">Bet x 10</span>
+    </div>
+    
+    <div class="paytable-item">
+      <div style="display: flex; align-items: center;">
+        <img src="./logos/nfc.png" alt="NFC">
+        <span>3x NFC Conference</span>
+      </div>
+      <span style="color: var(--led-green); font-weight: bold;">Bet x 10</span>
+    </div>
+    
+    <div class="paytable-item">
+      <div style="display: flex; align-items: center;">
+        <img src="./logos/patriots.png" alt="Team Logo">
+        <span>3x Any Team Logo</span>
+      </div>
+      <span style="color: var(--led-blue); font-weight: bold;">Bet x 3-6</span>
+    </div>
+    
+    <div class="paytable-item">
+      <div style="display: flex; align-items: center;">
+        <span style="margin-left: 50px;">2x Any Matching</span>
+      </div>
+      <span style="color: var(--text-color);">Bet x 1</span>
+    </div>
+    
+    <div style="margin-top: 20px; padding: 15px; background: rgba(255, 215, 0, 0.1); border-radius: 10px; text-align: center;">
+      <div style="font-size: 14px; color: var(--gold-color); margin-bottom: 10px;">
+        🎮 CONTROLS 🎮
+      </div>
+      <div style="font-size: 12px; line-height: 1.6;">
+        SPACE: Spin • ↑/↓: Adjust Bet • M: Max Bet<br>
+        A: Autoplay • P: Paytable • Click Lever to Spin
+      </div>
+    </div>
+    
+    <button class="paytable-close">Close Paytable</button>
+  </div>
 
-    const reels = [
-      document.getElementById('reel1'),
-      document.getElementById('reel2'),
-      document.getElementById('reel3')
-    ];
-
-    const spinButton = document.querySelector('.spin-button');
-    const winOverlay = document.getElementById('winOverlay');
-
-    function getRandomSymbol() {
-      return teams[Math.floor(Math.random() * teams.length)];
-    }
-
-    function getRandomReelSymbols() {
-      return [getRandomSymbol(), getRandomSymbol(), getRandomSymbol()];
-    }
-
-    function setReelSymbols(reelIndex, symbols) {
-      const track = reels[reelIndex].querySelector('.symbol-track');
-      track.innerHTML = symbols.map(s => `<img src="${s.image}" alt="${s.name}">`).join('');
-    }
-
-    function calculateWin(grid) {
-      const lines = [
-        [[0,0],[1,0],[2,0]],
-        [[0,1],[1,1],[2,1]],
-        [[0,2],[1,2],[2,2]],
-        [[0,0],[0,1],[0,2]],
-        [[1,0],[1,1],[1,2]],
-        [[2,0],[2,1],[2,2]],
-        [[0,0],[1,1],[2,2]],
-        [[2,0],[1,1],[0,2]],
-      ];
-
-      for (const line of lines) {
-        const symbols = line.map(([c,r]) => grid[c][r]);
-        const wilds = symbols.filter(s => s.isWild).length;
-        const nonWilds = symbols.filter(s => !s.isWild);
-        if (nonWilds.length === 0) continue;
-        const base = nonWilds[0];
-        const match = nonWilds.filter(s => s.name === base.name).length + wilds;
-
-        if (match === 3) {
-          const type = base.isJackpot ? 'jackpot' : base.isPremium ? 'premium' : 'three-match';
-          const value = type === 'jackpot' ? 2000 : type === 'premium' ? 1000 : 500;
-          return { win: value, type, line };
-        }
-      }
-
-      return { win: 0, type: 'no-win', line: [] };
-    }
-
-    async function spin() {
-      if (credits < 25) {
-        alert("Not enough credits!");
-        return;
-      }
-
-      credits -= 25;
-      document.getElementById('credits').textContent = `Credits: ${credits}`;
-      spinButton.disabled = true;
-      winOverlay.classList.remove('visible');
-
-      const final = [getRandomReelSymbols(), getRandomReelSymbols(), getRandomReelSymbols()];
-      for (let i = 0; i < 3; i++) {
-        setReelSymbols(i, final[i]);
-      }
-
-      await new Promise(res => setTimeout(res, 500));
-
-      const result = calculateWin(final);
-      if (result.win > 0) {
-        credits += result.win;
-        document.getElementById('credits').textContent = `Credits: ${credits}`;
-        winOverlay.textContent = `WIN ${result.win} POINTS!`;
-        winOverlay.classList.add('visible');
-
-        for (const [col, row] of result.line) {
-          const img = reels[col].querySelectorAll('img')[row];
-          if (img) img.classList.add('win');
-        }
-
-        setTimeout(() => winOverlay.classList.remove('visible'), 2000);
-      }
-
-      spinButton.disabled = false;
-    }
-
-    reels.forEach((reel, i) => setReelSymbols(i, getRandomReelSymbols()));
-    spinButton.addEventListener('click', spin);
-  </script>
+  <script src="nfl-slots.js"></script>
 </body>
 </html>
