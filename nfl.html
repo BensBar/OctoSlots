@@ -5,7 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NFL 4K Slots</title>
     <style>
-        /* ... (previous CSS remains the same) ... */
+        :root {
+            --machine-width: 3840px;
+            --machine-height: 2160px;
+            --reel-size: 400px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .slot-machine-4k {
+            width: 100vw;
+            max-width: var(--machine-width);
+            height: auto;
+            aspect-ratio: 16/9;
+            background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
+            position: relative;
+            border-radius: 30px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .machine-frame {
+            background: linear-gradient(135deg, #444, #222);
+            border-radius: 20px;
+            padding: 20px;
+            height: 100%;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #reels-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 40px;
+            background: #000;
+            border-radius: 15px;
+            margin: auto;
+            width: fit-content;
+            flex-grow: 1;
+        }
+
         .reel {
             width: var(--reel-size);
             height: var(--reel-size);
@@ -32,6 +83,7 @@
             align-items: center;
             padding: 10%;
             box-sizing: border-box;
+            background: #fff;
         }
 
         .symbol img {
@@ -40,14 +92,128 @@
             object-fit: contain;
         }
 
-        /* ... (rest of CSS remains the same) ... */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.8);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .credits {
+            color: #ff0;
+            font-size: 32px;
+            background: #000;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 2px solid #333;
+            text-shadow: 0 0 10px rgba(255,255,0,0.5);
+        }
+
+        .bet-display {
+            color: #fff;
+            font-size: 24px;
+            margin: 0 20px;
+        }
+
+        button {
+            background: linear-gradient(to bottom, #4a4a4a, #3a3a3a);
+            border: none;
+            color: #fff;
+            padding: 15px 30px;
+            font-size: 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0 10px;
+        }
+
+        button:hover {
+            background: linear-gradient(to bottom, #5a5a5a, #4a4a4a);
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background: #333;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #spin-button {
+            background: linear-gradient(to bottom, #ff4444, #cc0000);
+            font-size: 32px;
+            padding: 20px 40px;
+        }
+
+        #spin-button:hover {
+            background: linear-gradient(to bottom, #ff5555, #dd0000);
+        }
+
+        #spin-button:disabled {
+            background: linear-gradient(to bottom, #882222, #661111);
+        }
+
+        .bet-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        @media (max-width: 3840px) {
+            :root {
+                --reel-size: calc(min(25vw, 400px));
+            }
+        }
+
+        @keyframes win-flash {
+            0% { box-shadow: 0 0 20px #ff0; }
+            50% { box-shadow: 0 0 40px #ff0; }
+            100% { box-shadow: 0 0 20px #ff0; }
+        }
+
+        .win-celebration {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 48px;
+            text-shadow: 0 0 10px #ff0;
+            animation: win-flash 1s ease-in-out infinite;
+            z-index: 100;
+        }
     </style>
 </head>
 <body>
-    <!-- ... (HTML structure remains the same) ... -->
+    <div class="slot-machine-4k">
+        <div class="machine-frame">
+            <div id="reels-container">
+                <div class="reel" id="reel1">
+                    <div class="reel-strip"></div>
+                </div>
+                <div class="reel" id="reel2">
+                    <div class="reel-strip"></div>
+                </div>
+                <div class="reel" id="reel3">
+                    <div class="reel-strip"></div>
+                </div>
+            </div>
+            <div class="controls">
+                <div class="credits">Credits: <span id="credits">1000</span></div>
+                <div class="bet-controls">
+                    <button id="bet-down">-</button>
+                    <div class="bet-display">Bet: <span id="current-bet">10</span></div>
+                    <button id="bet-up">+</button>
+                    <button id="bet-max">Max Bet</button>
+                </div>
+                <button id="spin-button">SPIN</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Game configuration with all NFL teams
         const CONFIG = {
             reels: 3,
             symbols: [
@@ -60,18 +226,18 @@
                 'falcons', 'panthers', 'saints', 'buccaneers',
                 'cardinals', 'rams', 'seahawks', '49ers'
             ],
-            paylines: 25,
-            minBet: 1,
+            minBet: 10,
             maxBet: 100,
-            credits: 1000
+            betStep: 10,
+            initialCredits: 1000
         };
 
         class NFLSlots {
             constructor() {
-                this.credits = CONFIG.credits;
+                this.credits = CONFIG.initialCredits;
                 this.currentBet = CONFIG.minBet;
                 this.spinning = false;
-                this.symbols = [];
+                this.symbols = {};
                 this.reelStrips = [];
                 this.init();
             }
@@ -79,18 +245,18 @@
             async init() {
                 await this.preloadImages();
                 this.setupReels();
-                this.updateCredits();
+                this.updateDisplay();
                 this.setupEventListeners();
             }
 
             async preloadImages() {
                 const preloadPromises = CONFIG.symbols.map(team => {
-                    return new Promise((resolve, reject) => {
+                    return new Promise((resolve) => {
                         const img = new Image();
                         img.onload = () => resolve(img);
                         img.onerror = () => {
                             console.warn(`Failed to load logo for ${team}`);
-                            resolve(null); // Don't reject, just mark as unavailable
+                            resolve(null);
                         };
                         img.src = `logos/${team}.png`;
                         this.symbols[team] = img;
@@ -101,13 +267,10 @@
             }
 
             setupReels() {
-                const reels = document.querySelectorAll('.reel');
-                reels.forEach((reel, i) => {
-                    const strip = document.createElement('div');
-                    strip.className = 'reel-strip';
-                    this.reelStrips[i] = strip;
-                    
-                    // Create double set of symbols for seamless spinning
+                this.reelStrips = Array.from(document.querySelectorAll('.reel-strip'));
+                this.reelStrips.forEach(strip => {
+                    strip.innerHTML = '';
+                    // Double the symbols for seamless spinning
                     [...CONFIG.symbols, ...CONFIG.symbols].forEach(team => {
                         const symbol = document.createElement('div');
                         symbol.className = 'symbol';
@@ -115,24 +278,42 @@
                             const img = this.symbols[team].cloneNode();
                             symbol.appendChild(img);
                         } else {
-                            symbol.textContent = team; // Fallback if image failed to load
+                            symbol.textContent = team;
                         }
                         strip.appendChild(symbol);
                     });
-                    
-                    reel.appendChild(strip);
                 });
             }
 
-            updateCredits() {
+            updateDisplay() {
                 document.getElementById('credits').textContent = this.credits;
+                document.getElementById('current-bet').textContent = this.currentBet;
+                
+                const spinButton = document.getElementById('spin-button');
+                spinButton.disabled = this.spinning || this.credits < this.currentBet;
             }
 
             setupEventListeners() {
                 document.getElementById('spin-button').addEventListener('click', () => this.spin());
-                document.getElementById('bet-one').addEventListener('click', () => this.adjustBet(1));
+                document.getElementById('bet-up').addEventListener('click', () => this.adjustBet(CONFIG.betStep));
+                document.getElementById('bet-down').addEventListener('click', () => this.adjustBet(-CONFIG.betStep));
                 document.getElementById('bet-max').addEventListener('click', () => this.setBetMax());
-                document.getElementById('lever').addEventListener('click', () => this.spin());
+            }
+
+            adjustBet(amount) {
+                if (this.spinning) return;
+                
+                this.currentBet = Math.max(
+                    CONFIG.minBet,
+                    Math.min(CONFIG.maxBet, this.currentBet + amount)
+                );
+                this.updateDisplay();
+            }
+
+            setBetMax() {
+                if (this.spinning) return;
+                this.currentBet = CONFIG.maxBet;
+                this.updateDisplay();
             }
 
             spin() {
@@ -140,9 +321,9 @@
                 
                 this.spinning = true;
                 this.credits -= this.currentBet;
-                this.updateCredits();
+                this.updateDisplay();
 
-                const spinDurations = [2, 2.2, 2.4]; // Different durations for each reel
+                const spinDurations = [2, 2.2, 2.4];
                 const finalPositions = this.reelStrips.map(() => 
                     -(Math.floor(Math.random() * CONFIG.symbols.length) * 100)
                 );
@@ -152,15 +333,14 @@
                     strip.style.transform = `translateY(${finalPositions[i]}%)`;
                 });
 
-                // After the last reel stops
                 setTimeout(() => {
                     this.spinning = false;
                     this.checkWin();
-                }, Math.max(...spinDurations) * 1000);
+                    this.updateDisplay();
+                }, Math.max(...spinDurations) * 1000 + 100);
             }
 
             checkWin() {
-                // Get visible symbols
                 const visibleSymbols = this.reelStrips.map(strip => {
                     const transform = strip.style.transform;
                     const pos = parseInt(transform.match(/-?\d+/)[0]);
@@ -168,47 +348,31 @@
                     return CONFIG.symbols[index];
                 });
 
-                // Check for matches
                 const allMatch = visibleSymbols.every(sym => sym === visibleSymbols[0]);
                 if (allMatch) {
                     const winAmount = this.currentBet * 10;
                     this.credits += winAmount;
-                    this.updateCredits();
                     this.celebrateWin(winAmount);
                 }
             }
 
             celebrateWin(amount) {
                 const celebration = document.createElement('div');
-                celebration.style.position = 'absolute';
-                celebration.style.top = '50%';
-                celebration.style.left = '50%';
-                celebration.style.transform = 'translate(-50%, -50%)';
-                celebration.style.color = '#fff';
-                celebration.style.fontSize = '48px';
-                celebration.style.textShadow = '0 0 10px #ff0';
+                celebration.className = 'win-celebration';
                 celebration.textContent = `WIN! +${amount}`;
                 
                 document.querySelector('.slot-machine-4k').appendChild(celebration);
-                setTimeout(() => celebration.remove(), 2000);
-
-                // Flash the winning symbols
+                
                 this.reelStrips.forEach(strip => {
                     strip.style.animation = 'win-flash 1s ease-in-out 3';
                 });
-            }
 
-            adjustBet(amount) {
-                if (!this.spinning) {
-                    this.currentBet = Math.max(CONFIG.minBet, 
-                                            Math.min(CONFIG.maxBet, this.currentBet + amount));
-                }
-            }
-
-            setBetMax() {
-                if (!this.spinning) {
-                    this.currentBet = CONFIG.maxBet;
-                }
+                setTimeout(() => {
+                    celebration.remove();
+                    this.reelStrips.forEach(strip => {
+                        strip.style.animation = '';
+                    });
+                }, 3000);
             }
         }
 
