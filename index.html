@@ -434,6 +434,7 @@
       padding: 30px;
       overflow: visible;
       max-width: none;
+      cursor: pointer; /* Add pointer cursor to indicate interactivity */
     }
     
     .machine-glow {
@@ -538,6 +539,16 @@
       box-shadow: 
         inset 0 0 30px rgba(0, 0, 0, 0.8),
         0 4px 8px rgba(0, 0, 0, 0.3);
+      cursor: pointer; /* Add pointer cursor */
+      transition: all 0.2s ease;
+    }
+    
+    /* Add visual feedback for touch interaction */
+    .reels-container:active {
+      transform: scale(0.98);
+      box-shadow: 
+        inset 0 0 40px rgba(0, 0, 0, 0.9),
+        0 2px 4px rgba(0, 0, 0, 0.2);
     }
     
     .reel {
@@ -602,16 +613,18 @@
       animation: spin-blur 0.05s infinite linear;
     }
     
+    /* Spinning animations */
     @keyframes spin-blur {
-      0%, 100% { 
-        filter: blur(2px) brightness(0.8); 
-        transform: scale(0.95);
-      }
-      50% { 
-        filter: blur(4px) brightness(0.6); 
-        transform: scale(0.9);
-      }
+      0% { filter: blur(0px); }
+      50% { filter: blur(3px); }
+      100% { filter: blur(0px); }
     }
+    
+    .reel.spinning .slot-item img {
+      animation: spin-blur 0.1s infinite;
+    }
+    
+    /* Win line highlight */
     .win-line {
       position: absolute;
       left: 0;
@@ -647,6 +660,17 @@
         opacity: 1;
         box-shadow: 0 0 50px var(--green-led), 0 0 100px var(--green-led);
       }
+    }
+    
+    /* Vibration simulation */
+    .slot-machine.vibrate {
+      animation: vibrate 0.1s linear infinite;
+    }
+    
+    @keyframes vibrate {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-2px); }
+      75% { transform: translateX(2px); }
     }
     .controls {
       display: flex;
@@ -728,7 +752,7 @@
       background: linear-gradient(135deg, #FF3333 0%, #FF0000 50%, #CC0000 100%);
     }
     
-    .spin-button:active {
+    .spin-button:active, .spin-button.touch-active {
       transform: translateY(2px);
       box-shadow: 
         0 4px 15px rgba(0, 0, 0, 0.4),
@@ -744,547 +768,178 @@
         inset 0 0 10px rgba(255, 255, 255, 0.05);
       transform: translateY(0);
     }
-    .spin-button::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(45deg, 
-        transparent 30%, 
-        rgba(255,255,255,0.3) 50%, 
-        transparent 70%);
-      pointer-events: none;
-      transform: translateX(-100%);
-      transition: transform 0.6s;
-    }
-    
-    .spin-button:hover::after {
-      transform: translateX(100%);
-    }
-    .win-message {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: linear-gradient(135deg, var(--gold) 0%, #DAA520 100%);
-      padding: 40px;
-      border-radius: 20px;
-      border: 6px solid var(--chrome);
-      text-align: center;
-      z-index: 20;
+    /* Light Mode Win Message */
+    body.light-mode .win-message {
+      background: linear-gradient(135deg, var(--gold) 0%, #F57C00 100%) !important;
+      border: 6px solid #FFFFFF !important;
+      color: #FFFFFF !important;
       box-shadow: 
-        0 0 50px rgba(255, 215, 0, 0.8),
-        0 0 100px rgba(255, 215, 0, 0.4),
+        0 0 50px rgba(255, 152, 0, 0.8),
+        0 0 100px rgba(255, 152, 0, 0.4),
         inset 0 0 20px rgba(255, 255, 255, 0.3);
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.5s ease;
-      animation: win-message-glow 2s ease-in-out infinite alternate;
     }
     
-    .win-message.show {
-      opacity: 1;
-      visibility: visible;
+    body.light-mode .win-message h2 {
+      color: #FFFFFF !important;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     }
     
-    @keyframes win-message-glow {
-      0% { 
-        box-shadow: 
-          0 0 50px rgba(255, 215, 0, 0.8),
-          0 0 100px rgba(255, 215, 0, 0.4),
-          inset 0 0 20px rgba(255, 255, 255, 0.3);
-      }
-      100% { 
-        box-shadow: 
-          0 0 70px rgba(255, 215, 0, 1),
-          0 0 140px rgba(255, 215, 0, 0.6),
-          inset 0 0 30px rgba(255, 255, 255, 0.4);
-      }
+    body.light-mode .win-message p {
+      color: #FFFFFF !important;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
     }
     
-    .win-message h2 {
-      color: var(--machine-face);
-      font-size: 48px;
-      margin-bottom: 20px;
-      font-weight: 900;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-      letter-spacing: 3px;
+    body.light-mode .win-message button {
+      background: linear-gradient(135deg, var(--red-led) 0%, #D32F2F 100%);
+      border: 4px solid #FFFFFF;
     }
     
-    .win-message p {
-      color: var(--machine-face);
-      font-size: 24px;
-      margin-bottom: 25px;
-      font-weight: bold;
+    /* Light Mode Paytable */
+    body.light-mode .paytable {
+      background: linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%) !important;
+      border: 4px solid var(--chrome) !important;
+      color: var(--text-color) !important;
+      box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.15),
+        inset 0 0 20px rgba(33, 150, 243, 0.1);
+    }
+    
+    body.light-mode .paytable h3 {
+      color: var(--gold) !important;
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     }
     
-    .win-message button {
-      background: linear-gradient(135deg, var(--red-led) 0%, #CC0000 100%);
-      color: white;
-      border: 4px solid var(--chrome);
-      border-radius: 15px;
-      padding: 15px 30px;
-      font-size: 20px;
-      font-weight: bold;
-      cursor: pointer;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      transition: all 0.2s;
-    }
-    
-    .win-message button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-    }
-    .paytable {
-      position: absolute;
-      top: 30px;
-      right: 30px;
-      background: linear-gradient(135deg, var(--machine-face) 0%, #333 100%);
-      border: 4px solid var(--chrome);
-      border-radius: 15px;
-      padding: 20px;
-      font-size: 16px;
-      z-index: 30;
-      transform: scale(0);
-      transform-origin: top right;
-      transition: transform 0.4s ease;
-      box-shadow: 
-        0 8px 20px rgba(0, 0, 0, 0.5),
-        inset 0 0 20px rgba(255, 215, 0, 0.1);
-      min-width: 280px;
-    }
-    
-    .paytable-button {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: linear-gradient(135deg, var(--gold) 0%, #DAA520 100%);
-      color: var(--machine-face);
-      border: 4px solid var(--chrome);
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 24px;
-      font-weight: bold;
-      cursor: pointer;
-      z-index: 31;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      transition: all 0.2s;
-    }
-    
-    .paytable-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-    }
-    
-    .paytable.show {
-      transform: scale(1);
-    }
-    
-    .paytable h3 {
-      color: var(--gold);
-      margin-bottom: 15px;
-      font-size: 20px;
-      font-weight: bold;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-      text-align: center;
-      letter-spacing: 1px;
-    }
-    
-    .paytable-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 12px;
-      padding: 8px;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 8px;
+    body.light-mode .paytable-item {
+      background: rgba(33, 150, 243, 0.05);
       border: 1px solid var(--chrome);
     }
     
-    .paytable-item img {
-      width: 40px;
-      height: 40px;
-      margin-right: 15px;
-      filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
+    body.light-mode .paytable-item span {
+      color: var(--text-color) !important;
+      text-shadow: none;
     }
     
-    .paytable-item span {
-      color: var(--text-color);
-      font-weight: bold;
+    body.light-mode .paytable-button {
+      background: linear-gradient(135deg, var(--gold) 0%, #F57C00 100%) !important;
+      border: 4px solid var(--chrome) !important;
+      color: #FFFFFF !important;
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
     }
-    .lever-container {
-      position: absolute;
-      right: -60px;
-      top: 50%;
-      transform: translateY(-50%);
-      height: 250px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 5;
+    
+    /* Dark Mode Specific Overrides */
+    body:not(.light-mode) .slot-machine {
+      border: 8px solid #000 !important;
     }
     
-    .lever-base {
-      width: 60px;
-      height: 100px;
-      background: linear-gradient(135deg, var(--chrome) 0%, #999 100%);
-      border-radius: 15px 15px 0 0;
-      position: relative;
-      border: 3px solid #666;
-      box-shadow: 
-        0 4px 8px rgba(0, 0, 0, 0.3),
-        inset 0 0 10px rgba(255, 255, 255, 0.2);
+    body:not(.light-mode) .machine-top {
+      border: 4px solid #000 !important;
     }
     
-    .lever {
-      width: 30px;
-      height: 150px;
-      background: linear-gradient(135deg, var(--red-led) 0%, #CC0000 50%, #AA0000 100%);
-      border-radius: 15px;
-      border: 3px solid var(--chrome);
-      position: absolute;
-      top: 0;
-      left: 15px;
-      transform-origin: top center;
-      transform: rotate(0deg);
-      transition: transform 0.4s ease;
-      cursor: pointer;
-      box-shadow: 
-        0 4px 8px rgba(0, 0, 0, 0.3),
-        inset 0 0 10px rgba(255, 255, 255, 0.2);
+    body:not(.light-mode) .reels-container {
+      border: 4px solid #000 !important;
     }
     
-    .lever::after {
-      content: '';
-      position: absolute;
-      bottom: -20px;
-      left: -5px;
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, var(--red-led) 0%, #CC0000 100%);
-      border-radius: 50%;
-      border: 3px solid var(--chrome);
-      box-shadow: 
-        0 4px 8px rgba(0, 0, 0, 0.3),
-        inset 0 0 10px rgba(255, 255, 255, 0.2);
+    body:not(.light-mode) .reel {
+      border: 3px solid #000 !important;
     }
     
-    .lever.pulled {
-      transform: rotate(45deg);
+    body:not(.light-mode) .controls {
+      border: 4px solid #000 !important;
     }
     
-    .lever:hover {
-      background: linear-gradient(135deg, #FF3333 0%, var(--red-led) 50%, #CC0000 100%);
-    }
-    audio {
-      display: none;
+    body:not(.light-mode) .score-card {
+      border: 3px solid #000 !important;
     }
     
-    /* iPhone and Mobile Optimizations */
-    @media (max-width: 480px) {
-      .slot-machine {
-        width: 95vw;
-        height: 85vh;
-        padding: 15px;
-      }
-      
-      .machine-top {
-        margin-bottom: 15px;
-        padding: 15px;
-      }
-      
-      .jackpot-display {
-        font-size: 24px;
-      }
-      
-      .reels-container {
-        gap: 10px;
-        padding: 15px;
-      }
-      
-      .reel {
-        height: 180px;
-      }
-      
+    body:not(.light-mode) .spin-button {
+      border: 6px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .win-message {
+      border: 6px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .win-message button {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) #theme-toggle {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .paytable-button {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .paytable {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .paytable-item {
+      border: 1px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .light {
+      border: 2px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .lever {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .lever::after {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .lever-base {
+      border: 3px solid #000 !important;
+    }
+    /* Touchscreen optimizations for the spin button */
+    @media (hover: none) and (pointer: coarse) {
+      /* This media query targets touch devices */
       .spin-button {
-        padding: 20px 40px;
-        font-size: 24px;
-        min-width: 160px;
-        min-height: 60px;
+        padding: 30px 65px; /* Increased padding for larger touch target */
+        font-size: 36px;    /* Larger text */
+        min-width: 220px;   /* Wider button */
+        min-height: 100px;  /* Taller button */
+        /* Add a subtle indicator that the button is touchable */
+        box-shadow: 
+          0 8px 20px rgba(0, 0, 0, 0.5),
+          inset 0 0 20px rgba(255, 255, 255, 0.2),
+          0 0 15px rgba(255, 0, 0, 0.3);
       }
       
-      .score-display {
-        flex-direction: column;
-        gap: 10px;
+      /* Improve tap highlight behavior */
+      .spin-button.touch-active {
+        transform: translateY(3px) scale(0.98);
+        box-shadow: 
+          0 4px 10px rgba(0, 0, 0, 0.4),
+          inset 0 0 15px rgba(255, 255, 255, 0.1);
+        transition: transform 0.1s ease, box-shadow 0.1s ease;
       }
-      
-      .score-card {
-        padding: 12px 16px;
-      }
-      
-      .score-value {
-        font-size: 24px;
-      }
-      
-      .paytable {
-        right: 10px;
-        top: 10px;
-        min-width: 240px;
-        font-size: 14px;
-      }
-      
-      .paytable-button {
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
-      }
-    }
-    
-    /* iPhone landscape */
-    @media (max-width: 896px) and (orientation: landscape) {
-      .slot-machine {
-        height: 90vh;
-        width: 80vw;
-      }
-      
-      .reel {
-        height: 140px;
-      }
-      
-      .score-display {
-        flex-direction: row;
-      }
-    }
-    
-    /* iPhone portrait */
-    @media (max-width: 430px) and (orientation: portrait) {
-      .app-header {
-        height: 60px;
-        padding: 0 15px;
-      }
-      
-      .game-title {
-        font-size: 20px;
-      }
-      
-      .user-info, .date-info {
-        font-size: 14px;
-      }
-      
-      .slot-machine {
-        width: 98vw;
-        height: 80vh;
-        padding: 10px;
-      }
-      
-      .reel {
-        height: 160px;
-      }
-      
-      .spin-button {
-        padding: 15px 30px;
-        font-size: 20px;
-        min-width: 140px;
-        min-height: 50px;
-      }
-    }
-    
-    /* Touchscreen Optimizations */
-    @media (max-width: 1300px) {
-      .slot-machine {
-        width: 90vw;
-        height: 85vh;
-        max-width: 1200px;
-      }
-      
-      .lever-container {
-        display: none;
-      }
-    }
-    
-    @media (max-height: 1100px) {
-      .slot-machine {
-        height: 80vh;
-      }
-      
-      .reel {
-        height: 250px;
-      }
-      
-      .jackpot-display {
-        font-size: 36px;
-      }
-    }
-    
-    @media (max-width: 900px) {
-      .reels-container { 
-        gap: 15px; 
-        padding: 15px;
-      }
-      
-      .reel { 
-        height: 220px; 
-      }
-      
-      .slot-machine { 
-        padding: 20px; 
-      }
-      
-      .spin-button { 
-        padding: 20px 50px; 
-        font-size: 28px; 
-        min-width: 180px;
-        min-height: 70px;
-      }
-      
-      .score-card { 
-        padding: 15px 20px; 
-      }
-      
-      .score-value { 
-        font-size: 28px; 
-      }
-      
-      .lever-container { 
-        display: none; 
-      }
-    }
-    
-    @media (max-height: 800px) {
-      .machine-top { 
-        margin-bottom: 20px; 
-        padding: 15px; 
-      }
-      
-      .jackpot-display { 
-        font-size: 32px; 
-      }
-      
-      .controls { 
-        padding: 15px; 
-      }
-      
-      .score-display { 
-        margin-bottom: 20px; 
-      }
-      
-      .reel {
-        height: 180px;
-      }
-    }
-    
-    /* Add some decorative elements */
-    .machine-corner {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: var(--gold);
-      border: 2px solid var(--chrome);
-    }
-    
-    .machine-corner.top-left {
-      top: 10px;
-      left: 10px;
-      border-radius: 0 0 10px 0;
-    }
-    
-    .machine-corner.top-right {
-      top: 10px;
-      right: 10px;
-      border-radius: 0 0 0 10px;
-    }
-    
-    .machine-corner.bottom-left {
-      bottom: 10px;
-      left: 10px;
-      border-radius: 0 10px 0 0;
-    }
-    
-    .machine-corner.bottom-right {
-      bottom: 10px;
-      right: 10px;
-      border-radius: 10px 0 0 0;
-    }
-    
-    /* Vibration simulation */
-    .slot-machine.vibrate {
-      animation: vibrate 0.1s linear infinite;
-    }
-    
-    @keyframes vibrate {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-1px); }
-      75% { transform: translateX(1px); }
     }
   </style>
 </head>
 <body>
-  <header class="app-header">
-    <div class="user-info">Welcome, BensBar</div>
+  <div class="app-header">
+    <div class="user-info">User: Player1</div>
+    <div class="date-info">Date: 2023-10-05</div>
     <div class="game-title">OctoSlots</div>
-    <button id="theme-toggle" title="Toggle light/dark mode">
-      <span id="theme-icon">🌙</span>
-    </button>
-    <div class="date-info">2025-06-01 15:13:45 UTC</div>
-  </header>
-  
-  <!-- Audio elements embedded in the page -->
-  <audio id="spin-sound" src="sounds/spin.wav" preload="auto"></audio>
-  <audio id="stop-sound" src="sounds/stop.wav" preload="auto"></audio>
-  <audio id="win-sound" src="sounds/win.wav" preload="auto"></audio>
-  <audio id="win2-sound" src="sounds/win2.wav" preload="auto"></audio>
-  <audio id="win3-sound" src="sounds/win3.wav" preload="auto"></audio>
-  <audio id="lose-sound" src="sounds/lose.wav" preload="auto"></audio>
-  
+    <div id="theme-toggle">
+      <div id="theme-icon">🎰</div>
+    </div>
+  </div>
   <div class="slot-machine-container">
-    <div class="machine-glow"></div>
     <div class="slot-machine">
-      <div class="machine-corner top-left"></div>
-      <div class="machine-corner top-right"></div>
-      <div class="machine-corner bottom-left"></div>
-      <div class="machine-corner bottom-right"></div>
-      
-      <button class="paytable-button">?</button>
-      <div class="paytable">
-        <h3>Pay Table</h3>
-        <div class="paytable-item">
-          <img src="https://bensbar.github.io/OctoSlots/images/original.png" alt="Original">
-          <span>x3: 1000 pts</span>
-        </div>
-        <div class="paytable-item">
-          <img src="https://bensbar.github.io/OctoSlots/images/octobiwan.png" alt="Octobiwan">
-          <span>x3: 500 pts</span>
-        </div>
-        <div class="paytable-item">
-          <span>Any 3 matching: 250 pts</span>
-        </div>
-        <div class="paytable-item">
-          <span>Any 2 matching: 50 pts</span>
-        </div>
-      </div>
-      
+      <div class="machine-glow"></div>
       <div class="machine-top">
+        <div class="jackpot-display">Jackpot: <span class="jackpot-amount">1,000,000</span></div>
         <div class="flashing-lights">
           <div class="light"></div>
           <div class="light"></div>
           <div class="light"></div>
-          <div class="light"></div>
-          <div class="light"></div>
-          <div class="light"></div>
-          <div class="light"></div>
-          <div class="light"></div>
         </div>
-        <div class="jackpot-display">JACKPOT: 1000</div>
       </div>
-      
       <div class="reels-container">
         <div id="reel1" class="reel">
           <div class="slot-item top" id="reel1-top"></div>
@@ -1303,7 +958,6 @@
         </div>
         <div id="win-line" class="win-line"></div>
       </div>
-      
       <div class="controls">
         <div class="score-display">
           <div class="score-card">
@@ -1321,539 +975,366 @@
         </div>
         <button class="spin-button" id="spin-button">SPIN</button>
       </div>
-      
-      <div class="win-message" id="win-message">
-        <h2>WINNER!</h2>
-        <p>You won <span id="win-value">250</span> credits!</p>
-        <button id="continue-button">CONTINUE</button>
-      </div>
-      
-      <div class="lever-container">
-        <div class="lever-base">
-          <div class="lever" id="lever"></div>
-        </div>
-      </div>
     </div>
   </div>
-  
+  <div class="paytable">
+    <h3>Paytable</h3>
+    <div class="paytable-item">
+      <img src="images/original.png" alt="Original">
+      <span class="payout">x3: 1000 pts</span>
+    </div>
+    <div class="paytable-item">
+      <img src="images/octobiwan.png" alt="Octobiwan">
+      <span class="payout">x3: 500 pts</span>
+    </div>
+    <div class="paytable-item">
+      <span class="payout">Any 3 matching: 250 pts</span>
+    </div>
+    <div class="paytable-item">
+      <span class="payout">Any 2 matching: 50 pts</span>
+    </div>
+    <div class="paytable-button">Close</div>
+  </div>
   <script>
-    // THEME TOGGLE LOGIC
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    function setTheme(mode) {
-      if (mode === 'light') {
-        document.body.classList.add('light-mode');
-        themeIcon.textContent = '🌞';
-        localStorage.setItem('octoslots-theme', 'light');
-      } else {
-        document.body.classList.remove('light-mode');
-        themeIcon.textContent = '🌙';
-        localStorage.setItem('octoslots-theme', 'dark');
-      }
-    }
-    function toggleTheme() {
-      const isLight = document.body.classList.contains('light-mode');
-      setTheme(isLight ? 'dark' : 'light');
-    }
-    themeToggleBtn.addEventListener('click', toggleTheme);
-    (function() {
-      const saved = localStorage.getItem('octoslots-theme');
-      if (saved === 'light') {
-        setTheme('light');
-      } else if (saved === 'dark') {
-        setTheme('dark');
-      } else {
-        setTheme(prefersDark ? 'dark' : 'light');
-      }
-    })();
-
-    // --- Slot Machine Game logic ---
-    document.addEventListener('DOMContentLoaded', function() {
-      // Audio system
-      const audioContext = {
-        initialized: false,
-        context: null,
-        soundsLoaded: false,
-        sounds: {
-          spin: null,
-          stop: null,
-          win: null,
-          win2: null,
-          win3: null,
-          lose: null
-        },
-        volumes: {
-          spin: 1.0,
-          stop: 1.0,
-          win: 1.0,
-          win2: 1.0,
-          win3: 1.0,
-          lose: 1.0
-        }
-      };
-      const fallbackAudio = {
-        spin: document.getElementById('spin-sound'),
-        stop: document.getElementById('stop-sound'),
-        win: document.getElementById('win-sound'),
-        win2: document.getElementById('win2-sound'),
-        win3: document.getElementById('win3-sound'),
-        lose: document.getElementById('lose-sound')
-      };
-      Object.values(fallbackAudio).forEach(audio => {
-        if (audio) audio.volume = 1.0;
-      });
-      function initAudio() {
-        try {
-          if (audioContext.initialized) return true;
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          if (!AudioContext) return false;
-          audioContext.context = new AudioContext();
-          const sounds = [
-            { name: 'spin', url: 'sounds/spin.wav' },
-            { name: 'stop', url: 'sounds/stop.wav' },
-            { name: 'win', url: 'sounds/win.wav' },
-            { name: 'win2', url: 'sounds/win2.wav' },
-            { name: 'win3', url: 'sounds/win3.wav' },
-            { name: 'lose', url: 'sounds/lose.wav' }
-          ];
-          sounds.forEach(sound => loadSound(sound.name, sound.url));
-          audioContext.initialized = true;
-          return true;
-        } catch (e) {
-          return false;
-        }
-      }
-      function loadSound(name, url) {
-        try {
-          fetch(url)
-            .then(response => response.arrayBuffer())
-            .then(arrayBuffer => audioContext.context.decodeAudioData(arrayBuffer))
-            .then(audioBuffer => {
-              audioContext.sounds[name] = audioBuffer;
-              const allSoundsLoaded = Object.values(audioContext.sounds).every(sound => sound !== null);
-              if (allSoundsLoaded) {
-                audioContext.soundsLoaded = true;
-              }
-            })
-            .catch(e => {});
-        } catch (e) {}
-      }
-      function playSound(name) {
-        try {
-          if (audioContext.initialized && audioContext.sounds[name]) {
-            const source = audioContext.context.createBufferSource();
-            source.buffer = audioContext.sounds[name];
-            const gainNode = audioContext.context.createGain();
-            gainNode.gain.value = audioContext.volumes[name];
-            source.connect(gainNode);
-            gainNode.connect(audioContext.context.destination);
-            source.start(0);
-            return source;
-          } else if (fallbackAudio[name]) {
-            fallbackAudio[name].currentTime = 0;
-            fallbackAudio[name].volume = 1.0;
-            const promise = fallbackAudio[name].play();
-            if (promise !== undefined) {
-              promise.catch(e => {});
-            }
-            return fallbackAudio[name];
-          }
-        } catch (e) {
-          return null;
-        }
-      }
-      function stopSound(source) {
-        if (!source) return;
-        try {
-          if (source.stop) source.stop(0);
-          else if (source.pause) {
-            source.pause();
-            source.currentTime = 0;
-          }
-        } catch (e) {}
-      }
-      function unlockAudio() {
-        if (initAudio()) {
-          const silentBuffer = audioContext.context.createBuffer(1, 1, 22050);
-          const source = audioContext.context.createBufferSource();
-          source.buffer = silentBuffer;
-          source.connect(audioContext.context.destination);
-          source.start(0);
-          
-          // Resume audio context for iOS
-          if (audioContext.context.state === 'suspended') {
-            audioContext.context.resume();
-          }
-        }
-        Object.values(fallbackAudio).forEach(audio => {
-          if (audio) {
-            audio.volume = 0.01;
-            const playPromise = audio.play();
-            if (playPromise !== undefined) {
-              playPromise.then(() => {
-                audio.pause();
-                audio.currentTime = 0;
-                audio.volume = 1.0;
-              }).catch(e => {
-                // iOS audio play failed, that's OK
-              });
-            }
-          }
-        });
-        document.removeEventListener('click', unlockAudio);
-        document.removeEventListener('touchstart', unlockAudio);
-        document.removeEventListener('keydown', unlockAudio);
-      }
-      document.addEventListener('click', unlockAudio);
-      document.addEventListener('touchstart', unlockAudio);
-      document.addEventListener('keydown', unlockAudio);
-
-      let spinSoundInstance = null;
-      const config = {
-        spinCost: 10,
-        defaultCredits: 500,
-        spinDuration: 3000, // Longer spin for more excitement
-        stopDelay: 800, // Longer delays between reel stops
-        prizes: {
-          jackpot: 1000,
-          threeOriginal: 1000,
-          threeOctobiwan: 500,
-          threeMatching: 250,
-          twoMatching: 50
-        }
-      };
-      const state = {
-        credits: config.defaultCredits,
-        spinning: false,
-        currentSymbols: [null, null, null],
-        bet: config.spinCost,
-        lastWin: 0,
-        canPull: true
-      };
-      const octocats = [
-        { name: 'Original', image: 'images/original.png', value: 10 },
-        { name: 'Surftocat', image: 'images/surftocat.png', value: 5 },
-        { name: 'Yogitocat', image: 'https://bensbar.github.io/OctoSlots/images/yogitocat.png', value: 5 },
-        { name: 'Boxer', image: 'https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png', value: 5 },
-        { name: 'Dinotocat', image: 'https://bensbar.github.io/OctoSlots/images/dinotocat.png', value: 5 },
-        { name: 'Plumber', image: 'https://bensbar.github.io/OctoSlots/images/plumber.png', value: 5 },
-        { name: 'Security', image: 'https://bensbar.github.io/OctoSlots/images/securitocat.png', value: 8 },
-        { name: 'Inspectocat', image: 'https://bensbar.github.io/OctoSlots/images/inspectocat.png', value: 5 },
-        { name: 'Daftpunktocat', image: 'https://bensbar.github.io/OctoSlots/images/daftpunktocat-guy.gif', value: 5 },
-        { name: 'Minion', image: 'https://bensbar.github.io/OctoSlots/images/minion.png', value: 5 },
-        { name: 'Droidtocat', image: 'https://bensbar.github.io/OctoSlots/images/droidtocat.png', value: 5 },
-        { name: 'Ironcat', image: 'https://bensbar.github.io/OctoSlots/images/ironcat.png', value: 5 },
-        { name: 'TopGun', image: 'https://bensbar.github.io/OctoSlots/images/topguntocat.png', value: 5 },
-        { name: 'Megacat', image: 'https://bensbar.github.io/OctoSlots/images/megacat.png', value: 5 },
-        { name: 'Repo', image: 'https://bensbar.github.io/OctoSlots/images/repo.png', value: 5 }
-      ];
-
-      // --- STRAIGHT SYMBOLS ---
-      function setRandomSymbol(slotItem) {
-        const randomOctocat = octocats[Math.floor(Math.random() * octocats.length)];
-        slotItem.innerHTML = `<img src="${randomOctocat.image}" alt="${randomOctocat.name}">`;
-        slotItem.dataset.name = randomOctocat.name;
-        return randomOctocat;
-      }
-      function setSymbol(slotItem, symbolName) {
-        const octocat = octocats.find(o => o.name === symbolName) || octocats[0];
-        slotItem.innerHTML = `<img src="${octocat.image}" alt="${octocat.name}">`;
-        slotItem.dataset.name = octocat.name;
-        return octocat;
-      }
-
-      // --- REEL STAGGER (not perfectly aligned) ---
-      function randomReelOffset() {
-        // offset between -12px and +12px
-        return Math.floor(Math.random() * 25) - 12;
-      }
-
-      const elements = {
-        reels: [
-          document.getElementById('reel1'),
-          document.getElementById('reel2'),
-          document.getElementById('reel3')
+    // JavaScript code for interactivity
+    const elements = {
+      spinButton: document.getElementById('spin-button'),
+      reels: [
+        document.getElementById('reel1'),
+        document.getElementById('reel2'),
+        document.getElementById('reel3')
+      ],
+      jackpotDisplay: document.querySelector('.jackpot-display'),
+      creditsDisplay: document.getElementById('credits'),
+      betDisplay: document.getElementById('bet-amount'),
+      winDisplay: document.getElementById('win-amount'),
+      paytableButton: document.querySelector('.paytable-button'),
+      paytable: document.querySelector('.paytable'),
+      themeToggle: document.getElementById('theme-toggle'),
+      themeIcon: document.getElementById('theme-icon'),
+      slotItems: {
+        top: [
+          document.getElementById('reel1-top'),
+          document.getElementById('reel2-top'),
+          document.getElementById('reel3-top')
         ],
-        slotItems: {
-          top: [
-            document.getElementById('reel1-top'),
-            document.getElementById('reel2-top'),
-            document.getElementById('reel3-top')
-          ],
-          middle: [
-            document.getElementById('reel1-middle'),
-            document.getElementById('reel2-middle'),
-            document.getElementById('reel3-middle')
-          ],
-          bottom: [
-            document.getElementById('reel1-bottom'),
-            document.getElementById('reel2-bottom'),
-            document.getElementById('reel3-bottom')
-          ]
-        },
-        spinButton: document.getElementById('spin-button'),
-        creditsDisplay: document.getElementById('credits'),
-        betDisplay: document.getElementById('bet-amount'),
-        winDisplay: document.getElementById('win-amount'),
-        winLine: document.getElementById('win-line'),
-        winMessage: document.getElementById('win-message'),
-        winValue: document.getElementById('win-value'),
-        continueButton: document.getElementById('continue-button'),
-        paytableButton: document.querySelector('.paytable-button'),
-        paytable: document.querySelector('.paytable'),
-        lights: document.querySelectorAll('.light'),
-        lever: document.getElementById('lever'),
-        slotMachine: document.querySelector('.slot-machine')
-      };
-
-      function initializeSlots() {
-        for (let i = 0; i < 3; i++) {
-          setRandomSymbol(elements.slotItems.top[i]);
-          setRandomSymbol(elements.slotItems.middle[i]);
-          setRandomSymbol(elements.slotItems.bottom[i]);
-        }
+        middle: [
+          document.getElementById('reel1-middle'),
+          document.getElementById('reel2-middle'),
+          document.getElementById('reel3-middle')
+        ],
+        bottom: [
+          document.getElementById('reel1-bottom'),
+          document.getElementById('reel2-bottom'),
+          document.getElementById('reel3-bottom')
+        ]
+      },
+      winLine: document.getElementById('win-line'),
+      lights: document.querySelectorAll('.light')
+    };
+    
+    // Define the Octocats array
+    const octocats = [
+      { name: 'Original', image: 'images/original.png', value: 10 },
+      { name: 'Surftocat', image: 'images/surftocat.png', value: 5 },
+      { name: 'Yogitocat', image: 'images/yogitocat.png', value: 5 },
+      { name: 'Boxer', image: 'images/boxertocat_octodex.png', value: 5 },
+      { name: 'Dinotocat', image: 'images/dinotocat.png', value: 5 },
+      { name: 'Plumber', image: 'images/plumber.png', value: 5 },
+      { name: 'Security', image: 'images/securitocat.png', value: 8 },
+      { name: 'Inspectocat', image: 'images/inspectocat.png', value: 5 },
+      { name: 'Daftpunktocat', image: 'images/daftpunktocat-guy.gif', value: 5 },
+      { name: 'Minion', image: 'images/minion.png', value: 5 },
+      { name: 'Droidtocat', image: 'images/droidtocat.png', value: 5 },
+      { name: 'Ironcat', image: 'images/ironcat.png', value: 5 },
+      { name: 'TopGun', image: 'images/topguntocat.png', value: 5 },
+      { name: 'Megacat', image: 'images/megacat.png', value: 5 },
+      { name: 'Repo', image: 'images/repo.png', value: 5 }
+    ];
+    
+    const config = {
+      spinCost: 10,
+      spinDuration: 2000,
+      reelStopDelay: 500,
+      prizes: {
+        jackpot: 1000,
+        threeOriginal: 1000,
+        threeMatching: 250,
+        twoMatching: 50
       }
-
-      function determineWinningSymbols() {
-        const randomValue = Math.random();
-        let symbols = [];
-        if (randomValue < 0.1) {
-          const symbolName = octocats[Math.floor(Math.random() * octocats.length)].name;
-          symbols = [symbolName, symbolName, symbolName];
-        } else if (randomValue < 0.3) {
-          const symbolName1 = octocats[Math.floor(Math.random() * octocats.length)].name;
-          let symbolName2;
-          do {
-            symbolName2 = octocats[Math.floor(Math.random() * octocats.length)].name;
-          } while (symbolName2 === symbolName1);
-          symbols = [symbolName1, symbolName1, symbolName2];
-          symbols.sort(() => Math.random() - 0.5);
-        } else {
-          symbols = [
-            octocats[Math.floor(Math.random() * octocats.length)].name,
-            octocats[Math.floor(Math.random() * octocats.length)].name,
-            octocats[Math.floor(Math.random() * octocats.length)].name
-          ];
-        }
-        return symbols;
+    };
+    
+    const state = {
+      isSpinning: false,
+      credits: 1000,
+      bet: config.spinCost,
+      win: 0,
+      jackpot: 1000000,
+      currentSymbols: [null, null, null]
+    };
+    
+    // Audio handling (for future implementation)
+    function playSound(soundName) {
+      // If you have sound files, implement this
+      console.log(`Playing ${soundName} sound`);
+    }
+    
+    // Function to set a random symbol on a slot item
+    function setRandomSymbol(slotItem) {
+      const randomOctocat = octocats[Math.floor(Math.random() * octocats.length)];
+      slotItem.innerHTML = `<img src="${randomOctocat.image}" alt="${randomOctocat.name}">`;
+      slotItem.dataset.name = randomOctocat.name;
+      return randomOctocat;
+    }
+    
+    // Function to set a specific symbol on a slot item
+    function setSymbol(slotItem, symbolName) {
+      const octocat = octocats.find(o => o.name === symbolName) || octocats[0];
+      slotItem.innerHTML = `<img src="${octocat.image}" alt="${octocat.name}">`;
+      slotItem.dataset.name = octocat.name;
+      return octocat;
+    }
+    
+    // Initialize slots with random symbols
+    function initializeSlots() {
+      elements.slotItems.top.forEach(setRandomSymbol);
+      elements.slotItems.middle.forEach(setRandomSymbol);
+      elements.slotItems.bottom.forEach(setRandomSymbol);
+    }
+    
+    function updateDisplay() {
+      elements.creditsDisplay.textContent = state.credits;
+      elements.betDisplay.textContent = state.bet;
+      elements.winDisplay.textContent = state.win;
+      const jackpotAmount = elements.jackpotDisplay.querySelector('.jackpot-amount');
+      if (jackpotAmount) {
+        jackpotAmount.textContent = state.jackpot.toLocaleString();
+      } else {
+        elements.jackpotDisplay.textContent = `JACKPOT: ${state.jackpot.toLocaleString()}`;
       }
-
-      async function spinAllReels() {
-        if (state.spinning) return;
-        if (state.credits < state.bet) {
-          // Add screen shake for dramatic effect
-          const slotMachine = document.querySelector('.slot-machine');
-          if (slotMachine) {
-            slotMachine.style.animation = 'vibrate 0.5s ease-in-out 3';
-            setTimeout(() => {
-              slotMachine.style.animation = '';
-            }, 1500);
-          }
-          alert('Not enough credits!');
-          return;
-        }
-        if (elements.winMessage.classList.contains('show')) {
-          const lightIntervalId = elements.winMessage.dataset.lightIntervalId;
-          if (lightIntervalId) {
-            clearInterval(parseInt(lightIntervalId));
-          }
-          elements.winMessage.classList.remove('show');
-          stopLights();
-        }
+    }
+    
+    function simulateHaptic(duration) {
+      // Simulate haptic feedback for touch devices
+      if (navigator.vibrate) {
+        navigator.vibrate(duration);
+      }
+    }
+    
+    // Determine winning combinations
+    function determineWinningSymbols() {
+      const randomValue = Math.random();
+      let symbols = [];
+      
+      if (randomValue < 0.1) {
+        // 10% chance of all 3 matching
+        const symbolName = octocats[Math.floor(Math.random() * octocats.length)].name;
+        symbols = [symbolName, symbolName, symbolName];
+      } else if (randomValue < 0.3) {
+        // 20% chance of 2 matching
+        const symbolName1 = octocats[Math.floor(Math.random() * octocats.length)].name;
+        let symbolName2;
+        do {
+          symbolName2 = octocats[Math.floor(Math.random() * octocats.length)].name;
+        } while (symbolName2 === symbolName1);
         
-        // Haptic feedback simulation (iOS and Android)
-        function simulateHaptic(duration = 100) {
-          if (navigator.vibrate) {
-            navigator.vibrate(duration);
+        symbols = [symbolName1, symbolName1, symbolName2];
+        // Randomize the positions a bit
+        if (Math.random() > 0.5) {
+          symbols = [symbolName1, symbolName2, symbolName1];
+        } else if (Math.random() > 0.5) {
+          symbols = [symbolName2, symbolName1, symbolName1];
+        }
+      } else {
+        // 70% chance of all different
+        symbols = Array(3).fill().map(() => 
+          octocats[Math.floor(Math.random() * octocats.length)].name
+        );
+      }
+      
+      return symbols;
+    }
+    
+    // Evaluate the win based on the symbols
+    function evaluateWin(symbols) {
+      if (symbols[0] === 'Original' && symbols[1] === 'Original' && symbols[2] === 'Original') {
+        return { amount: config.prizes.threeOriginal, sound: 'win' };
+      }
+      if (symbols[0] === symbols[1] && symbols[1] === symbols[2]) {
+        return { amount: config.prizes.threeMatching, sound: 'win' };
+      }
+      if (symbols[0] === symbols[1] || symbols[1] === symbols[2] || symbols[0] === symbols[2]) {
+        return { amount: config.prizes.twoMatching, sound: 'win' };
+      }
+      return { amount: 0, sound: 'lose' };
+    }
+    
+    // Flashing lights animation
+    let lightInterval = null;
+    function startLights(winning = false) {
+      if (lightInterval) clearInterval(lightInterval);
+      
+      elements.lights.forEach(light => light.classList.remove('on'));
+      
+      let idx = 0;
+      lightInterval = setInterval(() => {
+        elements.lights.forEach((light, i) => {
+          if (winning) {
+            // Random flashing for winning
+            light.classList.toggle('on', Math.random() > 0.5);
           } else {
-            // iOS doesn't support vibrate, add visual feedback
-            const button = document.querySelector('.spin-button');
-            if (button) {
-              button.style.transform = 'scale(0.95)';
-              setTimeout(() => {
-                button.style.transform = '';
-              }, 100);
-            }
+            // Sequential flashing for spinning
+            light.classList.toggle('on', i === idx % elements.lights.length);
           }
-        }
-        
-        simulateHaptic([100, 50, 100]);
-        
-        unlockAudio();
-        spinSoundInstance = playSound('spin');
-        state.credits -= state.bet;
-        updateDisplay();
-        state.spinning = true;
-        state.lastWin = 0;
-        elements.spinButton.disabled = true;
-        elements.winLine.classList.remove('highlight');
-        startLights();
-
-        // Add machine vibration effect
-        const slotMachine = document.querySelector('.slot-machine');
-        if (slotMachine) {
-          slotMachine.classList.add('vibrate');
-        }
-
-        // Reset all rows to perfectly aligned before spin
-        elements.slotItems.middle.forEach(item => item.style.top = '33.33%');
-        elements.slotItems.top.forEach(item => item.style.top = '0');
-        elements.slotItems.bottom.forEach(item => item.style.top = '66.66%');
-
-        const finalSymbols = determineWinningSymbols();
-        elements.reels.forEach(reel => reel.classList.add('spinning'));
-        const spinningIntervals = elements.reels.map((reel, reelIndex) => {
-          return setInterval(() => {
-            setRandomSymbol(elements.slotItems.top[reelIndex]);
-            setRandomSymbol(elements.slotItems.middle[reelIndex]);
-            setRandomSymbol(elements.slotItems.bottom[reelIndex]);
-          }, 80); // Faster symbol changes for more excitement
         });
-        
-        for (let i = 0; i < 3; i++) {
-          await new Promise(resolve => {
-            setTimeout(() => {
-              clearInterval(spinningIntervals[i]);
-              setSymbol(elements.slotItems.top[i], octocats[Math.floor(Math.random() * octocats.length)].name);
-              setSymbol(elements.slotItems.middle[i], finalSymbols[i]);
-              setSymbol(elements.slotItems.bottom[i], octocats[Math.floor(Math.random() * octocats.length)].name);
-              elements.reels[i].classList.remove('spinning');
-              playSound('stop');
-              
-              // Haptic feedback for each reel stop
-              simulateHaptic(50);
-              
-              resolve();
-            }, config.spinDuration + i * config.stopDelay);
-          });
-        }
-        
-        // Stop machine vibration
-        if (slotMachine) {
-          slotMachine.classList.remove('vibrate');
-        }
-        
-        stopSound(spinSoundInstance);
-        state.currentSymbols = [
-          elements.slotItems.middle[0].dataset.name,
-          elements.slotItems.middle[1].dataset.name,
-          elements.slotItems.middle[2].dataset.name
-        ];
-        const win = evaluateWin(state.currentSymbols);
-        state.lastWin = win.amount;
-
-        // --- Apply "stagger" effect to middle row after stopping ---
-        elements.slotItems.middle.forEach((item, i) => {
-          const offset = randomReelOffset();
-          item.style.top = `calc(33.33% + ${offset}px)`;
-        });
-        // Top and bottom stay at fixed positions
-        elements.slotItems.top.forEach(item => item.style.top = '0');
-        elements.slotItems.bottom.forEach(item => item.style.top = '66.66%');
-
-        if (win.amount > 0) {
-          state.credits += win.amount;
-          elements.winValue.textContent = win.amount;
-          elements.winMessage.classList.add('show');
-          elements.winLine.classList.add('highlight');
-          playSound(win.sound);
-          startLights(true);
-          
-          // Big win haptic feedback
-          if (win.amount >= 250) {
-            simulateHaptic([200, 100, 200, 100, 200]);
-          }
-        } else {
-          playSound('lose');
-          stopLights();
-        }
-        updateDisplay();
-        setTimeout(() => {
-          state.spinning = false;
-          elements.spinButton.disabled = false;
-        }, 800);
+        idx++;
+      }, 100);
+    }
+    
+    function stopLights() {
+      if (lightInterval) clearInterval(lightInterval);
+      elements.lights.forEach(light => light.classList.remove('on'));
+    }
+    
+    // Spin all reels
+    async function spinAllReels() {
+      if (state.isSpinning) return;
+      
+      if (state.credits < state.bet) {
+        alert('Not enough credits!');
+        return;
       }
-
-      function evaluateWin(symbols) {
-        if (symbols[0] === 'Original' && symbols[1] === 'Original' && symbols[2] === 'Original') {
-          return { amount: config.prizes.jackpot, sound: 'win3' };
-        }
-        if (symbols[0] === 'Octobiwan' && symbols[1] === 'Octobiwan' && symbols[2] === 'Octobiwan') {
-          return { amount: config.prizes.threeOctobiwan, sound: 'win2' };
-        }
-        if (symbols[0] === symbols[1] && symbols[1] === symbols[2]) {
-          return { amount: config.prizes.threeMatching, sound: 'win' };
-        }
-        if (symbols[0] === symbols[1] || symbols[1] === symbols[2] || symbols[0] === symbols[2]) {
-          return { amount: config.prizes.twoMatching, sound: 'win' };
-        }
-        return { amount: 0, sound: 'lose' };
-      }
-
-      function updateDisplay() {
-        elements.creditsDisplay.textContent = state.credits;
-        elements.betDisplay.textContent = state.bet;
-        elements.winDisplay.textContent = state.lastWin;
-      }
-      let lightInterval = null;
-      function startLights(winning) {
-        if (lightInterval) clearInterval(lightInterval);
-        elements.lights.forEach(light => light.classList.remove('on'));
-        let idx = 0;
-        lightInterval = setInterval(() => {
-          elements.lights.forEach((light, i) => {
-            light.classList.toggle('on', winning ? Math.random() > 0.5 : i === idx % elements.lights.length);
-          });
-          idx++;
-        }, 100);
-      }
-      function stopLights() {
-        if (lightInterval) clearInterval(lightInterval);
-        elements.lights.forEach(light => light.classList.remove('on'));
-      }
-      elements.spinButton.addEventListener('click', spinAllReels);
-      elements.spinButton.addEventListener('touchstart', function(e) {
-        e.preventDefault(); // Prevent double-tap zoom
-        simulateHaptic(50);
-      });
-      elements.continueButton.addEventListener('click', () => {
-        elements.winMessage.classList.remove('show');
-        elements.winLine.classList.remove('highlight');
-        stopLights();
-      });
-      elements.paytableButton.addEventListener('click', () => {
-        elements.paytable.classList.toggle('show');
-      });
-      document.addEventListener('click', function(e) {
-        if (!elements.paytable.contains(e.target) && !elements.paytableButton.contains(e.target)) {
-          elements.paytable.classList.remove('show');
-        }
-      });
-      if (elements.lever) {
-        // Add touch and mouse events for better responsiveness
-        const handleLeverPull = function() {
-          if (!state.spinning && state.canPull) {
-            state.canPull = false;
-            elements.lever.classList.add('pulled');
-            
-            // Haptic feedback
-            simulateHaptic(100);
-            
-            setTimeout(() => {
-              elements.lever.classList.remove('pulled');
-              spinAllReels();
-              setTimeout(() => { state.canPull = true; }, 1200);
-            }, 600);
-          }
-        };
-        
-        elements.lever.addEventListener('click', handleLeverPull);
-        elements.lever.addEventListener('touchstart', handleLeverPull);
-      }
-      initializeSlots();
+      
+      // Deduct bet and update display
+      state.credits -= state.bet;
+      state.win = 0;
       updateDisplay();
+      
+      // Start spinning animation
+      state.isSpinning = true;
+      elements.spinButton.disabled = true;
+      startLights();
+      
+      // Add vibration effect to the machine
+      const slotMachine = document.querySelector('.slot-machine');
+      if (slotMachine) {
+        slotMachine.classList.add('vibrate');
+      }
+      
+      // Play spin sound
+      playSound('spin');
+      
+      // Add spinning class to reels
+      elements.reels.forEach(reel => reel.classList.add('spinning'));
+      
+      // Set up spinning intervals for random symbols
+      const spinningIntervals = elements.reels.map((reel, reelIndex) => {
+        return setInterval(() => {
+          setRandomSymbol(elements.slotItems.top[reelIndex]);
+          setRandomSymbol(elements.slotItems.middle[reelIndex]);
+          setRandomSymbol(elements.slotItems.bottom[reelIndex]);
+        }, 80);
+      });
+      
+      // Determine the final result
+      const finalSymbols = determineWinningSymbols();
+      
+      // Stop each reel with a delay
+      for (let i = 0; i < 3; i++) {
+        await new Promise(resolve => {
+          setTimeout(() => {
+            clearInterval(spinningIntervals[i]);
+            
+            // Set the final symbols
+            setRandomSymbol(elements.slotItems.top[i]);
+            setSymbol(elements.slotItems.middle[i], finalSymbols[i]);
+            setRandomSymbol(elements.slotItems.bottom[i]);
+            
+            elements.reels[i].classList.remove('spinning');
+            playSound('stop');
+            
+            // Haptic feedback for each reel stop
+            simulateHaptic(50);
+            
+            resolve();
+          }, config.spinDuration + i * config.reelStopDelay);
+        });
+      }
+      
+      // Stop vibration
+      if (slotMachine) {
+        slotMachine.classList.remove('vibrate');
+      }
+      
+      // Store current symbols for win evaluation
+      state.currentSymbols = [
+        elements.slotItems.middle[0].dataset.name,
+        elements.slotItems.middle[1].dataset.name,
+        elements.slotItems.middle[2].dataset.name
+      ];
+      
+      // Evaluate win
+      const win = evaluateWin(state.currentSymbols);
+      state.win = win.amount;
+      
+      if (win.amount > 0) {
+        state.credits += win.amount;
+        playSound(win.sound);
+        startLights(true);
+        
+        // Highlight the win line
+        if (elements.winLine) {
+          elements.winLine.classList.add('highlight');
+        }
+        
+        // Big win haptic feedback
+        if (win.amount >= 250) {
+          simulateHaptic([200, 100, 200, 100, 200]);
+        }
+      } else {
+        playSound('lose');
+        stopLights();
+        if (elements.winLine) {
+          elements.winLine.classList.remove('highlight');
+        }
+      }
+      
+      updateDisplay();
+      
+      // Reset state
+      setTimeout(() => {
+        state.isSpinning = false;
+        elements.spinButton.disabled = false;
+      }, 800);
+    }
+
+    // Event Listeners
+    elements.spinButton.addEventListener('click', spinAllReels);
+    elements.spinButton.addEventListener('touchstart', function(e) {
+      e.preventDefault(); // Prevent double-tap zoom
+      simulateHaptic(50);
+      elements.spinButton.classList.add('touch-active');
+      spinAllReels(); // Directly call spinAllReels on touchstart
     });
+    elements.spinButton.addEventListener('touchend', function(e) {
+      elements.spinButton.classList.remove('touch-active');
+    });
+    elements.spinButton.addEventListener('touchcancel', function(e) {
+      elements.spinButton.classList.remove('touch-active');
+    });
+    
+    elements.paytableButton.addEventListener('click', () => {
+      elements.paytable.classList.toggle('visible');
+    });
+    
+    elements.themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      elements.themeIcon.textContent = document.body.classList.contains('light-mode') ? '🌞' : '🌙';
+    });
+    
+    // Initialize
+    initializeSlots();
+    updateDisplay();
   </script>
 </body>
 </html>
