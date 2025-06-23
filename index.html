@@ -439,21 +439,22 @@
     
     /* Fullscreen mode styles */
     .fullscreen-mode .slot-machine-container {
-      padding-top: 0;
-      margin-top: 0;
+      padding: 0;
+      margin: 0;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      width: 100%;
+      width: 100vw;
       display: flex;
-      overflow: visible;
+      overflow: hidden; /* Prevent scrolling in fullscreen */
+      background: var(--primary-bg); /* Apply background color from variables */
     }
     
     .fullscreen-mode .slot-machine {
-      transform: scale(1); /* Prevent automatic zoom */
+      transform: scale(1.4); /* Make the machine bigger in fullscreen mode */
       margin: auto;
-      max-height: 90vh; /* Prevent the machine from being too tall */
-      max-width: 95vw; /* Prevent the machine from being too wide */
+      max-height: none; /* Allow machine to be as tall as needed */
+      max-width: none; /* Allow machine to be as wide as needed */
       height: auto;
       transform-origin: center center;
     }
@@ -472,16 +473,42 @@
       left: 0;
     }
     
-    /* Prevent zooming in fullscreen mode */
-    .fullscreen-mode .slot-machine {
-      transform: scale(1.0);
-      max-width: 95vw;
-      max-height: 95vh;
-    }
-    
     /* Keep controls and reels properly sized in fullscreen */
     .fullscreen-mode .reels-container {
-      max-height: 60vh;
+      height: auto; /* Allow natural height */
+      max-height: none; /* No limit on height */
+    }
+    
+    /* Ensure images in reels scale properly in fullscreen */
+    .fullscreen-mode .slot-item img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    /* Optimize fullscreen in different orientations */
+    @media (orientation: landscape) {
+      .fullscreen-mode .slot-machine {
+        /* In landscape, optimize for width */
+        max-height: 98vh;
+        transform-origin: center center;
+      }
+    }
+    
+    @media (orientation: portrait) {
+      .fullscreen-mode .slot-machine {
+        /* In portrait, optimize for height */
+        max-width: 98vw;
+        transform-origin: center center;
+      }
+    }
+    
+    /* Square monitor optimizations */
+    @media (min-aspect-ratio: 0.9/1) and (max-aspect-ratio: 1.1/1) {
+      .fullscreen-mode .slot-machine {
+        /* For square-ish monitors, make it as large as possible */
+        transform: scale(1.5) !important;
+      }
     }
     
     .slot-machine {
@@ -1742,15 +1769,29 @@
           document.body.classList.add('fullscreen-mode');
           fullscreenIcon.textContent = '↙️';
           
-          // Ensure proper scaling on mobile
+          // Ensure proper scaling to make the machine as large as possible
           setTimeout(() => {
             const slotMachine = document.querySelector('.slot-machine');
             if (slotMachine) {
-              // Adjust scale based on screen size
+              // Calculate optimal scale for both width and height
               const viewportHeight = window.innerHeight;
-              const machineHeight = slotMachine.offsetHeight;
-              const scale = Math.min(1, (viewportHeight * 0.85) / machineHeight);
-              slotMachine.style.transform = `scale(${scale})`;
+              const viewportWidth = window.innerWidth;
+              const machineHeight = slotMachine.offsetHeight / 1.4; // Compensate for initial scale
+              const machineWidth = slotMachine.offsetWidth / 1.4; // Compensate for initial scale
+              
+              // Calculate how much we can scale based on viewport
+              const heightScale = viewportHeight * 0.95 / machineHeight;
+              const widthScale = viewportWidth * 0.95 / machineWidth;
+              
+              // Use the smaller scale to ensure machine fits completely
+              const optimalScale = Math.min(heightScale, widthScale);
+              
+              // Apply a larger scale to fill the entire square monitor
+              // Minimum scale of 1.4 (from CSS), but can go larger if viewport allows
+              const finalScale = Math.max(1.4, optimalScale);
+              
+              console.log(`Applying scale: ${finalScale} (viewport: ${viewportWidth}x${viewportHeight}, machine: ${machineWidth}x${machineHeight})`);
+              slotMachine.style.transform = `scale(${finalScale})`;
             }
           }, 100);
         } else {
@@ -1792,7 +1833,29 @@
           const slotMachine = document.querySelector('.slot-machine');
           if (slotMachine) {
             slotMachine.style.transform = '';
+            
+            // Make sure all content is visible after exiting fullscreen
+            setTimeout(() => {
+              window.scrollTo(0, 0);
+            }, 100);
           }
+        } else if (document.fullscreenElement) {
+          // When entering fullscreen, make sure scaling is applied properly
+          setTimeout(() => {
+            const slotMachine = document.querySelector('.slot-machine');
+            if (slotMachine && document.body.classList.contains('fullscreen-mode')) {
+              // Apply the same scaling logic from the click handler
+              const viewportHeight = window.innerHeight;
+              const viewportWidth = window.innerWidth;
+              const machineHeight = slotMachine.offsetHeight / 1.4;
+              const machineWidth = slotMachine.offsetWidth / 1.4;
+              const heightScale = viewportHeight * 0.95 / machineHeight;
+              const widthScale = viewportWidth * 0.95 / machineWidth;
+              const optimalScale = Math.min(heightScale, widthScale);
+              const finalScale = Math.max(1.4, optimalScale);
+              slotMachine.style.transform = `scale(${finalScale})`;
+            }
+          }, 100);
         }
       }
     }
