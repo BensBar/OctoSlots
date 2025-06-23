@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=1280, height=1084, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="OctoSlots">
   <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#000000">
   <title>OctoSlots - Professional Slot Machine</title>
   <style>
     :root {
@@ -918,6 +920,182 @@
         transition: transform 0.1s ease, box-shadow 0.1s ease;
       }
     }
+    
+    /* iPhone and Mobile Optimizations */
+    @media (max-width: 480px) {
+      :root {
+        --machine-width: 95vw;
+        --machine-height: auto;
+      }
+      
+      body {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        height: 100%;
+        position: relative;
+      }
+      
+      .app-header {
+        height: 60px;
+        padding: 0 10px;
+      }
+      
+      .game-title {
+        font-size: 24px;
+      }
+      
+      .user-info, .date-info {
+        font-size: 14px;
+      }
+      
+      .slot-machine-container {
+        padding: 10px;
+        height: auto;
+      }
+      
+      .slot-machine {
+        width: 100%;
+        height: auto;
+        padding: 15px;
+      }
+      
+      .machine-top {
+        margin-bottom: 15px;
+        padding: 10px;
+      }
+      
+      .jackpot-display {
+        font-size: 24px;
+      }
+      
+      .reels-container {
+        gap: 10px;
+        padding: 10px;
+      }
+      
+      .reel {
+        height: 180px;
+      }
+      
+      .spin-button {
+        padding: 15px 30px;
+        font-size: 24px;
+        min-width: 160px;
+        min-height: 60px;
+      }
+      
+      .score-display {
+        flex-direction: row;
+        gap: 10px;
+      }
+      
+      .score-card {
+        padding: 10px;
+      }
+      
+      .score-card h3 {
+        font-size: 14px;
+      }
+      
+      .score-value {
+        font-size: 20px;
+      }
+    }
+    
+    /* iPhone landscape */
+    @media (max-width: 896px) and (orientation: landscape) {
+      .app-header {
+        height: 50px;
+      }
+      
+      .slot-machine {
+        height: auto;
+        max-height: 80vh;
+      }
+      
+      .reel {
+        height: 120px;
+      }
+      
+      .score-display {
+        flex-direction: row;
+        margin-bottom: 15px;
+      }
+      
+      .spin-button {
+        padding: 10px 20px;
+        font-size: 20px;
+        min-height: 50px;
+      }
+    }
+    
+    /* iPhone portrait - smaller devices */
+    @media (max-width: 380px) {
+      .app-header {
+        height: 50px;
+        padding: 0 5px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .game-title {
+        font-size: 20px;
+        width: 100%;
+        text-align: center;
+        margin: 0;
+        order: 1;
+      }
+      
+      .user-info {
+        font-size: 12px;
+        order: 2;
+      }
+      
+      .date-info {
+        font-size: 12px;
+        order: 4;
+      }
+      
+      #theme-toggle {
+        order: 3;
+        margin: 5px;
+        min-width: 40px;
+        min-height: 40px;
+      }
+      
+      .reel {
+        height: 150px;
+      }
+      
+      .score-card {
+        padding: 8px;
+      }
+      
+      .score-card h3 {
+        font-size: 12px;
+        margin-bottom: 4px;
+      }
+      
+      .score-value {
+        font-size: 18px;
+      }
+    }
+    
+    /* Handle notched iPhones */
+    @supports (padding: max(0px)) {
+      body {
+        padding-top: max(var(--header-height), env(safe-area-inset-top));
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+      }
+      
+      .app-header {
+        padding-top: max(0px, env(safe-area-inset-top));
+        padding-left: max(10px, env(safe-area-inset-left));
+        padding-right: max(10px, env(safe-area-inset-right));
+      }
+    }
   </style>
 </head>
 <body>
@@ -1080,7 +1258,34 @@
       currentSymbols: [null, null, null]
     };
     
-    // Audio handling
+    // Audio handling with better mobile support
+    const audioContext = {
+      initialized: false,
+      context: null,
+      sounds: {},
+      currentSounds: {},
+      isIOS: /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
+    };
+    
+    // Initialize Web Audio API if supported
+    function initAudio() {
+      try {
+        if (audioContext.initialized) return true;
+        
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) {
+          audioContext.context = new AudioContext();
+          audioContext.initialized = true;
+          return true;
+        }
+        return false;
+      } catch (e) {
+        console.log('Web Audio API not supported:', e);
+        return false;
+      }
+    }
+    
+    // Load and play sounds with proper mobile handling
     function playSound(soundName) {
       try {
         // Map sound names to audio element IDs
@@ -1092,22 +1297,61 @@
           'lose': 'lose-sound'
         };
         
+        // On iOS, we need special handling for the spin sound
+        // because it often gets interrupted by other sounds
+        if (audioContext.isIOS && soundName === 'spin') {
+          // Create a new Audio instance for spin sound on iOS
+          const tempAudio = new Audio('sounds/spin.wav');
+          tempAudio.volume = 1.0;
+          tempAudio.play().catch(e => {
+            console.log('Spin sound fallback failed:', e);
+          });
+          return tempAudio;
+        }
+        
+        // For other sounds, use the pre-loaded audio elements
         const audioId = audioMap[soundName];
         if (!audioId) return;
         
         const audio = document.getElementById(audioId);
         if (!audio) return;
         
-        // Reset and play
+        // Stop any currently playing sound of this type
+        if (audioContext.currentSounds[soundName]) {
+          try {
+            audioContext.currentSounds[soundName].pause();
+          } catch (e) { /* Ignore errors on pause */ }
+        }
+        
+        // On mobile, especially iOS, it's better to clone for overlapping sounds
+        if (audioContext.isIOS && (soundName === 'stop')) {
+          const clone = audio.cloneNode(true);
+          clone.volume = 1.0;
+          clone.play().catch(e => {
+            console.log('Cloned audio play failed:', e);
+          });
+          
+          // Clean up clones after they finish
+          clone.onended = function() {
+            clone.onended = null;
+            clone.remove();
+          };
+          
+          return clone;
+        }
+        
+        // For non-iOS or non-overlapping sounds
         audio.currentTime = 0;
         audio.volume = 1.0;
         
-        // Play with promise handling for browsers that require user interaction
+        // Play with promise handling
         const playPromise = audio.play();
+        audioContext.currentSounds[soundName] = audio;
         
         if (playPromise !== undefined) {
           playPromise.catch(error => {
-            console.log('Audio play failed, probably needs user interaction first:', error);
+            console.log(`Audio '${soundName}' play failed:`, error);
+            delete audioContext.currentSounds[soundName];
           });
         }
         
