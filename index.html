@@ -27,7 +27,7 @@
       --highlight-color: #FFD700;
       --gold-color: #FFD700;
       --win-color: #00FF00;
-      --header-height: 80px;
+      --header-height: 60px; /* Reduced header height to move machine closer to top */
       --machine-width: 900px;
       --machine-height: 950px;
     }
@@ -348,15 +348,35 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
     
-    /* Move the slot machine container up (closer to the top) */
+    /* Move the slot machine container up (much closer to the top) */
     .slot-machine-container {
-      margin-top: calc(var(--header-height) + 10px); /* Reduced gap after header */
+      margin-top: var(--header-height); /* No extra gap after header */
       padding-top: 0; /* Remove top padding to move it up */
     }
     
-    /* Adjust the machine size to be slightly smaller for better visibility */
+    /* Adjust the machine size and position for better visibility */
     .slot-machine {
-      margin-top: 0; /* Remove any default margin */
+      margin-top: -20px; /* Increased negative margin to move it up more */
+      margin-bottom: auto; /* Push everything up */
+      transform: translateY(-20px); /* Increased negative transform to move it even closer to header */
+    }
+    
+    /* Additional positioning to move the slot machine as close as possible to the header */
+    @media (min-height: 700px) {
+      .slot-machine-container {
+        padding-top: 0;
+      }
+      
+      .slot-machine {
+        margin-top: -25px; /* Even more negative margin for taller screens */
+        transform: translateY(-25px); /* More negative transform for taller screens */
+      }
+    }
+    
+    /* Reduce the size of the top section of the machine to save vertical space */
+    .machine-top {
+      padding: 3px 15px !important; /* Further reduced padding */
+      margin-bottom: 5px !important; /* Even less margin */
     }
     /* Fullscreen button styles */
     #fullscreen-toggle {
@@ -407,13 +427,12 @@
     .slot-machine-container {
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
+      justify-content: flex-start; /* Align content to the top */
       align-items: center;
       height: calc(100vh - var(--header-height));
       width: 100vw;
-      padding: 20px;
+      padding: 0px 20px 20px 20px; /* No top padding, normal padding on sides and bottom */
       margin-top: var(--header-height);
-      padding-top: 0; /* No extra padding to position the machine higher */
       background: radial-gradient(ellipse at center, rgba(101, 67, 33, 0.2) 0%, transparent 70%);
       transition: all 0.3s ease;
     }
@@ -474,7 +493,7 @@
       border: 8px solid var(--chrome);
       box-shadow: 
         0 0 40px rgba(0, 0, 0, 0.9),
-        inset 0 0 20px rgba(255, 215, 0, 0.2),
+        inset 0 0 20px rgba(255, 255, 255, 0.1),
         inset 0 -10px 20px rgba(0, 0, 0, 0.8);
       padding: 30px;
       overflow: visible;
