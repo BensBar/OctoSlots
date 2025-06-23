@@ -2,115 +2,217 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>OctoSlots - GitHub Octocat Slot Machine</title>
+  <meta name="viewport" content="width=1280, height=1084, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>OctoSlots - Professional Slot Machine</title>
   <style>
     :root {
-      --primary-bg: #0d1117;
-      --secondary-bg: #161b22;
-      --border-color: #30363d;
-      --text-color: #c9d1d9;
-      --highlight-color: #58a6ff;
-      --gold-color: #f1e05a;
-      --win-color: #3fb950;
-      --header-height: 60px;
+      --primary-bg: #1a0e0a;
+      --secondary-bg: #2d1b16;
+      --machine-body: #8B4513;
+      --machine-face: #1C1C1C;
+      --chrome: #C0C0C0;
+      --gold: #FFD700;
+      --red-led: #FF0000;
+      --green-led: #00FF00;
+      --blue-led: #0066FF;
+      --border-color: #444;
+      --text-color: #FFFFFF;
+      --highlight-color: #FFD700;
+      --gold-color: #FFD700;
+      --win-color: #00FF00;
+      --header-height: 80px;
+      --machine-width: 900px;
+      --machine-height: 950px;
     }
     body.light-mode {
-      --primary-bg: #f3f7f9;
-      --secondary-bg: #e6edf3;
-      --border-color: #b6bec6;
-      --text-color: #161b22;
-      --highlight-color: #1f6feb;
-      --gold-color: #ffdf5d;
-      --win-color: #22863a;
+      --primary-bg: #f0f8ff;
+      --secondary-bg: #e6f3ff;
+      --machine-body: #4682B4;
+      --machine-face: #F5F5F5;
+      --chrome: #708090;
+      --gold: #FF6347;
+      --red-led: #DC143C;
+      --green-led: #32CD32;
+      --blue-led: #1E90FF;
+      --text-color: #191970;
+      --highlight-color: #FF4500;
+      --gold-color: #FF6347;
+      --win-color: #228B22;
+    }
+    
+    body.light-mode {
+      background: radial-gradient(circle at center, #e6f3ff 0%, #f0f8ff 100%);
+    }
+    
+    body.light-mode .slot-machine-container {
+      background: radial-gradient(ellipse at center, rgba(70, 130, 180, 0.1) 0%, transparent 70%);
+    }
+    
+    body.light-mode .slot-machine {
+      background: linear-gradient(135deg, var(--machine-body) 0%, #5F9EA0 50%, var(--machine-body) 100%);
+    }
+    
+    body.light-mode .machine-top {
+      background: linear-gradient(135deg, var(--machine-face) 0%, #E0E0E0 100%);
+    }
+    
+    body.light-mode .reels-container {
+      background: linear-gradient(135deg, var(--machine-face) 0%, #DCDCDC 100%);
+    }
+    
+    body.light-mode .controls {
+      background: linear-gradient(135deg, var(--machine-face) 0%, #E0E0E0 100%);
+    }
+    
+    body.light-mode .score-card {
+      background: linear-gradient(135deg, #FFFFFF 0%, #F8F8FF 100%);
+      color: var(--text-color);
+    }
+    
+    body.light-mode .paytable {
+      background: linear-gradient(135deg, var(--machine-face) 0%, #E0E0E0 100%);
+    }
+    
+    body.light-mode .paytable-item span {
+      color: var(--text-color);
     }
     body.light-mode .app-header,
     body.light-mode .slot-machine,
     body.light-mode .paytable,
     body.light-mode .paytable-button {
-      box-shadow: 0 2px 8px rgba(0,0,0,0.07), 0 1.5px 3px rgba(31,111,235,0.04);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 1.5px 3px rgba(70,130,180,0.1);
+    }
+    
+    body.light-mode .app-header {
+      background: linear-gradient(135deg, var(--machine-body) 0%, #5F9EA0 100%);
+    }
+    
+    body.light-mode .user-info, 
+    body.light-mode .date-info,
+    body.light-mode .game-title {
+      color: #FFFFFF;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     }
     body.light-mode .win-message {
-      background-color: rgba(255,255,255,0.96) !important;
-      color: var(--text-color) !important;
-      box-shadow: 0 0 30px rgba(0,0,0,0.07);
+      background: linear-gradient(135deg, var(--gold) 0%, #FF7F50 100%) !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 0 50px rgba(255, 99, 71, 0.8);
     }
+    
     body.light-mode .win-message h2 {
-      color: var(--gold-color) !important;
+      color: #FFFFFF !important;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    
+    body.light-mode .win-message p {
+      color: #FFFFFF !important;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     }
     body.light-mode .paytable {
-      background-color: var(--secondary-bg) !important;
+      background: linear-gradient(135deg, var(--machine-face) 0%, #E0E0E0 100%) !important;
       color: var(--text-color) !important;
-      border: 1px solid var(--border-color) !important;
+      border: 4px solid var(--chrome) !important;
     }
-    body.light-mode .paytable-button {
-      background-color: var(--secondary-bg) !important;
+    
+    body.light-mode .paytable h3 {
       color: var(--highlight-color) !important;
-      border: 1px solid var(--border-color) !important;
+    }
+    
+    body.light-mode .paytable-button {
+      background: linear-gradient(135deg, var(--gold) 0%, #FF7F50 100%) !important;
+      color: #FFFFFF !important;
+      border: 4px solid var(--chrome) !important;
     }
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
+    
     body {
-      background-color: var(--primary-bg);
+      background: radial-gradient(circle at center, #2d1b16 0%, #1a0e0a 100%);
       color: var(--text-color);
       overflow: hidden;
       height: 100vh;
       width: 100vw;
       display: flex;
       flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      font-size: 18px;
     }
     .app-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 15px;
+      padding: 0 30px;
       height: var(--header-height);
-      background-color: var(--secondary-bg);
-      border-bottom: 1px solid var(--border-color);
+      background: linear-gradient(135deg, var(--machine-body) 0%, #654321 100%);
+      border-bottom: 4px solid var(--gold);
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       z-index: 10;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
+    
     .user-info, .date-info {
-      font-size: 14px;
-      color: #8b949e;
-      white-space: nowrap;
-    }
-    .game-title {
       font-size: 18px;
+      color: var(--gold);
+      white-space: nowrap;
       font-weight: bold;
-      color: var(--highlight-color);
-      margin: 0 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    }
+    
+    .game-title {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--gold);
+      margin: 0 20px;
       flex-shrink: 0;
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+      letter-spacing: 2px;
     }
     #theme-toggle {
-      background: none;
-      border: none;
+      background: linear-gradient(135deg, var(--gold) 0%, #DAA520 100%);
+      border: 3px solid var(--chrome);
       cursor: pointer;
-      font-size: 22px;
-      padding: 5px 10px;
+      font-size: 24px;
+      padding: 12px 16px;
       display: flex;
       align-items: center;
       outline: none;
-      transition: background 0.2s;
-      margin: 0 10px;
+      transition: all 0.3s;
+      margin: 0 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      min-width: 60px;
+      min-height: 60px;
+      justify-content: center;
     }
-    #theme-toggle:focus {
-      background: rgba(100,100,100,0.08);
-      border-radius: 50%;
+    
+    #theme-toggle:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
     }
+    
+    #theme-toggle:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
     #theme-icon {
-      transition: transform 0.2s;
+      transition: transform 0.3s;
     }
+    
     #theme-toggle:active #theme-icon {
-      transform: rotate(-30deg) scale(1.15);
+      transform: rotate(-30deg) scale(1.2);
     }
     .slot-machine-container {
       display: flex;
@@ -121,67 +223,157 @@
       width: 100vw;
       padding: 20px;
       margin-top: var(--header-height);
+      background: radial-gradient(ellipse at center, rgba(139, 69, 19, 0.1) 0%, transparent 70%);
     }
+    
     .slot-machine {
       position: relative;
-      width: 100%;
-      max-width: 800px;
-      background-color: var(--secondary-bg);
-      border-radius: 20px;
-      border: 3px solid var(--border-color);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
-                  inset 0 0 10px rgba(255, 255, 255, 0.1);
-      padding: 20px;
-      overflow: hidden;
+      width: var(--machine-width);
+      height: var(--machine-height);
+      background: linear-gradient(135deg, var(--machine-body) 0%, #654321 50%, var(--machine-body) 100%);
+      border-radius: 30px;
+      border: 8px solid var(--chrome);
+      box-shadow: 
+        0 0 40px rgba(0, 0, 0, 0.8),
+        inset 0 0 20px rgba(255, 215, 0, 0.1),
+        inset 0 -10px 20px rgba(0, 0, 0, 0.3);
+      padding: 30px;
+      overflow: visible;
+      max-width: none;
+    }
+    
+    .machine-glow {
+      position: absolute;
+      top: -20px;
+      left: -20px;
+      right: -20px;
+      bottom: -20px;
+      background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+      border-radius: 50px;
+      z-index: -1;
+      animation: glow-pulse 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes glow-pulse {
+      0% { opacity: 0.5; }
+      100% { opacity: 0.8; }
     }
     .machine-top {
       text-align: center;
-      margin-bottom: 20px;
-      padding: 10px;
-      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 30px;
+      padding: 20px;
+      background: linear-gradient(135deg, var(--machine-face) 0%, #333 100%);
+      border-radius: 20px;
+      border: 4px solid var(--chrome);
       position: relative;
+      box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.5),
+        0 4px 8px rgba(0, 0, 0, 0.3);
     }
+    
     .jackpot-display {
-      font-size: clamp(1.5rem, 5vw, 2.5rem);
-      font-weight: bold;
-      color: var(--gold-color);
-      text-shadow: 0 0 10px rgba(241, 224, 90, 0.5);
+      font-size: 48px;
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 
+        0 0 20px var(--gold),
+        0 0 40px var(--gold),
+        2px 2px 4px rgba(0, 0, 0, 0.8);
+      letter-spacing: 4px;
+      animation: jackpot-glow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes jackpot-glow {
+      0% { text-shadow: 0 0 20px var(--gold), 0 0 40px var(--gold), 2px 2px 4px rgba(0, 0, 0, 0.8); }
+      100% { text-shadow: 0 0 30px var(--gold), 0 0 60px var(--gold), 2px 2px 4px rgba(0, 0, 0, 0.8); }
     }
     .flashing-lights {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 10px;
+      top: -8px;
+      left: 10px;
+      right: 10px;
+      height: 16px;
       display: flex;
       justify-content: space-around;
+      z-index: 5;
     }
+    
     .light {
-      width: 10px;
-      height: 10px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       background-color: #444;
+      border: 2px solid var(--chrome);
+      box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.5);
+      transition: all 0.2s;
     }
+    
     .light.on {
-      background-color: var(--highlight-color);
-      box-shadow: 0 0 10px var(--highlight-color);
+      background-color: var(--red-led);
+      box-shadow: 
+        0 0 20px var(--red-led),
+        0 0 40px var(--red-led),
+        inset 0 0 8px rgba(255, 255, 255, 0.3);
+    }
+    
+    .light:nth-child(2n).on {
+      background-color: var(--blue-led);
+      box-shadow: 
+        0 0 20px var(--blue-led),
+        0 0 40px var(--blue-led),
+        inset 0 0 8px rgba(255, 255, 255, 0.3);
+    }
+    
+    .light:nth-child(3n).on {
+      background-color: var(--green-led);
+      box-shadow: 
+        0 0 20px var(--green-led),
+        0 0 40px var(--green-led),
+        inset 0 0 8px rgba(255, 255, 255, 0.3);
     }
     .reels-container {
       display: flex;
       justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 20px;
+      margin-bottom: 30px;
       position: relative;
+      background: linear-gradient(135deg, var(--machine-face) 0%, #1a1a1a 100%);
+      padding: 20px;
+      border-radius: 20px;
+      border: 4px solid var(--chrome);
+      box-shadow: 
+        inset 0 0 30px rgba(0, 0, 0, 0.8),
+        0 4px 8px rgba(0, 0, 0, 0.3);
     }
+    
     .reel {
       position: relative;
       flex: 1;
-      height: clamp(150px, 30vh, 300px);
-      background-color: var(--primary-bg);
-      border-radius: 10px;
-      border: 2px solid var(--border-color);
+      height: 300px;
+      background: linear-gradient(135deg, #000 0%, #1a1a1a 50%, #000 100%);
+      border-radius: 15px;
+      border: 3px solid var(--chrome);
       overflow: hidden;
-      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+      box-shadow: 
+        inset 0 0 30px rgba(0, 0, 0, 0.9),
+        0 0 10px rgba(255, 215, 0, 0.3);
+    }
+    
+    .reel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 100%
+      );
+      pointer-events: none;
+      z-index: 2;
     }
     .slot-item {
       position: absolute;
@@ -190,107 +382,173 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      transition: top 0.5s cubic-bezier(.4,2,.6,.8);
+      transition: top 0.8s cubic-bezier(.4,1.6,.6,.8);
+      background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
     }
+    
     .slot-item.top { top: 0; }
     .slot-item.middle { top: 33.33%; }
     .slot-item.bottom { top: 66.66%; }
+    
     .slot-item img {
+      max-width: 85%;
+      max-height: 85%;
+      object-fit: contain;
+      transition: transform 0.5s cubic-bezier(.4,1.6,.6,.8);
+      filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+    }
+    
+    .slot-item.middle img {
       max-width: 95%;
       max-height: 95%;
-      object-fit: contain;
-      transition: transform 0.3s cubic-bezier(.4,2,.6,.8);
+      filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
     }
+    
     .spinning .slot-item {
-      animation: spin-blur 0.1s infinite linear;
+      animation: spin-blur 0.05s infinite linear;
     }
+    
     @keyframes spin-blur {
-      0%, 100% { filter: blur(1px); }
-      50% { filter: blur(2px); }
+      0%, 100% { 
+        filter: blur(2px) brightness(0.8); 
+        transform: scale(0.95);
+      }
+      50% { 
+        filter: blur(4px) brightness(0.6); 
+        transform: scale(0.9);
+      }
     }
     .win-line {
       position: absolute;
       left: 0;
       right: 0;
       top: 50%;
-      height: 6px;
-      background-color: red;
+      height: 8px;
+      background: linear-gradient(90deg, transparent 0%, var(--red-led) 50%, transparent 100%);
       transform: translateY(-50%);
       z-index: 5;
       pointer-events: none;
-      border: 1px solid white;
-      box-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
-      opacity: 0.6;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      border-radius: 4px;
+      box-shadow: 0 0 20px var(--red-led);
+      opacity: 0;
+      transition: opacity 0.3s;
     }
+    
     .win-line.highlight {
-      background-color: lime;
-      box-shadow: 0 0 10px lime;
-      opacity: 0.8;
-      animation: pulse 1s infinite;
+      background: linear-gradient(90deg, transparent 0%, var(--green-led) 50%, transparent 100%);
+      box-shadow: 
+        0 0 30px var(--green-led),
+        0 0 60px var(--green-led);
+      opacity: 1;
+      animation: win-line-pulse 0.5s infinite alternate;
     }
-    @keyframes pulse {
-      0% { opacity: 0.5; }
-      50% { opacity: 0.8; }
-      100% { opacity: 0.5; }
+    
+    @keyframes win-line-pulse {
+      0% { 
+        opacity: 0.8;
+        box-shadow: 0 0 30px var(--green-led), 0 0 60px var(--green-led);
+      }
+      100% { 
+        opacity: 1;
+        box-shadow: 0 0 50px var(--green-led), 0 0 100px var(--green-led);
+      }
     }
     .controls {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 10px;
-      border-top: 2px solid var(--border-color);
+      padding: 20px;
+      background: linear-gradient(135deg, var(--machine-face) 0%, #333 100%);
+      border-radius: 20px;
+      border: 4px solid var(--chrome);
+      box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.5),
+        0 4px 8px rgba(0, 0, 0, 0.3);
     }
+    
     .score-display {
       display: flex;
       justify-content: space-between;
       width: 100%;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
+      gap: 20px;
     }
+    
     .score-card {
-      background-color: var(--primary-bg);
-      padding: 10px 15px;
-      border-radius: 10px;
-      border: 2px solid var(--border-color);
+      background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+      padding: 20px 25px;
+      border-radius: 15px;
+      border: 3px solid var(--chrome);
       text-align: center;
-      min-width: 120px;
+      flex: 1;
+      box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.8),
+        0 4px 8px rgba(0, 0, 0, 0.3);
     }
+    
     .score-card h3 {
-      font-size: 14px;
-      margin-bottom: 5px;
-      color: #8b949e;
-    }
-    .score-value {
-      font-size: 22px;
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: var(--gold);
       font-weight: bold;
-      color: var(--highlight-color);
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+      letter-spacing: 1px;
+    }
+    
+    .score-value {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 
+        0 0 10px var(--gold),
+        2px 2px 4px rgba(0, 0, 0, 0.8);
+      font-family: "Courier New", monospace;
     }
     .spin-button {
-      background: linear-gradient(to bottom, #1f6feb, #1158c7);
+      background: linear-gradient(135deg, var(--red-led) 0%, #CC0000 50%, var(--red-led) 100%);
       color: white;
-      border: none;
-      border-radius: 50px;
-      padding: 15px 40px;
-      font-size: 24px;
-      font-weight: bold;
+      border: 6px solid var(--chrome);
+      border-radius: 25px;
+      padding: 25px 60px;
+      font-size: 32px;
+      font-weight: 900;
       cursor: pointer;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.5),
+        inset 0 0 20px rgba(255, 255, 255, 0.2);
       transition: all 0.2s ease;
       position: relative;
       overflow: hidden;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+      letter-spacing: 3px;
+      min-width: 200px;
+      min-height: 80px;
     }
+    
     .spin-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 
+        0 12px 30px rgba(0, 0, 0, 0.6),
+        inset 0 0 30px rgba(255, 255, 255, 0.3);
+      background: linear-gradient(135deg, #FF3333 0%, #FF0000 50%, #CC0000 100%);
     }
+    
     .spin-button:active {
-      transform: translateY(1px);
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+      transform: translateY(2px);
+      box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.4),
+        inset 0 0 15px rgba(255, 255, 255, 0.1);
     }
+    
     .spin-button:disabled {
-      background: linear-gradient(to bottom, #2b3442, #1d2430);
-      color: #4d5566;
+      background: linear-gradient(135deg, #666 0%, #444 50%, #333 100%);
+      color: #999;
       cursor: not-allowed;
-      box-shadow: none;
+      box-shadow: 
+        0 4px 10px rgba(0, 0, 0, 0.3),
+        inset 0 0 10px rgba(255, 255, 255, 0.05);
+      transform: translateY(0);
     }
     .spin-button::after {
       content: '';
@@ -299,155 +557,369 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0));
+      background: linear-gradient(45deg, 
+        transparent 30%, 
+        rgba(255,255,255,0.3) 50%, 
+        transparent 70%);
       pointer-events: none;
+      transform: translateX(-100%);
+      transition: transform 0.6s;
+    }
+    
+    .spin-button:hover::after {
+      transform: translateX(100%);
     }
     .win-message {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background-color: rgba(22, 27, 34, 0.9);
-      padding: 20px;
-      border-radius: 10px;
+      background: linear-gradient(135deg, var(--gold) 0%, #DAA520 100%);
+      padding: 40px;
+      border-radius: 20px;
+      border: 6px solid var(--chrome);
       text-align: center;
       z-index: 20;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+      box-shadow: 
+        0 0 50px rgba(255, 215, 0, 0.8),
+        0 0 100px rgba(255, 215, 0, 0.4),
+        inset 0 0 20px rgba(255, 255, 255, 0.3);
       opacity: 0;
       visibility: hidden;
-      transition: all 0.3s ease;
+      transition: all 0.5s ease;
+      animation: win-message-glow 2s ease-in-out infinite alternate;
     }
+    
     .win-message.show {
       opacity: 1;
       visibility: visible;
     }
+    
+    @keyframes win-message-glow {
+      0% { 
+        box-shadow: 
+          0 0 50px rgba(255, 215, 0, 0.8),
+          0 0 100px rgba(255, 215, 0, 0.4),
+          inset 0 0 20px rgba(255, 255, 255, 0.3);
+      }
+      100% { 
+        box-shadow: 
+          0 0 70px rgba(255, 215, 0, 1),
+          0 0 140px rgba(255, 215, 0, 0.6),
+          inset 0 0 30px rgba(255, 255, 255, 0.4);
+      }
+    }
+    
     .win-message h2 {
-      color: var(--gold-color);
-      font-size: 28px;
-      margin-bottom: 10px;
+      color: var(--machine-face);
+      font-size: 48px;
+      margin-bottom: 20px;
+      font-weight: 900;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      letter-spacing: 3px;
     }
+    
     .win-message p {
-      color: var(--text-color);
-      font-size: 18px;
-      margin-bottom: 15px;
+      color: var(--machine-face);
+      font-size: 24px;
+      margin-bottom: 25px;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     }
+    
     .win-message button {
-      background-color: var(--highlight-color);
+      background: linear-gradient(135deg, var(--red-led) 0%, #CC0000 100%);
       color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 10px 20px;
-      font-size: 16px;
+      border: 4px solid var(--chrome);
+      border-radius: 15px;
+      padding: 15px 30px;
+      font-size: 20px;
+      font-weight: bold;
       cursor: pointer;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s;
+    }
+    
+    .win-message button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
     }
     .paytable {
       position: absolute;
-      top: 20px;
-      right: 20px;
-      background-color: var(--secondary-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 5px;
-      padding: 10px;
-      font-size: 12px;
+      top: 30px;
+      right: 30px;
+      background: linear-gradient(135deg, var(--machine-face) 0%, #333 100%);
+      border: 4px solid var(--chrome);
+      border-radius: 15px;
+      padding: 20px;
+      font-size: 16px;
       z-index: 30;
       transform: scale(0);
       transform-origin: top right;
-      transition: transform 0.3s ease;
+      transition: transform 0.4s ease;
+      box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.5),
+        inset 0 0 20px rgba(255, 215, 0, 0.1);
+      min-width: 280px;
     }
+    
     .paytable-button {
       position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: var(--secondary-bg);
-      color: var(--highlight-color);
-      border: 1px solid var(--border-color);
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, var(--gold) 0%, #DAA520 100%);
+      color: var(--machine-face);
+      border: 4px solid var(--chrome);
       border-radius: 50%;
-      width: 30px;
-      height: 30px;
+      width: 50px;
+      height: 50px;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 16px;
+      font-size: 24px;
+      font-weight: bold;
       cursor: pointer;
       z-index: 31;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s;
     }
+    
+    .paytable-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    }
+    
     .paytable.show {
       transform: scale(1);
     }
+    
     .paytable h3 {
-      color: var(--highlight-color);
-      margin-bottom: 5px;
+      color: var(--gold);
+      margin-bottom: 15px;
+      font-size: 20px;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+      text-align: center;
+      letter-spacing: 1px;
     }
+    
     .paytable-item {
       display: flex;
       align-items: center;
-      margin-bottom: 5px;
+      margin-bottom: 12px;
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      border: 1px solid var(--chrome);
     }
+    
     .paytable-item img {
-      width: 30px;
-      height: 30px;
-      margin-right: 10px;
+      width: 40px;
+      height: 40px;
+      margin-right: 15px;
+      filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
+    }
+    
+    .paytable-item span {
+      color: var(--text-color);
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
     }
     .lever-container {
       position: absolute;
-      right: -40px;
+      right: -60px;
       top: 50%;
       transform: translateY(-50%);
-      height: 200px;
+      height: 250px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      z-index: 5;
     }
+    
     .lever-base {
-      width: 40px;
-      height: 80px;
-      background-color: #333;
-      border-radius: 10px 10px 0 0;
+      width: 60px;
+      height: 100px;
+      background: linear-gradient(135deg, var(--chrome) 0%, #999 100%);
+      border-radius: 15px 15px 0 0;
       position: relative;
+      border: 3px solid #666;
+      box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.3),
+        inset 0 0 10px rgba(255, 255, 255, 0.2);
     }
+    
     .lever {
-      width: 20px;
-      height: 120px;
-      background: linear-gradient(to bottom, #c0392b, #e74c3c);
-      border-radius: 10px;
+      width: 30px;
+      height: 150px;
+      background: linear-gradient(135deg, var(--red-led) 0%, #CC0000 50%, #AA0000 100%);
+      border-radius: 15px;
+      border: 3px solid var(--chrome);
       position: absolute;
       top: 0;
-      left: 10px;
+      left: 15px;
       transform-origin: top center;
       transform: rotate(0deg);
-      transition: transform 0.3s ease;
+      transition: transform 0.4s ease;
       cursor: pointer;
+      box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.3),
+        inset 0 0 10px rgba(255, 255, 255, 0.2);
     }
+    
     .lever::after {
       content: '';
       position: absolute;
-      bottom: -15px;
-      left: 0;
-      width: 20px;
-      height: 20px;
-      background-color: #c0392b;
+      bottom: -20px;
+      left: -5px;
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--red-led) 0%, #CC0000 100%);
       border-radius: 50%;
+      border: 3px solid var(--chrome);
+      box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.3),
+        inset 0 0 10px rgba(255, 255, 255, 0.2);
     }
+    
     .lever.pulled {
-      transform: rotate(60deg);
+      transform: rotate(45deg);
+    }
+    
+    .lever:hover {
+      background: linear-gradient(135deg, #FF3333 0%, var(--red-led) 50%, #CC0000 100%);
     }
     audio {
       display: none;
     }
-    @media (max-width: 767px) {
-      .reels-container { gap: 5px; }
-      .reel { height: clamp(100px, 20vh, 200px); }
-      .slot-machine { padding: 10px; }
-      .spin-button { padding: 10px 30px; font-size: 20px; }
-      .score-card { min-width: 80px; padding: 8px; }
-      .score-value { font-size: 18px; }
-      .lever-container { display: none; }
+    
+    /* Touchscreen Optimizations */
+    @media (max-width: 1300px) {
+      .slot-machine {
+        width: 90vw;
+        height: 85vh;
+        max-width: 1200px;
+      }
+      
+      .lever-container {
+        display: none;
+      }
     }
-    @media (max-height: 600px) {
-      .machine-top { margin-bottom: 10px; padding: 5px; }
-      .jackpot-display { font-size: 1.2rem; }
-      .controls { padding: 5px; }
-      .score-display { margin-bottom: 10px; }
+    
+    @media (max-height: 1100px) {
+      .slot-machine {
+        height: 80vh;
+      }
+      
+      .reel {
+        height: 250px;
+      }
+      
+      .jackpot-display {
+        font-size: 36px;
+      }
+    }
+    
+    @media (max-width: 900px) {
+      .reels-container { 
+        gap: 15px; 
+        padding: 15px;
+      }
+      
+      .reel { 
+        height: 220px; 
+      }
+      
+      .slot-machine { 
+        padding: 20px; 
+      }
+      
+      .spin-button { 
+        padding: 20px 50px; 
+        font-size: 28px; 
+        min-width: 180px;
+        min-height: 70px;
+      }
+      
+      .score-card { 
+        padding: 15px 20px; 
+      }
+      
+      .score-value { 
+        font-size: 28px; 
+      }
+      
+      .lever-container { 
+        display: none; 
+      }
+    }
+    
+    @media (max-height: 800px) {
+      .machine-top { 
+        margin-bottom: 20px; 
+        padding: 15px; 
+      }
+      
+      .jackpot-display { 
+        font-size: 32px; 
+      }
+      
+      .controls { 
+        padding: 15px; 
+      }
+      
+      .score-display { 
+        margin-bottom: 20px; 
+      }
+      
+      .reel {
+        height: 180px;
+      }
+    }
+    
+    /* Add some decorative elements */
+    .machine-corner {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: var(--gold);
+      border: 2px solid var(--chrome);
+    }
+    
+    .machine-corner.top-left {
+      top: 10px;
+      left: 10px;
+      border-radius: 0 0 10px 0;
+    }
+    
+    .machine-corner.top-right {
+      top: 10px;
+      right: 10px;
+      border-radius: 0 0 0 10px;
+    }
+    
+    .machine-corner.bottom-left {
+      bottom: 10px;
+      left: 10px;
+      border-radius: 0 10px 0 0;
+    }
+    
+    .machine-corner.bottom-right {
+      bottom: 10px;
+      right: 10px;
+      border-radius: 10px 0 0 0;
+    }
+    
+    /* Vibration simulation */
+    .slot-machine.vibrate {
+      animation: vibrate 0.1s linear infinite;
+    }
+    
+    @keyframes vibrate {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-1px); }
+      75% { transform: translateX(1px); }
     }
   </style>
 </head>
@@ -470,7 +942,13 @@
   <audio id="lose-sound" src="sounds/lose.wav" preload="auto"></audio>
   
   <div class="slot-machine-container">
+    <div class="machine-glow"></div>
     <div class="slot-machine">
+      <div class="machine-corner top-left"></div>
+      <div class="machine-corner top-right"></div>
+      <div class="machine-corner bottom-left"></div>
+      <div class="machine-corner bottom-right"></div>
+      
       <button class="paytable-button">?</button>
       <div class="paytable">
         <h3>Pay Table</h3>
@@ -722,8 +1200,8 @@
       const config = {
         spinCost: 10,
         defaultCredits: 500,
-        spinDuration: 2000,
-        stopDelay: 500,
+        spinDuration: 3000, // Longer spin for more excitement
+        stopDelay: 800, // Longer delays between reel stops
         prizes: {
           jackpot: 1000,
           threeOriginal: 1000,
@@ -812,7 +1290,8 @@
         paytableButton: document.querySelector('.paytable-button'),
         paytable: document.querySelector('.paytable'),
         lights: document.querySelectorAll('.light'),
-        lever: document.getElementById('lever')
+        lever: document.getElementById('lever'),
+        slotMachine: document.querySelector('.slot-machine')
       };
 
       function initializeSlots() {
@@ -850,6 +1329,11 @@
       async function spinAllReels() {
         if (state.spinning) return;
         if (state.credits < state.bet) {
+          // Add screen shake for dramatic effect
+          elements.slotMachine.style.animation = 'vibrate 0.5s ease-in-out 3';
+          setTimeout(() => {
+            elements.slotMachine.style.animation = '';
+          }, 1500);
           alert('Not enough credits!');
           return;
         }
@@ -861,6 +1345,12 @@
           elements.winMessage.classList.remove('show');
           stopLights();
         }
+        
+        // Haptic feedback simulation
+        if (navigator.vibrate) {
+          navigator.vibrate([100, 50, 100]);
+        }
+        
         unlockAudio();
         spinSoundInstance = playSound('spin');
         state.credits -= state.bet;
@@ -870,6 +1360,9 @@
         elements.spinButton.disabled = true;
         elements.winLine.classList.remove('highlight');
         startLights();
+
+        // Add machine vibration effect
+        elements.slotMachine.classList.add('vibrate');
 
         // Reset all rows to perfectly aligned before spin
         elements.slotItems.middle.forEach(item => item.style.top = '33.33%');
@@ -883,8 +1376,9 @@
             setRandomSymbol(elements.slotItems.top[reelIndex]);
             setRandomSymbol(elements.slotItems.middle[reelIndex]);
             setRandomSymbol(elements.slotItems.bottom[reelIndex]);
-          }, 100);
+          }, 80); // Faster symbol changes for more excitement
         });
+        
         for (let i = 0; i < 3; i++) {
           await new Promise(resolve => {
             setTimeout(() => {
@@ -894,10 +1388,20 @@
               setSymbol(elements.slotItems.bottom[i], octocats[Math.floor(Math.random() * octocats.length)].name);
               elements.reels[i].classList.remove('spinning');
               playSound('stop');
+              
+              // Haptic feedback for each reel stop
+              if (navigator.vibrate) {
+                navigator.vibrate(50);
+              }
+              
               resolve();
             }, config.spinDuration + i * config.stopDelay);
           });
         }
+        
+        // Stop machine vibration
+        elements.slotMachine.classList.remove('vibrate');
+        
         stopSound(spinSoundInstance);
         state.currentSymbols = [
           elements.slotItems.middle[0].dataset.name,
@@ -923,6 +1427,11 @@
           elements.winLine.classList.add('highlight');
           playSound(win.sound);
           startLights(true);
+          
+          // Big win haptic feedback
+          if (navigator.vibrate && win.amount >= 250) {
+            navigator.vibrate([200, 100, 200, 100, 200]);
+          }
         } else {
           playSound('lose');
           stopLights();
@@ -931,7 +1440,7 @@
         setTimeout(() => {
           state.spinning = false;
           elements.spinButton.disabled = false;
-        }, 500);
+        }, 800);
       }
 
       function evaluateWin(symbols) {
@@ -972,6 +1481,12 @@
         elements.lights.forEach(light => light.classList.remove('on'));
       }
       elements.spinButton.addEventListener('click', spinAllReels);
+      elements.spinButton.addEventListener('touchstart', function(e) {
+        e.preventDefault(); // Prevent double-tap zoom
+        if (navigator.vibrate) {
+          navigator.vibrate(50);
+        }
+      });
       elements.continueButton.addEventListener('click', () => {
         elements.winMessage.classList.remove('show');
         elements.winLine.classList.remove('highlight');
@@ -986,17 +1501,27 @@
         }
       });
       if (elements.lever) {
-        elements.lever.addEventListener('click', function() {
+        // Add touch and mouse events for better responsiveness
+        const handleLeverPull = function() {
           if (!state.spinning && state.canPull) {
             state.canPull = false;
             elements.lever.classList.add('pulled');
+            
+            // Haptic feedback
+            if (navigator.vibrate) {
+              navigator.vibrate(100);
+            }
+            
             setTimeout(() => {
               elements.lever.classList.remove('pulled');
               spinAllReels();
-              setTimeout(() => { state.canPull = true; }, 800);
-            }, 400);
+              setTimeout(() => { state.canPull = true; }, 1200);
+            }, 600);
           }
-        });
+        };
+        
+        elements.lever.addEventListener('click', handleLeverPull);
+        elements.lever.addEventListener('touchstart', handleLeverPull);
       }
       initializeSlots();
       updateDisplay();
