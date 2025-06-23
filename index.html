@@ -2,20 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=1280, height=1084, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=1280, height=1084, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OctoSlots">
+  <meta name="mobile-web-app-capable" content="yes">
   <title>OctoSlots - Professional Slot Machine</title>
   <style>
     :root {
-      --primary-bg: #1a0e0a;
-      --secondary-bg: #2d1b16;
-      --machine-body: #8B4513;
-      --machine-face: #1C1C1C;
-      --chrome: #C0C0C0;
+      /* Dark Mode - Casino Night Theme (Default) */
+      --primary-bg: #000000;
+      --secondary-bg: #111111;
+      --machine-body: #654321;
+      --machine-face: #000000;
+      --chrome: #2a2a2a;
       --gold: #FFD700;
       --red-led: #FF0000;
       --green-led: #00FF00;
       --blue-led: #0066FF;
-      --border-color: #444;
+      --border-color: #333;
       --text-color: #FFFFFF;
       --highlight-color: #FFD700;
       --gold-color: #FFD700;
@@ -25,66 +30,125 @@
       --machine-height: 950px;
     }
     body.light-mode {
-      --primary-bg: #f0f8ff;
-      --secondary-bg: #e6f3ff;
-      --machine-body: #4682B4;
-      --machine-face: #F5F5F5;
-      --chrome: #708090;
-      --gold: #FF6347;
-      --red-led: #DC143C;
-      --green-led: #32CD32;
-      --blue-led: #1E90FF;
-      --text-color: #191970;
-      --highlight-color: #FF4500;
-      --gold-color: #FF6347;
-      --win-color: #228B22;
+      /* Light Mode - Bright Casino/Arcade Theme */
+      --primary-bg: #FFFFFF;
+      --secondary-bg: #F8F9FA;
+      --machine-body: #E3F2FD;
+      --machine-face: #FFFFFF;
+      --chrome: #607D8B;
+      --gold: #FF9800;
+      --red-led: #F44336;
+      --green-led: #4CAF50;
+      --blue-led: #2196F3;
+      --border-color: #E0E0E0;
+      --text-color: #212121;
+      --highlight-color: #FF9800;
+      --gold-color: #FF9800;
+      --win-color: #4CAF50;
     }
     
+    /* Dark Mode Body */
+    body {
+      background: radial-gradient(circle at center, #111111 0%, #000000 100%);
+    }
+    
+    /* Light Mode Body */
     body.light-mode {
-      background: radial-gradient(circle at center, #e6f3ff 0%, #f0f8ff 100%);
+      background: radial-gradient(circle at center, #F5F5F5 0%, #FFFFFF 100%);
     }
     
+    /* Light Mode Slot Machine Container */
     body.light-mode .slot-machine-container {
-      background: radial-gradient(ellipse at center, rgba(70, 130, 180, 0.1) 0%, transparent 70%);
+      background: radial-gradient(ellipse at center, rgba(33, 150, 243, 0.1) 0%, transparent 70%);
     }
     
+    /* Light Mode Machine Styling */
     body.light-mode .slot-machine {
-      background: linear-gradient(135deg, var(--machine-body) 0%, #5F9EA0 50%, var(--machine-body) 100%);
+      background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 50%, #E3F2FD 100%);
+      border: 8px solid var(--chrome);
+      box-shadow: 
+        0 0 40px rgba(0, 0, 0, 0.2),
+        inset 0 0 20px rgba(33, 150, 243, 0.1),
+        inset 0 -10px 20px rgba(0, 0, 0, 0.05);
     }
     
+    /* Light Mode Machine Glow */
+    body.light-mode .machine-glow {
+      background: radial-gradient(ellipse at center, rgba(33, 150, 243, 0.3) 0%, transparent 70%);
+    }
+    
+    /* Light Mode Machine Top */
     body.light-mode .machine-top {
-      background: linear-gradient(135deg, var(--machine-face) 0%, #E0E0E0 100%);
+      background: linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%);
+      border: 4px solid var(--chrome);
+      box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.1);
     }
     
+    /* Light Mode Jackpot Display */
+    body.light-mode .jackpot-display {
+      color: var(--gold);
+      text-shadow: 
+        0 0 20px rgba(255, 152, 0, 0.8),
+        0 0 40px rgba(255, 152, 0, 0.6),
+        2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Light Mode Reels Container */
     body.light-mode .reels-container {
-      background: linear-gradient(135deg, var(--machine-face) 0%, #DCDCDC 100%);
+      background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+      border: 4px solid var(--chrome);
+      box-shadow: 
+        inset 0 0 30px rgba(0, 0, 0, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.1);
     }
     
+    /* Light Mode Reels */
+    body.light-mode .reel {
+      background: linear-gradient(135deg, #FAFAFA 0%, #F0F0F0 50%, #FAFAFA 100%);
+      border: 3px solid var(--chrome);
+      box-shadow: 
+        inset 0 0 30px rgba(0, 0, 0, 0.1),
+        0 0 10px rgba(33, 150, 243, 0.2);
+    }
+    
+    /* Light Mode Controls */
     body.light-mode .controls {
-      background: linear-gradient(135deg, var(--machine-face) 0%, #E0E0E0 100%);
+      background: linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%);
+      border: 4px solid var(--chrome);
+      box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.1);
     }
     
+    /* Light Mode Score Cards */
     body.light-mode .score-card {
-      background: linear-gradient(135deg, #FFFFFF 0%, #F8F8FF 100%);
+      background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+      border: 3px solid var(--chrome);
       color: var(--text-color);
+      box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.05),
+        0 4px 8px rgba(0, 0, 0, 0.1);
     }
     
-    body.light-mode .paytable {
-      background: linear-gradient(135deg, var(--machine-face) 0%, #E0E0E0 100%);
-    }
-    
-    body.light-mode .paytable-item span {
+    /* Light Mode Score Card Text */
+    body.light-mode .score-card h3 {
       color: var(--text-color);
-    }
-    body.light-mode .app-header,
-    body.light-mode .slot-machine,
-    body.light-mode .paytable,
-    body.light-mode .paytable-button {
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 1.5px 3px rgba(70,130,180,0.1);
+      text-shadow: none;
     }
     
+    body.light-mode .score-value {
+      color: var(--gold);
+      text-shadow: 
+        0 0 10px rgba(255, 152, 0, 0.8),
+        2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    /* Light Mode Header */
     body.light-mode .app-header {
-      background: linear-gradient(135deg, var(--machine-body) 0%, #5F9EA0 100%);
+      background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+      border-bottom: 4px solid var(--gold);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     }
     
     body.light-mode .user-info, 
@@ -93,35 +157,154 @@
       color: #FFFFFF;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     }
+    
+    /* Light Mode Theme Toggle */
+    body.light-mode #theme-toggle {
+      background: linear-gradient(135deg, var(--gold) 0%, #F57C00 100%);
+      border: 3px solid #FFFFFF;
+      color: #FFFFFF;
+    }
+    /* Light Mode Spin Button */
+    body.light-mode .spin-button {
+      background: linear-gradient(135deg, var(--red-led) 0%, #D32F2F 50%, #C62828 100%);
+      border: 6px solid var(--chrome);
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+    
+    body.light-mode .spin-button:hover {
+      background: linear-gradient(135deg, #FF5722 0%, var(--red-led) 50%, #D32F2F 100%);
+    }
+    
+    body.light-mode .spin-button:disabled {
+      background: linear-gradient(135deg, #BDBDBD 0%, #9E9E9E 50%, #757575 100%);
+      color: #FFFFFF;
+    }
+    /* Light Mode Win Message */
     body.light-mode .win-message {
-      background: linear-gradient(135deg, var(--gold) 0%, #FF7F50 100%) !important;
+      background: linear-gradient(135deg, var(--gold) 0%, #F57C00 100%) !important;
+      border: 6px solid #FFFFFF !important;
       color: #FFFFFF !important;
-      box-shadow: 0 0 50px rgba(255, 99, 71, 0.8);
+      box-shadow: 
+        0 0 50px rgba(255, 152, 0, 0.8),
+        0 0 100px rgba(255, 152, 0, 0.4),
+        inset 0 0 20px rgba(255, 255, 255, 0.3);
     }
     
     body.light-mode .win-message h2 {
       color: #FFFFFF !important;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     }
     
     body.light-mode .win-message p {
       color: #FFFFFF !important;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
     }
+    
+    body.light-mode .win-message button {
+      background: linear-gradient(135deg, var(--red-led) 0%, #D32F2F 100%);
+      border: 4px solid #FFFFFF;
+    }
+    
+    /* Light Mode Paytable */
     body.light-mode .paytable {
-      background: linear-gradient(135deg, var(--machine-face) 0%, #E0E0E0 100%) !important;
-      color: var(--text-color) !important;
+      background: linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%) !important;
       border: 4px solid var(--chrome) !important;
+      color: var(--text-color) !important;
+      box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.15),
+        inset 0 0 20px rgba(33, 150, 243, 0.1);
     }
     
     body.light-mode .paytable h3 {
-      color: var(--highlight-color) !important;
+      color: var(--gold) !important;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+    
+    body.light-mode .paytable-item {
+      background: rgba(33, 150, 243, 0.05);
+      border: 1px solid var(--chrome);
+    }
+    
+    body.light-mode .paytable-item span {
+      color: var(--text-color) !important;
+      text-shadow: none;
     }
     
     body.light-mode .paytable-button {
-      background: linear-gradient(135deg, var(--gold) 0%, #FF7F50 100%) !important;
-      color: #FFFFFF !important;
+      background: linear-gradient(135deg, var(--gold) 0%, #F57C00 100%) !important;
       border: 4px solid var(--chrome) !important;
+      color: #FFFFFF !important;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    }
+    
+    /* Dark Mode Specific Overrides */
+    body:not(.light-mode) .slot-machine {
+      border: 8px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .machine-top {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .reels-container {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .reel {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .controls {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .score-card {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .spin-button {
+      border: 6px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .win-message {
+      border: 6px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .win-message button {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) #theme-toggle {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .paytable-button {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .paytable {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .paytable-item {
+      border: 1px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .light {
+      border: 2px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .lever {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .lever::after {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .lever-base {
+      border: 3px solid #000 !important;
     }
     * {
       margin: 0;
@@ -130,11 +313,16 @@
       font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
       touch-action: manipulation;
     }
     
     body {
-      background: radial-gradient(circle at center, #2d1b16 0%, #1a0e0a 100%);
+      background: radial-gradient(circle at center, #111111 0%, #000000 100%);
       color: var(--text-color);
       overflow: hidden;
       height: 100vh;
@@ -145,6 +333,12 @@
       top: 0;
       left: 0;
       font-size: 18px;
+      /* iOS Safari specific */
+      -webkit-overflow-scrolling: touch;
+      /* Prevent iOS Safari bounce */
+      overscroll-behavior: none;
+      /* Handle iPhone notch */
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
     .app-header {
       display: flex;
@@ -223,20 +417,20 @@
       width: 100vw;
       padding: 20px;
       margin-top: var(--header-height);
-      background: radial-gradient(ellipse at center, rgba(139, 69, 19, 0.1) 0%, transparent 70%);
+      background: radial-gradient(ellipse at center, rgba(101, 67, 33, 0.2) 0%, transparent 70%);
     }
     
     .slot-machine {
       position: relative;
       width: var(--machine-width);
       height: var(--machine-height);
-      background: linear-gradient(135deg, var(--machine-body) 0%, #654321 50%, var(--machine-body) 100%);
+      background: linear-gradient(135deg, var(--machine-body) 0%, #4A2C17 50%, var(--machine-body) 100%);
       border-radius: 30px;
       border: 8px solid var(--chrome);
       box-shadow: 
-        0 0 40px rgba(0, 0, 0, 0.8),
-        inset 0 0 20px rgba(255, 215, 0, 0.1),
-        inset 0 -10px 20px rgba(0, 0, 0, 0.3);
+        0 0 40px rgba(0, 0, 0, 0.9),
+        inset 0 0 20px rgba(255, 215, 0, 0.2),
+        inset 0 -10px 20px rgba(0, 0, 0, 0.8);
       padding: 30px;
       overflow: visible;
       max-width: none;
@@ -302,9 +496,9 @@
       width: 16px;
       height: 16px;
       border-radius: 50%;
-      background-color: #444;
+      background-color: #222;
       border: 2px solid var(--chrome);
-      box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.5);
+      box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.8);
       transition: all 0.2s;
     }
     
@@ -794,6 +988,115 @@
       display: none;
     }
     
+    /* iPhone and Mobile Optimizations */
+    @media (max-width: 480px) {
+      .slot-machine {
+        width: 95vw;
+        height: 85vh;
+        padding: 15px;
+      }
+      
+      .machine-top {
+        margin-bottom: 15px;
+        padding: 15px;
+      }
+      
+      .jackpot-display {
+        font-size: 24px;
+      }
+      
+      .reels-container {
+        gap: 10px;
+        padding: 15px;
+      }
+      
+      .reel {
+        height: 180px;
+      }
+      
+      .spin-button {
+        padding: 20px 40px;
+        font-size: 24px;
+        min-width: 160px;
+        min-height: 60px;
+      }
+      
+      .score-display {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .score-card {
+        padding: 12px 16px;
+      }
+      
+      .score-value {
+        font-size: 24px;
+      }
+      
+      .paytable {
+        right: 10px;
+        top: 10px;
+        min-width: 240px;
+        font-size: 14px;
+      }
+      
+      .paytable-button {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+      }
+    }
+    
+    /* iPhone landscape */
+    @media (max-width: 896px) and (orientation: landscape) {
+      .slot-machine {
+        height: 90vh;
+        width: 80vw;
+      }
+      
+      .reel {
+        height: 140px;
+      }
+      
+      .score-display {
+        flex-direction: row;
+      }
+    }
+    
+    /* iPhone portrait */
+    @media (max-width: 430px) and (orientation: portrait) {
+      .app-header {
+        height: 60px;
+        padding: 0 15px;
+      }
+      
+      .game-title {
+        font-size: 20px;
+      }
+      
+      .user-info, .date-info {
+        font-size: 14px;
+      }
+      
+      .slot-machine {
+        width: 98vw;
+        height: 80vh;
+        padding: 10px;
+      }
+      
+      .reel {
+        height: 160px;
+      }
+      
+      .spin-button {
+        padding: 15px 30px;
+        font-size: 20px;
+        min-width: 140px;
+        min-height: 50px;
+      }
+    }
+    
     /* Touchscreen Optimizations */
     @media (max-width: 1300px) {
       .slot-machine {
@@ -1177,15 +1480,25 @@
           source.buffer = silentBuffer;
           source.connect(audioContext.context.destination);
           source.start(0);
+          
+          // Resume audio context for iOS
+          if (audioContext.context.state === 'suspended') {
+            audioContext.context.resume();
+          }
         }
         Object.values(fallbackAudio).forEach(audio => {
           if (audio) {
             audio.volume = 0.01;
-            audio.play().then(() => {
-              audio.pause();
-              audio.currentTime = 0;
-              audio.volume = 1.0;
-            }).catch(e => {});
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+              playPromise.then(() => {
+                audio.pause();
+                audio.currentTime = 0;
+                audio.volume = 1.0;
+              }).catch(e => {
+                // iOS audio play failed, that's OK
+              });
+            }
           }
         });
         document.removeEventListener('click', unlockAudio);
@@ -1330,10 +1643,13 @@
         if (state.spinning) return;
         if (state.credits < state.bet) {
           // Add screen shake for dramatic effect
-          elements.slotMachine.style.animation = 'vibrate 0.5s ease-in-out 3';
-          setTimeout(() => {
-            elements.slotMachine.style.animation = '';
-          }, 1500);
+          const slotMachine = document.querySelector('.slot-machine');
+          if (slotMachine) {
+            slotMachine.style.animation = 'vibrate 0.5s ease-in-out 3';
+            setTimeout(() => {
+              slotMachine.style.animation = '';
+            }, 1500);
+          }
           alert('Not enough credits!');
           return;
         }
@@ -1346,10 +1662,23 @@
           stopLights();
         }
         
-        // Haptic feedback simulation
-        if (navigator.vibrate) {
-          navigator.vibrate([100, 50, 100]);
+        // Haptic feedback simulation (iOS and Android)
+        function simulateHaptic(duration = 100) {
+          if (navigator.vibrate) {
+            navigator.vibrate(duration);
+          } else {
+            // iOS doesn't support vibrate, add visual feedback
+            const button = document.querySelector('.spin-button');
+            if (button) {
+              button.style.transform = 'scale(0.95)';
+              setTimeout(() => {
+                button.style.transform = '';
+              }, 100);
+            }
+          }
         }
+        
+        simulateHaptic([100, 50, 100]);
         
         unlockAudio();
         spinSoundInstance = playSound('spin');
@@ -1362,7 +1691,10 @@
         startLights();
 
         // Add machine vibration effect
-        elements.slotMachine.classList.add('vibrate');
+        const slotMachine = document.querySelector('.slot-machine');
+        if (slotMachine) {
+          slotMachine.classList.add('vibrate');
+        }
 
         // Reset all rows to perfectly aligned before spin
         elements.slotItems.middle.forEach(item => item.style.top = '33.33%');
@@ -1390,9 +1722,7 @@
               playSound('stop');
               
               // Haptic feedback for each reel stop
-              if (navigator.vibrate) {
-                navigator.vibrate(50);
-              }
+              simulateHaptic(50);
               
               resolve();
             }, config.spinDuration + i * config.stopDelay);
@@ -1400,7 +1730,9 @@
         }
         
         // Stop machine vibration
-        elements.slotMachine.classList.remove('vibrate');
+        if (slotMachine) {
+          slotMachine.classList.remove('vibrate');
+        }
         
         stopSound(spinSoundInstance);
         state.currentSymbols = [
@@ -1429,8 +1761,8 @@
           startLights(true);
           
           // Big win haptic feedback
-          if (navigator.vibrate && win.amount >= 250) {
-            navigator.vibrate([200, 100, 200, 100, 200]);
+          if (win.amount >= 250) {
+            simulateHaptic([200, 100, 200, 100, 200]);
           }
         } else {
           playSound('lose');
@@ -1483,9 +1815,7 @@
       elements.spinButton.addEventListener('click', spinAllReels);
       elements.spinButton.addEventListener('touchstart', function(e) {
         e.preventDefault(); // Prevent double-tap zoom
-        if (navigator.vibrate) {
-          navigator.vibrate(50);
-        }
+        simulateHaptic(50);
       });
       elements.continueButton.addEventListener('click', () => {
         elements.winMessage.classList.remove('show');
@@ -1508,9 +1838,7 @@
             elements.lever.classList.add('pulled');
             
             // Haptic feedback
-            if (navigator.vibrate) {
-              navigator.vibrate(100);
-            }
+            simulateHaptic(100);
             
             setTimeout(() => {
               elements.lever.classList.remove('pulled');
