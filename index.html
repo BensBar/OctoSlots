@@ -319,91 +319,44 @@
     }
     
     body {
-      background: #000000; /* Solid black background for dark mode */
+      margin: 0;
+      padding: 0;
+      background: var(--primary-bg);
       color: var(--text-color);
-      overflow: hidden;
-      height: 100vh;
-      width: 100vw;
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0;
-      left: 0;
-      font-size: 18px;
-      /* iOS Safari specific */
-      -webkit-overflow-scrolling: touch;
-      /* Prevent iOS Safari bounce */
-      overscroll-behavior: none;
-      /* Handle iPhone notch */
-      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      font-family: 'Arial', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+      /* Dark Theme - Default */
+      background: radial-gradient(circle at center, #333333 0%, #000000 100%);
     }
+    
     .app-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 30px;
-      height: var(--header-height);
-      background: linear-gradient(135deg, var(--machine-body) 0%, #654321 100%);
-      border-bottom: 4px solid var(--gold);
       position: fixed;
       top: 0;
       left: 0;
-      right: 0;
-      z-index: 10;
+      width: 100%;
+      height: var(--header-height);
+      background: linear-gradient(135deg, #654321 0%, #834D1E 100%);
+      border-bottom: 4px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-sizing: border-box;
+      z-index: 1000;
       box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
     
-    .user-info, .date-info {
-      font-size: 18px;
-      color: var(--gold);
-      white-space: nowrap;
-      font-weight: bold;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    /* Move the slot machine container up (closer to the top) */
+    .slot-machine-container {
+      margin-top: calc(var(--header-height) + 10px); /* Reduced gap after header */
+      padding-top: 0; /* Remove top padding to move it up */
     }
     
-    .game-title {
-      font-size: 28px;
-      font-weight: 900;
-      color: var(--gold);
-      margin: 0 20px;
-      flex-shrink: 0;
-      text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
-      letter-spacing: 2px;
-    }
-    #theme-toggle {
-      background: linear-gradient(135deg, var(--gold) 0%, #DAA520 100%);
-      border: 3px solid var(--chrome);
-      cursor: pointer;
-      font-size: 24px;
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      outline: none;
-      transition: all 0.3s;
-      margin: 0 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      min-width: 60px;
-      min-height: 60px;
-      justify-content: center;
-    }
-    
-    #theme-toggle:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
-    }
-    
-    #theme-toggle:active {
-      transform: translateY(0);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
-    
-    #theme-icon {
-      transition: transform 0.3s;
-    }
-    
-    #theme-toggle:active #theme-icon {
-      transform: rotate(-30deg) scale(1.2);
+    /* Adjust the machine size to be slightly smaller for better visibility */
+    .slot-machine {
+      margin-top: 0; /* Remove any default margin */
     }
     /* Fullscreen button styles */
     #fullscreen-toggle {
@@ -460,7 +413,7 @@
       width: 100vw;
       padding: 20px;
       margin-top: var(--header-height);
-      padding-top: calc(20vh - var(--header-height)/2); /* Position halfway to the top */
+      padding-top: 0; /* No extra padding to position the machine higher */
       background: radial-gradient(ellipse at center, rgba(101, 67, 33, 0.2) 0%, transparent 70%);
       transition: all 0.3s ease;
     }
@@ -472,8 +425,18 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      width: 100%;
       display: flex;
-      overflow: hidden;
+      overflow: visible;
+    }
+    
+    .fullscreen-mode .slot-machine {
+      transform: scale(1); /* Prevent automatic zoom */
+      margin: auto;
+      max-height: 90vh; /* Prevent the machine from being too tall */
+      max-width: 95vw; /* Prevent the machine from being too wide */
+      height: auto;
+      transform-origin: center center;
     }
     
     .fullscreen-mode .app-header {
@@ -488,7 +451,18 @@
       position: fixed;
       top: 0;
       left: 0;
-      overflow: hidden;
+    }
+    
+    /* Prevent zooming in fullscreen mode */
+    .fullscreen-mode .slot-machine {
+      transform: scale(1.0);
+      max-width: 95vw;
+      max-height: 95vh;
+    }
+    
+    /* Keep controls and reels properly sized in fullscreen */
+    .fullscreen-mode .reels-container {
+      max-height: 60vh;
     }
     
     .slot-machine {
@@ -1732,15 +1706,34 @@
       fullscreenToggle.addEventListener('click', () => {
         if (!document.fullscreenElement) {
           // Enter fullscreen
-          if (document.documentElement.requestFullscreen) {
+          const container = document.querySelector('.slot-machine-container');
+          if (container && container.requestFullscreen) {
+            container.requestFullscreen().catch(err => {
+              console.log(`Error attempting to enable fullscreen mode: ${err.message}`);
+            });
+          } else if (container && container.webkitRequestFullscreen) { // Safari
+            container.webkitRequestFullscreen();
+          } else if (container && container.msRequestFullscreen) { // IE11
+            container.msRequestFullscreen();
+          } else if (document.documentElement.requestFullscreen) {
+            // Fallback to document element
             document.documentElement.requestFullscreen();
-          } else if (document.documentElement.webkitRequestFullscreen) { // Safari
-            document.documentElement.webkitRequestFullscreen();
-          } else if (document.documentElement.msRequestFullscreen) { // IE11
-            document.documentElement.msRequestFullscreen();
           }
+          
           document.body.classList.add('fullscreen-mode');
           fullscreenIcon.textContent = '↙️';
+          
+          // Ensure proper scaling on mobile
+          setTimeout(() => {
+            const slotMachine = document.querySelector('.slot-machine');
+            if (slotMachine) {
+              // Adjust scale based on screen size
+              const viewportHeight = window.innerHeight;
+              const machineHeight = slotMachine.offsetHeight;
+              const scale = Math.min(1, (viewportHeight * 0.85) / machineHeight);
+              slotMachine.style.transform = `scale(${scale})`;
+            }
+          }, 100);
         } else {
           // Exit fullscreen
           if (document.exitFullscreen) {
@@ -1750,8 +1743,15 @@
           } else if (document.msExitFullscreen) { // IE11
             document.msExitFullscreen();
           }
+          
           document.body.classList.remove('fullscreen-mode');
           fullscreenIcon.textContent = '↔️';
+          
+          // Reset transform
+          const slotMachine = document.querySelector('.slot-machine');
+          if (slotMachine) {
+            slotMachine.style.transform = '';
+          }
         }
       });
       
@@ -1768,6 +1768,12 @@
             !document.msFullscreenElement) {
           document.body.classList.remove('fullscreen-mode');
           fullscreenIcon.textContent = '↔️';
+          
+          // Reset transform when exiting fullscreen
+          const slotMachine = document.querySelector('.slot-machine');
+          if (slotMachine) {
+            slotMachine.style.transform = '';
+          }
         }
       }
     }
