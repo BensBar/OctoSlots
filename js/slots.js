@@ -300,6 +300,27 @@ class PaytableSystem {
         const paytableElement = document.getElementById('paytable');
         if (paytableElement) {
             this.renderPaytable(paytableElement);
+            this.setupPaytableToggle();
+        }
+    }
+
+    setupPaytableToggle() {
+        const toggleButton = document.getElementById('paytable-toggle');
+        const paytableElement = document.getElementById('paytable');
+        
+        if (toggleButton && paytableElement) {
+            toggleButton.addEventListener('click', () => {
+                paytableElement.classList.toggle('visible');
+            });
+            
+            // Add close button to paytable
+            const closeButton = document.createElement('button');
+            closeButton.className = 'paytable-close';
+            closeButton.innerHTML = '×';
+            closeButton.addEventListener('click', () => {
+                paytableElement.classList.remove('visible');
+            });
+            paytableElement.insertBefore(closeButton, paytableElement.firstChild);
         }
     }
 

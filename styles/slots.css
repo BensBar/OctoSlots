@@ -312,19 +312,42 @@ body {
     transform: none;
 }
 
-/* Paytable section */
+/* Paytable section - initially hidden */
 .paytable {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     background: linear-gradient(135deg, 
-        rgba(0,0,0,0.8), 
-        rgba(20,20,20,0.9));
+        rgba(0,0,0,0.95), 
+        rgba(20,20,20,0.95));
     border: 3px solid var(--chrome-dark);
     border-radius: 10px;
     padding: 20px;
-    min-width: 250px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    min-width: 300px;
+    max-width: 400px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    z-index: 1000;
+    display: none;
+}
+
+.paytable.visible {
+    display: block;
+}
+
+.paytable-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: var(--nfl-red);
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .paytable h3 {
@@ -418,11 +441,11 @@ body {
     }
     
     .paytable {
-        position: relative;
-        top: auto;
-        right: auto;
-        margin-top: 20px;
-        width: 100%;
+        width: 90vw;
+        max-width: 90vw;
+        height: auto;
+        max-height: 80vh;
+        overflow-y: auto;
     }
 }
 
