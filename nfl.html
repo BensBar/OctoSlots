@@ -626,6 +626,87 @@
       100% { box-shadow: 0 0 15px var(--gold-color), 0 0 25px var(--gold-color); }
     }
 
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+      :root {
+        --machine-width: 95vw;
+        --reel-size: clamp(60px, 15vw, 150px);
+        --font-size-base: clamp(12px, 3vw, 18px);
+        --font-size-large: clamp(16px, 4vw, 24px);
+        --font-size-xl: clamp(20px, 5vw, 32px);
+      }
+      
+      .slot-machine {
+        padding: 15px;
+        margin: 10px auto;
+      }
+      
+      .reels {
+        padding: 15px;
+        gap: 8px;
+      }
+      
+      .controls {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      
+      .control-button {
+        padding: 10px 20px;
+        font-size: calc(var(--font-size-base) * 0.9);
+      }
+      
+      .spin-button {
+        padding: 12px 25px;
+        order: -1;
+        flex-basis: 100%;
+      }
+      
+      .bet-controls {
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+      
+      .bet-amount {
+        min-width: 60px;
+        padding: 5px 10px;
+      }
+      
+      .lever-container {
+        display: none; /* Hide lever on mobile for better layout */
+      }
+      
+      .paytable {
+        padding: 15px;
+        margin-top: 15px;
+      }
+      
+      .paytable-grid {
+        gap: 8px;
+      }
+      
+      .paytable-item img {
+        width: 25px;
+        height: 25px;
+      }
+    }
+
+    /* Touch optimizations */
+    @media (hover: none) and (pointer: coarse) {
+      .control-button:hover {
+        transform: none;
+      }
+      
+      .control-button:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease;
+      }
+      
+      .reel:hover::after {
+        opacity: 0;
+      }
+    }
+
     /* Particle effects for wins */
     .particle-container {
       position: absolute;
@@ -688,18 +769,18 @@
       <div class="controls">
         <div class="bet-controls">
           <span>Bet:</span>
-          <div class="bet-amount" id="betAmount">25</div>
-          <button class="control-button" id="betDown">-</button>
-          <button class="control-button" id="betUp">+</button>
+          <div class="bet-amount" id="betAmount" role="status" aria-label="Current bet amount">25</div>
+          <button class="control-button" id="betDown" aria-label="Decrease bet">-</button>
+          <button class="control-button" id="betUp" aria-label="Increase bet">+</button>
         </div>
-        <button class="control-button spin-button" id="spinButton">SPIN</button>
-        <button class="control-button" id="maxBetButton">MAX BET</button>
-        <button class="control-button" id="autoPlayButton">AUTO PLAY</button>
+        <button class="control-button spin-button" id="spinButton" aria-label="Spin the reels">SPIN</button>
+        <button class="control-button" id="maxBetButton" aria-label="Set maximum bet">MAX BET</button>
+        <button class="control-button" id="autoPlayButton" aria-label="Toggle automatic play">AUTO PLAY</button>
       </div>
-      <div class="win-overlay" id="winOverlay"></div>
+      <div class="win-overlay" id="winOverlay" role="status" aria-live="polite"></div>
       <div class="particle-container" id="particleContainer"></div>
     </div>
-    <div id="credits" class="credits-display">Credits: 1000</div>
+    <div id="credits" class="credits-display" role="status" aria-label="Available credits">Credits: 1000</div>
     
     <div class="paytable" id="paytable">
       <h3>🏆 PAYTABLE 🏆</h3>
@@ -1003,19 +1084,29 @@
       // Generate final symbols
       const final = [getRandomReelSymbols(), getRandomReelSymbols(), getRandomReelSymbols()];
       
-      // Animate reels with staggered timing
+      // Animate reels with staggered timing using requestAnimationFrame
       const spinPromises = [];
       for (let i = 0; i < 3; i++) {
         const track = reels[i].querySelector('.symbol-track');
         track.classList.add('spinning');
         
         spinPromises.push(new Promise(resolve => {
-          setTimeout(() => {
-            track.classList.remove('spinning');
-            setReelSymbols(i, final[i]);
-            playSound('stop');
-            resolve();
-          }, 1000 + i * 300); // Staggered stop timing
+          const stopTime = performance.now() + (1000 + i * 300);
+          
+          function animateReel() {
+            if (performance.now() < stopTime) {
+              // Continue spinning
+              requestAnimationFrame(animateReel);
+            } else {
+              // Stop reel
+              track.classList.remove('spinning');
+              setReelSymbols(i, final[i]);
+              playSound('stop');
+              resolve();
+            }
+          }
+          
+          requestAnimationFrame(animateReel);
         }));
       }
 
@@ -1032,6 +1123,7 @@
         // Show win message
         winOverlay.textContent = `🎉 WIN ${result.win} CREDITS! 🎉`;
         winOverlay.classList.add('visible');
+        winOverlay.setAttribute('aria-live', 'polite'); // Accessibility
         
         // Play appropriate sound
         if (result.type === 'jackpot' || result.type === 'progressive') {
@@ -1048,18 +1140,28 @@
         result.lines.forEach(({line}) => {
           line.forEach(([col, row]) => {
             const img = reels[col].querySelectorAll('img')[row];
-            if (img) img.classList.add('win');
+            if (img) {
+              img.classList.add('win');
+              img.setAttribute('aria-label', 'Winning symbol'); // Accessibility
+            }
           });
         });
         
         setTimeout(() => {
           winOverlay.classList.remove('visible');
-          // Remove win highlights
+          // Remove win highlights and accessibility attributes
           document.querySelectorAll('.symbol-track img.win')
-            .forEach(img => img.classList.remove('win'));
+            .forEach(img => {
+              img.classList.remove('win');
+              img.removeAttribute('aria-label');
+            });
         }, 3000);
       } else {
         playSound('lose');
+        winOverlay.textContent = 'Try again!';
+        winOverlay.classList.add('visible');
+        winOverlay.setAttribute('aria-live', 'polite');
+        setTimeout(() => winOverlay.classList.remove('visible'), 1500);
       }
 
       // Re-enable buttons
