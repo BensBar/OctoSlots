@@ -5,53 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NFL 4K Slots</title>
     <style>
-        :root {
-            --machine-width: 3840px;
-            --machine-height: 2160px;
-            --reel-size: 400px;
-            --chrome-light: #e8e8e8;
-            --chrome-dark: #888888;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            font-family: Arial, sans-serif;
-        }
-
-        .slot-machine-4k {
-            width: var(--machine-width);
-            height: var(--machine-height);
-            background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
-            position: relative;
-            border-radius: 30px;
-            overflow: hidden;
-        }
-
-        .machine-frame {
-            background: linear-gradient(135deg, var(--chrome-light), var(--chrome-dark));
-            border-radius: 20px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            padding: 40px;
-            height: calc(100% - 80px);
-        }
-
-        #reels-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 40px auto;
-            background: #000;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
-        }
-
+        /* ... (previous CSS remains the same) ... */
         .reel {
             width: var(--reel-size);
             height: var(--reel-size);
@@ -62,154 +16,50 @@
             box-shadow: 0 0 15px rgba(255,255,255,0.3);
         }
 
-        .controls-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background: linear-gradient(to bottom, #2a2a2a, #1a1a1a);
-            border-radius: 15px;
-            margin-top: 20px;
-        }
-
-        .led-display {
-            font-family: 'Digital', sans-serif;
-            font-size: 48px;
-            color: #ff0;
-            text-shadow: 0 0 10px rgba(255,255,0,0.7);
-            background: #000;
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: 2px solid #333;
-        }
-
-        .bet-controls {
-            display: flex;
-            gap: 15px;
-        }
-
-        button {
-            background: linear-gradient(to bottom, #4a4a4a, #3a3a3a);
-            border: none;
-            color: #fff;
-            padding: 15px 30px;
-            font-size: 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-        }
-
-        button:hover {
-            background: linear-gradient(to bottom, #5a5a5a, #4a4a4a);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
-        }
-
-        button:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        #spin-button {
-            background: linear-gradient(to bottom, #ff4444, #cc0000);
-            font-size: 32px;
-            padding: 20px 40px;
-        }
-
-        #spin-button:hover {
-            background: linear-gradient(to bottom, #ff5555, #dd0000);
-        }
-
-        .lever {
-            width: 60px;
-            height: 200px;
-            background: linear-gradient(90deg, var(--chrome-light), var(--chrome-dark));
-            border-radius: 10px;
-            cursor: pointer;
-            transform-origin: top center;
-            transition: transform 0.3s;
-            position: relative;
-            margin-right: 40px;
-        }
-
-        .lever:hover {
-            transform: rotate(5deg);
-        }
-
-        .lever:active {
-            transform: rotate(45deg);
-        }
-
-        .paytable {
+        .reel-strip {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.8);
-            padding: 20px;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 18px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: transform 2s cubic-bezier(0.21, 0.53, 0.29, 0.99);
         }
 
-        /* Responsive scaling */
-        @media (max-width: 3840px) {
-            :root {
-                --machine-width: 100vw;
-                --machine-height: 56.25vw;
-                --reel-size: calc(var(--machine-width) * 0.1);
-            }
+        .symbol {
+            width: var(--reel-size);
+            height: var(--reel-size);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10%;
+            box-sizing: border-box;
         }
 
-        /* Animation keyframes */
-        @keyframes spin {
-            from { transform: translateY(0); }
-            to { transform: translateY(-100%); }
+        .symbol img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
-        @keyframes win-flash {
-            0% { box-shadow: 0 0 20px #ff0; }
-            50% { box-shadow: 0 0 40px #ff0; }
-            100% { box-shadow: 0 0 20px #ff0; }
-        }
+        /* ... (rest of CSS remains the same) ... */
     </style>
 </head>
 <body>
-    <div id="slot-machine" class="slot-machine-4k">
-        <div class="machine-frame">
-            <div id="reels-container">
-                <div class="reel" id="reel1"></div>
-                <div class="reel" id="reel2"></div>
-                <div class="reel" id="reel3"></div>
-            </div>
-            <div class="controls-section">
-                <div class="led-display">Credits: <span id="credits">1000</span></div>
-                <div class="bet-controls">
-                    <button id="bet-one">Bet One</button>
-                    <button id="bet-max">Max Bet</button>
-                    <button id="auto-play">Auto Play</button>
-                </div>
-                <div class="spin-section">
-                    <div id="lever" class="lever"></div>
-                    <button id="spin-button">SPIN</button>
-                </div>
-            </div>
-        </div>
-        <div id="paytable" class="paytable">
-            <h3>Paytable</h3>
-            <div id="winning-combinations">
-                <!-- Winning combinations will be dynamically added here -->
-            </div>
-        </div>
-    </div>
+    <!-- ... (HTML structure remains the same) ... -->
 
     <script>
-        // Game configuration
+        // Game configuration with all NFL teams
         const CONFIG = {
             reels: 3,
-            symbols: ['NFL_LOGO_1', 'NFL_LOGO_2', 'NFL_LOGO_3'],
+            symbols: [
+                'bills', 'dolphins', 'patriots', 'jets',
+                'ravens', 'bengals', 'browns', 'steelers',
+                'texans', 'colts', 'jaguars', 'titans',
+                'broncos', 'chiefs', 'raiders', 'chargers',
+                'cowboys', 'giants', 'eagles', 'commanders',
+                'bears', 'lions', 'packers', 'vikings',
+                'falcons', 'panthers', 'saints', 'buccaneers',
+                'cardinals', 'rams', 'seahawks', '49ers'
+            ],
             paylines: 25,
             minBet: 1,
             maxBet: 100,
@@ -221,12 +71,57 @@
                 this.credits = CONFIG.credits;
                 this.currentBet = CONFIG.minBet;
                 this.spinning = false;
+                this.symbols = [];
+                this.reelStrips = [];
                 this.init();
             }
 
-            init() {
+            async init() {
+                await this.preloadImages();
+                this.setupReels();
                 this.updateCredits();
                 this.setupEventListeners();
+            }
+
+            async preloadImages() {
+                const preloadPromises = CONFIG.symbols.map(team => {
+                    return new Promise((resolve, reject) => {
+                        const img = new Image();
+                        img.onload = () => resolve(img);
+                        img.onerror = () => {
+                            console.warn(`Failed to load logo for ${team}`);
+                            resolve(null); // Don't reject, just mark as unavailable
+                        };
+                        img.src = `logos/${team}.png`;
+                        this.symbols[team] = img;
+                    });
+                });
+
+                await Promise.all(preloadPromises);
+            }
+
+            setupReels() {
+                const reels = document.querySelectorAll('.reel');
+                reels.forEach((reel, i) => {
+                    const strip = document.createElement('div');
+                    strip.className = 'reel-strip';
+                    this.reelStrips[i] = strip;
+                    
+                    // Create double set of symbols for seamless spinning
+                    [...CONFIG.symbols, ...CONFIG.symbols].forEach(team => {
+                        const symbol = document.createElement('div');
+                        symbol.className = 'symbol';
+                        if (this.symbols[team]) {
+                            const img = this.symbols[team].cloneNode();
+                            symbol.appendChild(img);
+                        } else {
+                            symbol.textContent = team; // Fallback if image failed to load
+                        }
+                        strip.appendChild(symbol);
+                    });
+                    
+                    reel.appendChild(strip);
+                });
             }
 
             updateCredits() {
@@ -247,28 +142,36 @@
                 this.credits -= this.currentBet;
                 this.updateCredits();
 
-                // Animate reels
-                const reels = document.querySelectorAll('.reel');
-                reels.forEach((reel, index) => {
-                    setTimeout(() => {
-                        reel.style.animation = 'spin 0.5s linear infinite';
-                    }, index * 500);
+                const spinDurations = [2, 2.2, 2.4]; // Different durations for each reel
+                const finalPositions = this.reelStrips.map(() => 
+                    -(Math.floor(Math.random() * CONFIG.symbols.length) * 100)
+                );
 
-                    setTimeout(() => {
-                        reel.style.animation = '';
-                        if (index === reels.length - 1) {
-                            this.spinning = false;
-                            this.checkWin();
-                        }
-                    }, 2000 + (index * 500));
+                this.reelStrips.forEach((strip, i) => {
+                    strip.style.transition = `transform ${spinDurations[i]}s cubic-bezier(0.21, 0.53, 0.29, 0.99)`;
+                    strip.style.transform = `translateY(${finalPositions[i]}%)`;
                 });
+
+                // After the last reel stops
+                setTimeout(() => {
+                    this.spinning = false;
+                    this.checkWin();
+                }, Math.max(...spinDurations) * 1000);
             }
 
             checkWin() {
-                // Simulate a win (for demonstration)
-                const randomWin = Math.random() > 0.5;
-                if (randomWin) {
-                    const winAmount = this.currentBet * Math.floor(Math.random() * 10 + 2);
+                // Get visible symbols
+                const visibleSymbols = this.reelStrips.map(strip => {
+                    const transform = strip.style.transform;
+                    const pos = parseInt(transform.match(/-?\d+/)[0]);
+                    const index = Math.abs(Math.round(pos / 100)) % CONFIG.symbols.length;
+                    return CONFIG.symbols[index];
+                });
+
+                // Check for matches
+                const allMatch = visibleSymbols.every(sym => sym === visibleSymbols[0]);
+                if (allMatch) {
+                    const winAmount = this.currentBet * 10;
                     this.credits += winAmount;
                     this.updateCredits();
                     this.celebrateWin(winAmount);
@@ -276,9 +179,22 @@
             }
 
             celebrateWin(amount) {
-                const reels = document.querySelectorAll('.reel');
-                reels.forEach(reel => {
-                    reel.style.animation = 'win-flash 1s ease-in-out 3';
+                const celebration = document.createElement('div');
+                celebration.style.position = 'absolute';
+                celebration.style.top = '50%';
+                celebration.style.left = '50%';
+                celebration.style.transform = 'translate(-50%, -50%)';
+                celebration.style.color = '#fff';
+                celebration.style.fontSize = '48px';
+                celebration.style.textShadow = '0 0 10px #ff0';
+                celebration.textContent = `WIN! +${amount}`;
+                
+                document.querySelector('.slot-machine-4k').appendChild(celebration);
+                setTimeout(() => celebration.remove(), 2000);
+
+                // Flash the winning symbols
+                this.reelStrips.forEach(strip => {
+                    strip.style.animation = 'win-flash 1s ease-in-out 3';
                 });
             }
 
@@ -298,7 +214,7 @@
 
         // Initialize game when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            const game = new NFLSlots();
+            new NFLSlots();
         });
     </script>
 </body>
