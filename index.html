@@ -921,6 +921,13 @@
   </style>
 </head>
 <body>
+  <!-- Audio elements -->
+  <audio id="spin-sound" src="sounds/spin.wav" preload="auto"></audio>
+  <audio id="stop-sound" src="sounds/stop.wav" preload="auto"></audio>
+  <audio id="win-sound" src="sounds/win.wav" preload="auto"></audio>
+  <audio id="win3-sound" src="sounds/win3.wav" preload="auto"></audio>
+  <audio id="lose-sound" src="sounds/lose.wav" preload="auto"></audio>
+  
   <div class="app-header">
     <div class="user-info">User: Player1</div>
     <div class="date-info">Date: 2023-10-05</div>
@@ -1073,10 +1080,76 @@
       currentSymbols: [null, null, null]
     };
     
-    // Audio handling (for future implementation)
+    // Audio handling
     function playSound(soundName) {
-      // If you have sound files, implement this
-      console.log(`Playing ${soundName} sound`);
+      try {
+        // Map sound names to audio element IDs
+        const audioMap = {
+          'spin': 'spin-sound',
+          'stop': 'stop-sound',
+          'win': 'win-sound',
+          'win3': 'win3-sound',
+          'lose': 'lose-sound'
+        };
+        
+        const audioId = audioMap[soundName];
+        if (!audioId) return;
+        
+        const audio = document.getElementById(audioId);
+        if (!audio) return;
+        
+        // Reset and play
+        audio.currentTime = 0;
+        audio.volume = 1.0;
+        
+        // Play with promise handling for browsers that require user interaction
+        const playPromise = audio.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.log('Audio play failed, probably needs user interaction first:', error);
+          });
+        }
+        
+        return audio;
+      } catch (e) {
+        console.error('Error playing sound:', e);
+        return null;
+      }
+    }
+    
+    // Function to unlock audio playback on user interaction
+    function unlockAudio() {
+      const sounds = [
+        document.getElementById('spin-sound'),
+        document.getElementById('stop-sound'),
+        document.getElementById('win-sound'),
+        document.getElementById('win3-sound'),
+        document.getElementById('lose-sound')
+      ];
+      
+      sounds.forEach(sound => {
+        if (sound) {
+          // Set very low volume for the initial play
+          sound.volume = 0.01;
+          
+          // Try to play and immediately pause
+          const playPromise = sound.play();
+          if (playPromise !== undefined) {
+            playPromise.then(() => {
+              sound.pause();
+              sound.currentTime = 0;
+              sound.volume = 1.0;
+            }).catch(e => {
+              console.log('Audio unlock failed, that\'s OK on some browsers');
+            });
+          }
+        }
+      });
+      
+      // Remove the event listeners once unlocked
+      document.removeEventListener('click', unlockAudio);
+      document.removeEventListener('touchstart', unlockAudio);
     }
     
     // Function to set a random symbol on a slot item
@@ -1221,7 +1294,8 @@
         slotMachine.classList.add('vibrate');
       }
       
-      // Play spin sound
+      // Unlock audio and play spin sound
+      unlockAudio();
       playSound('spin');
       
       // Add spinning class to reels
