@@ -1334,14 +1334,6 @@
     
     // Load and play sounds with proper mobile handling
     function playSound(soundName) {
-        // Always stop the spin sound before playing win/lose sounds to prevent overlap
-        if (["win", "win3", "lose"].includes(soundName)) {
-          const spinAudio = document.getElementById('spin-sound');
-          if (spinAudio) {
-            spinAudio.pause();
-            spinAudio.currentTime = 0;
-          }
-        }
       try {
         // Map sound names to audio element IDs
         const audioMap = {
@@ -1351,6 +1343,15 @@
           'win3': 'win3-sound',
           'lose': 'lose-sound'
         };
+        
+        // Always stop the spin sound before playing win/lose sounds to prevent overlap
+        if (['win', 'win3', 'lose'].includes(soundName)) {
+          const spinAudio = document.getElementById('spin-sound');
+          if (spinAudio) {
+            spinAudio.pause();
+            spinAudio.currentTime = 0;
+          }
+        }
         
         // On iOS, we need special handling for the spin sound
         // because it often gets interrupted by other sounds
@@ -1607,7 +1608,6 @@
     
     // Spin all reels
     async function spinAllReels() {
-      playSound('spin'); // Play spin sound immediately for reliability
       if (state.isSpinning) return;
       if (state.credits < state.bet) {
         alert('Not enough credits!');
@@ -1645,7 +1645,7 @@
         }
         slotMachine.classList.add('vibrate');
       }
-      // Unlock audio and play spin sound
+      // Unlock audio and play spin sound - play only once here
       // unlockAudio(); // Removed to prevent all sounds from playing on first spin
       playSound('spin');
       
@@ -1678,6 +1678,15 @@
             elements.reels[i].classList.remove('spinning');
             playSound('stop');
             
+            // Stop the spin sound immediately when the last reel stops
+            if (i === 2) {
+              const spinAudio = document.getElementById('spin-sound');
+              if (spinAudio) {
+                spinAudio.pause();
+                spinAudio.currentTime = 0;
+              }
+            }
+            
             // Haptic feedback for each reel stop
             simulateHaptic(50);
             
@@ -1689,12 +1698,6 @@
       // Stop vibration
       if (slotMachine) {
         slotMachine.classList.remove('vibrate');
-      }
-      // Stop the spin sound immediately after all reels stop
-      const spinAudio = document.getElementById('spin-sound');
-      if (spinAudio) {
-        spinAudio.pause();
-        spinAudio.currentTime = 0;
       }
       
       // Store current symbols for win evaluation
