@@ -1311,6 +1311,7 @@
       context: null,
       sounds: {},
       currentSounds: {},
+      currentSpinAudio: null, // Track the current spin audio specifically
       isIOS: /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
     };
     
@@ -1346,6 +1347,13 @@
         
         // Always stop the spin sound before playing win/lose sounds to prevent overlap
         if (['win', 'win3', 'lose'].includes(soundName)) {
+          // Stop any current spin audio
+          if (audioContext.currentSpinAudio) {
+            audioContext.currentSpinAudio.pause();
+            audioContext.currentSpinAudio.currentTime = 0;
+            audioContext.currentSpinAudio = null;
+          }
+          
           const spinAudio = document.getElementById('spin-sound');
           if (spinAudio) {
             spinAudio.pause();
@@ -1356,9 +1364,16 @@
         // On iOS, we need special handling for the spin sound
         // because it often gets interrupted by other sounds
         if (audioContext.isIOS && soundName === 'spin') {
+          // Stop any previous spin audio first
+          if (audioContext.currentSpinAudio) {
+            audioContext.currentSpinAudio.pause();
+            audioContext.currentSpinAudio = null;
+          }
+          
           // Create a new Audio instance for spin sound on iOS
           const tempAudio = new Audio('sounds/spin.wav');
           tempAudio.volume = 1.0;
+          audioContext.currentSpinAudio = tempAudio;
           tempAudio.play().catch(e => {
             console.log('Spin sound fallback failed:', e);
           });
@@ -1400,6 +1415,16 @@
         audio.currentTime = 0;
         audio.volume = 1.0;
         
+        // Track spin audio specifically
+        if (soundName === 'spin') {
+          // Stop any previous spin audio
+          if (audioContext.currentSpinAudio) {
+            audioContext.currentSpinAudio.pause();
+            audioContext.currentSpinAudio = null;
+          }
+          audioContext.currentSpinAudio = audio;
+        }
+        
         // Play with promise handling
         const playPromise = audio.play();
         audioContext.currentSounds[soundName] = audio;
@@ -1430,20 +1455,9 @@
       
       sounds.forEach(sound => {
         if (sound) {
-          // Set very low volume for the initial play
-          sound.volume = 0.01;
-          
-          // Try to play and immediately pause
-          const playPromise = sound.play();
-          if (playPromise !== undefined) {
-            playPromise.then(() => {
-              sound.pause();
-              sound.currentTime = 0;
-              sound.volume = 1.0;
-            }).catch(e => {
-              console.log('Audio unlock failed, that\'s OK on some browsers');
-            });
-          }
+          // Just load the audio without playing it to unlock
+          sound.load();
+          sound.volume = 1.0;
         }
       });
       
@@ -1680,6 +1694,13 @@
             
             // Stop the spin sound immediately when the last reel stops
             if (i === 2) {
+              // Stop any current spin audio
+              if (audioContext.currentSpinAudio) {
+                audioContext.currentSpinAudio.pause();
+                audioContext.currentSpinAudio.currentTime = 0;
+                audioContext.currentSpinAudio = null;
+              }
+              
               const spinAudio = document.getElementById('spin-sound');
               if (spinAudio) {
                 spinAudio.pause();
