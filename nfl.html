@@ -8,8 +8,8 @@
     <title>NFL Championship Slots - Mobile</title>
     <style>
         :root {
-            --reel-size: 80px;
-            --reel-gap: 8px;
+            --reel-size: 60px;
+            --reel-gap: 4px;
             --nfl-blue: #013369;
             --nfl-red: #D50A0A;
             --nfl-gold: #FFB81C;
@@ -79,7 +79,7 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: var(--reel-gap);
-            padding: 20px 10px;
+            padding: 15px 5px;
             background: linear-gradient(135deg, #000, #111, #000);
             border-radius: 10px;
             margin: 10px 0;
@@ -88,14 +88,17 @@
             flex: 1;
             align-content: center;
             position: relative;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .win-lines-container {
             position: absolute;
-            top: 20px;
-            left: 10px;
-            right: 10px;
-            bottom: 20px;
+            top: 15px;
+            left: 5px;
+            right: 5px;
+            bottom: 15px;
             pointer-events: none;
             z-index: 15;
         }
@@ -104,14 +107,15 @@
             width: var(--reel-size);
             height: calc(var(--reel-size) * 3);
             background: linear-gradient(135deg, #fff, #f0f0f0);
-            border-radius: 8px;
+            border-radius: 6px;
             position: relative;
             overflow: hidden;
             box-shadow: 
-                0 0 10px rgba(255,255,255,0.3),
-                inset 0 0 5px rgba(0,0,0,0.2);
+                0 0 8px rgba(255,255,255,0.3),
+                inset 0 0 4px rgba(0,0,0,0.2);
             border: 2px solid var(--nfl-blue);
             justify-self: center;
+            min-width: 0; /* Prevents grid overflow */
         }
 
         .reel-strip {
@@ -132,7 +136,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 6px;
+            padding: 4px;
             box-sizing: border-box;
             background: linear-gradient(135deg, #fff, #f8f8f8);
             border-bottom: 1px solid #ddd;
@@ -143,7 +147,7 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.2));
+            filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.2));
         }
 
         .symbol.winning {
@@ -261,51 +265,95 @@
 
         @media (max-width: 480px) {
             :root {
-                --reel-size: 65px;
-                --reel-gap: 6px;
+                --reel-size: 50px;
+                --reel-gap: 3px;
             }
             
             .game-title {
-                font-size: 20px;
+                font-size: 18px;
             }
             
             .game-subtitle {
-                font-size: 12px;
+                font-size: 11px;
             }
             
             .credits, .win-display {
-                font-size: 18px;
-                padding: 8px 12px;
+                font-size: 16px;
+                padding: 6px 10px;
             }
             
             .bet-display {
-                font-size: 16px;
+                font-size: 14px;
             }
             
             #spin-button {
-                font-size: 24px;
-                padding: 18px 35px;
+                font-size: 22px;
+                padding: 16px 30px;
             }
             
             button {
-                font-size: 14px;
-                padding: 10px 16px;
-                min-width: 50px;
+                font-size: 13px;
+                padding: 8px 12px;
+                min-width: 40px;
+            }
+            
+            #reels-container {
+                padding: 10px 3px;
             }
         }
 
         @media (max-width: 360px) {
             :root {
-                --reel-size: 55px;
-                --reel-gap: 4px;
+                --reel-size: 45px;
+                --reel-gap: 2px;
             }
             
             .machine-frame {
-                padding: 10px;
+                padding: 8px;
             }
             
             #reels-container {
-                padding: 15px 5px;
+                padding: 8px 2px;
+                margin: 8px 0;
+            }
+            
+            .game-header {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+            
+            .controls {
+                padding: 15px 10px;
+                gap: 10px;
+            }
+            
+            .bet-controls {
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 320px) {
+            :root {
+                --reel-size: 40px;
+                --reel-gap: 1px;
+            }
+            
+            .game-title {
+                font-size: 16px;
+            }
+            
+            .game-subtitle {
+                font-size: 10px;
+            }
+            
+            #spin-button {
+                font-size: 20px;
+                padding: 14px 25px;
+            }
+            
+            .credits, .win-display {
+                font-size: 14px;
+                padding: 5px 8px;
             }
         }
 
@@ -689,7 +737,7 @@
                             symbol.appendChild(img);
                         } else {
                             symbol.textContent = team.toUpperCase();
-                            symbol.style.fontSize = '12px';
+                            symbol.style.fontSize = '8px';
                             symbol.style.fontWeight = 'bold';
                         }
                         strip.appendChild(symbol);
@@ -913,18 +961,18 @@
                 // Calculate positions for horizontal lines
                 if (lineIndex < 3) {
                     const row = lineIndex;
-                    const top = 20 + (row * (reelSize + 2)) + (reelSize / 2) - 2;
+                    const top = 15 + (row * (reelSize + 1)) + (reelSize / 2) - 2;
                     winLineElement.style.top = `${top}px`;
                     winLineElement.classList.add('horizontal');
                 } else if (lineIndex === 3) {
                     // Diagonal top-left to bottom-right
-                    const top = 20 + (reelSize / 2) - 2;
+                    const top = 15 + (reelSize / 2) - 2;
                     winLineElement.style.top = `${top}px`;
                     winLineElement.style.transform = `rotate(${Math.atan2(reelSize * 2, reelSize * 4) * 180 / Math.PI}deg)`;
                     winLineElement.classList.add('diagonal1');
                 } else if (lineIndex === 4) {
                     // Diagonal bottom-left to top-right
-                    const top = 20 + (reelSize * 2.5) - 2;
+                    const top = 15 + (reelSize * 2.5) - 2;
                     winLineElement.style.top = `${top}px`;
                     winLineElement.style.transform = `rotate(${-Math.atan2(reelSize * 2, reelSize * 4) * 180 / Math.PI}deg)`;
                     winLineElement.classList.add('diagonal2');
