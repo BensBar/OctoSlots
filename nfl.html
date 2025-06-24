@@ -171,33 +171,51 @@
         }
 
         .win-line.active {
-            opacity: 0.8;
+            opacity: 0.9;
             animation: win-line-glow 1s ease-in-out infinite alternate;
         }
 
         .win-line.horizontal {
-            height: 4px;
-            width: calc(100% - 20px);
-            left: 10px;
+            height: 6px;
+            width: calc(100% - 4px);
+            left: 2px;
+            background: linear-gradient(90deg, transparent 5%, var(--nfl-gold) 20%, var(--nfl-gold) 80%, transparent 95%);
         }
 
-        .win-line.diagonal1 {
-            height: 4px;
-            width: calc(100% - 20px);
-            left: 10px;
+        .win-line.diagonal {
+            height: 6px;
+            width: calc(100% - 4px);
+            left: 2px;
+            background: linear-gradient(90deg, transparent 5%, var(--nfl-gold) 20%, var(--nfl-gold) 80%, transparent 95%);
             transform-origin: left center;
         }
 
-        .win-line.diagonal2 {
+        .win-line.zigzag {
             height: 4px;
-            width: calc(100% - 20px);
-            left: 10px;
-            transform-origin: right center;
+            background: linear-gradient(90deg, transparent 5%, var(--nfl-gold) 20%, var(--nfl-gold) 80%, transparent 95%);
+            width: calc(100% - 4px);
+            left: 2px;
         }
 
-        .win-line.zigzag {
-            height: 3px;
-            background: linear-gradient(45deg, transparent, var(--nfl-gold), transparent, var(--nfl-gold), transparent);
+        /* Win line number indicator */
+        .win-line.active::before {
+            content: attr(data-line);
+            position: absolute;
+            left: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--nfl-blue);
+            color: var(--nfl-gold);
+            border: 2px solid var(--nfl-gold);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 20;
         }
 
         .controls {
@@ -552,13 +570,36 @@
                 <div class="reel" id="reel5">
                     <div class="reel-strip"></div>
                 </div>
-                <!-- Win line overlays -->
+                <!-- Win line overlays - comprehensive system for all 25 paylines -->
                 <div class="win-lines-container">
-                    <div class="win-line horizontal" id="win-line-0"></div>
-                    <div class="win-line horizontal" id="win-line-1"></div>
-                    <div class="win-line horizontal" id="win-line-2"></div>
-                    <div class="win-line diagonal1" id="win-line-3"></div>
-                    <div class="win-line diagonal2" id="win-line-4"></div>
+                    <!-- Horizontal lines (3) -->
+                    <div class="win-line horizontal" id="win-line-0" data-line="0"></div>
+                    <div class="win-line horizontal" id="win-line-1" data-line="1"></div>
+                    <div class="win-line horizontal" id="win-line-2" data-line="2"></div>
+                    
+                    <!-- Diagonal and zigzag lines (22) -->
+                    <div class="win-line diagonal" id="win-line-3" data-line="3"></div>
+                    <div class="win-line diagonal" id="win-line-4" data-line="4"></div>
+                    <div class="win-line zigzag" id="win-line-5" data-line="5"></div>
+                    <div class="win-line zigzag" id="win-line-6" data-line="6"></div>
+                    <div class="win-line zigzag" id="win-line-7" data-line="7"></div>
+                    <div class="win-line zigzag" id="win-line-8" data-line="8"></div>
+                    <div class="win-line zigzag" id="win-line-9" data-line="9"></div>
+                    <div class="win-line zigzag" id="win-line-10" data-line="10"></div>
+                    <div class="win-line zigzag" id="win-line-11" data-line="11"></div>
+                    <div class="win-line zigzag" id="win-line-12" data-line="12"></div>
+                    <div class="win-line zigzag" id="win-line-13" data-line="13"></div>
+                    <div class="win-line zigzag" id="win-line-14" data-line="14"></div>
+                    <div class="win-line zigzag" id="win-line-15" data-line="15"></div>
+                    <div class="win-line zigzag" id="win-line-16" data-line="16"></div>
+                    <div class="win-line zigzag" id="win-line-17" data-line="17"></div>
+                    <div class="win-line zigzag" id="win-line-18" data-line="18"></div>
+                    <div class="win-line zigzag" id="win-line-19" data-line="19"></div>
+                    <div class="win-line zigzag" id="win-line-20" data-line="20"></div>
+                    <div class="win-line zigzag" id="win-line-21" data-line="21"></div>
+                    <div class="win-line zigzag" id="win-line-22" data-line="22"></div>
+                    <div class="win-line zigzag" id="win-line-23" data-line="23"></div>
+                    <div class="win-line zigzag" id="win-line-24" data-line="24"></div>
                 </div>
             </div>
             
@@ -812,6 +853,7 @@
             }
 
             spin() {
+                console.log('Spin clicked! Spinning:', this.spinning, 'Credits:', this.credits, 'Bet:', this.currentBet);
                 if (this.spinning || this.credits < this.currentBet) return;
                 
                 this.spinning = true;
@@ -819,6 +861,8 @@
                 this.currentWinAmount = 0;
                 this.clearWinEffects();
                 this.updateDisplay();
+                
+                console.log('Starting spin...');
                 
                 // Play spin sound
                 this.playSound('spin');
@@ -852,6 +896,7 @@
                 });
 
                 Promise.all(promises).then(() => {
+                    console.log('All reels stopped');
                     // Stop spin sound
                     if (this.spinSound) {
                         this.spinSound.pause();
@@ -864,7 +909,12 @@
                         this.checkWins();
                         this.spinning = false;
                         this.updateDisplay();
+                        console.log('Spin complete');
                     }, 300);
+                }).catch(error => {
+                    console.error('Spin error:', error);
+                    this.spinning = false;
+                    this.updateDisplay();
                 });
             }
 
@@ -893,7 +943,7 @@
                         }
                     }
                 });
-
+                
                 if (totalWin > 0) {
                     this.currentWinAmount = totalWin;
                     this.credits += totalWin;
@@ -948,10 +998,8 @@
                         }
                     });
                     
-                    // Show win line overlay for main paylines
-                    if (index < 5) { // Only show lines for first 5 main paylines
-                        this.showWinLine(winLine.line, winLine.payline);
-                    }
+                    // Show win line overlay for ALL winning paylines
+                    this.showWinLine(winLine.line, winLine.payline);
                 });
             }
 
@@ -963,38 +1011,72 @@
             }
 
             showWinLine(lineIndex, payline) {
-                if (lineIndex >= 5) return; // Only show first 5 main win lines
-                
                 const winLineElement = document.getElementById(`win-line-${lineIndex}`);
                 if (!winLineElement) return;
 
-                // Position the win line based on the payline pattern
-                const reelContainer = document.getElementById('reels-container');
-                const containerRect = reelContainer.getBoundingClientRect();
                 const reelSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--reel-size'));
-                const reelGap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--reel-gap'));
                 
-                // Calculate positions for horizontal lines
+                // Position the win line based on the actual payline pattern
                 if (lineIndex < 3) {
+                    // Horizontal lines (rows 0, 1, 2)
                     const row = lineIndex;
-                    const top = 15 + (row * (reelSize + 1)) + (reelSize / 2) - 2;
+                    const top = 10 + (row * (reelSize + 1)) + (reelSize / 2) - 3;
                     winLineElement.style.top = `${top}px`;
-                    winLineElement.classList.add('horizontal');
                 } else if (lineIndex === 3) {
-                    // Diagonal top-left to bottom-right
-                    const top = 15 + (reelSize / 2) - 2;
+                    // Main diagonal: top-left to bottom-right
+                    const top = 10 + (reelSize / 2) - 3;
                     winLineElement.style.top = `${top}px`;
-                    winLineElement.style.transform = `rotate(${Math.atan2(reelSize * 2, reelSize * 4) * 180 / Math.PI}deg)`;
-                    winLineElement.classList.add('diagonal1');
+                    winLineElement.style.transform = `rotate(${Math.atan2(reelSize * 2, (reelSize + 2) * 4) * 180 / Math.PI}deg)`;
                 } else if (lineIndex === 4) {
-                    // Diagonal bottom-left to top-right
-                    const top = 15 + (reelSize * 2.5) - 2;
+                    // Main diagonal: bottom-left to top-right  
+                    const top = 10 + (reelSize * 2.5) - 3;
                     winLineElement.style.top = `${top}px`;
-                    winLineElement.style.transform = `rotate(${-Math.atan2(reelSize * 2, reelSize * 4) * 180 / Math.PI}deg)`;
-                    winLineElement.classList.add('diagonal2');
+                    winLineElement.style.transform = `rotate(${-Math.atan2(reelSize * 2, (reelSize + 2) * 4) * 180 / Math.PI}deg)`;
+                } else {
+                    // Complex zigzag patterns - draw connecting lines through payline positions
+                    this.drawComplexWinLine(winLineElement, payline, lineIndex, reelSize);
                 }
                 
                 winLineElement.classList.add('active');
+                
+                // Add win line number for identification
+                winLineElement.setAttribute('data-line', (lineIndex + 1).toString());
+            }
+
+            drawComplexWinLine(element, payline, lineIndex, reelSize) {
+                // For complex patterns, we'll draw a path that connects the payline positions
+                const positions = payline.map(([row, reel]) => ({
+                    x: reel * (reelSize + 2) + (reelSize / 2),
+                    y: 10 + (row * (reelSize + 1)) + (reelSize / 2)
+                }));
+                
+                // Create SVG path for complex win lines
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.style.position = 'absolute';
+                svg.style.top = '0';
+                svg.style.left = '0';
+                svg.style.width = '100%';
+                svg.style.height = '100%';
+                svg.style.pointerEvents = 'none';
+                svg.style.zIndex = '10';
+                
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                let pathData = `M ${positions[0].x} ${positions[0].y}`;
+                
+                for (let i = 1; i < positions.length; i++) {
+                    pathData += ` L ${positions[i].x} ${positions[i].y}`;
+                }
+                
+                path.setAttribute('d', pathData);
+                path.setAttribute('stroke', '#FFB81C');
+                path.setAttribute('stroke-width', '4');
+                path.setAttribute('fill', 'none');
+                path.setAttribute('filter', 'drop-shadow(0 0 8px #FFB81C)');
+                path.style.animation = 'win-line-glow 1s ease-in-out infinite alternate';
+                
+                svg.appendChild(path);
+                element.innerHTML = '';
+                element.appendChild(svg);
             }
 
             clearWinEffects() {
@@ -1034,10 +1116,12 @@
                     celebration.style.boxShadow = '0 0 30px #FFD700, inset 0 0 20px rgba(255,215,0,0.3)';
                     celebration.style.fontSize = '18px';
                     celebration.style.fontWeight = 'bold';
-                } else if (amount >= 5000) {
+                } else if (amount >= 15000) {
                     message = `� CHAMPIONSHIP WIN! �<br>$${amount.toLocaleString()}!<br>INCREDIBLE!`;
-                } else if (amount >= 2000) {
+                } else if (amount >= 8000) {
                     message = `🏈 PLAYOFF WIN! 🏈<br>$${amount.toLocaleString()}!<br>AMAZING!`;
+                } else if (amount >= 3000) {
+                    message = `🎯 BIG WIN! 🎯<br>$${amount.toLocaleString()}!<br>NICE!`;
                 }
                 
                 celebration.innerHTML = message;
