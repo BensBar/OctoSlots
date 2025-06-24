@@ -917,7 +917,56 @@
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
     }
     
-    /* Dark Mode Specific Overrides */
+    /* Base paytable styles - hidden by default */
+    .paytable {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      max-width: 400px;
+      background: var(--machine-body);
+      border: 6px solid var(--gold);
+      color: white;
+      border-radius: 10px;
+      padding: 20px;
+      z-index: 2000;
+      display: none; /* Hidden by default */
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    /* Visible state for paytable */
+    .paytable.visible {
+      display: block;
+      opacity: 1;
+    }
+    
+    /* Paytable overlay to prevent clicking through */
+    .paytable-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1999;
+      display: none;
+    }
+    
+    /* Show overlay when paytable is visible */
+    .paytable-overlay.visible {
+      display: block;
+    }
+    
+    /* Position paytable inside fullscreen mode properly */
+    .fullscreen-mode .paytable {
+      z-index: 3000;
+    }
+    
+    /* Light Mode Specific Overrides */
     body:not(.light-mode) .slot-machine {
       border: 8px solid #000 !important;
     }
@@ -1195,6 +1244,9 @@
   <audio id="win3-sound" src="sounds/win3.wav" preload="auto"></audio>
   <audio id="lose-sound" src="sounds/lose.wav" preload="auto"></audio>
   
+  <!-- Paytable overlay for better UX -->
+  <div class="paytable-overlay"></div>
+  
   <div class="app-header">
     <div class="user-info">User: Player1</div>
     <div class="date-info">Date: 2023-10-05</div>
@@ -1254,6 +1306,7 @@
       </div>
     </div>
   </div>
+  <div class="paytable-overlay"></div>
   <div class="paytable">
     <h3>Paytable</h3>
     <div class="paytable-item">
@@ -1349,7 +1402,8 @@
       bet: config.spinCost,
       win: 0,
       jackpot: 1000000,
-      currentSymbols: [null, null, null]
+      currentSymbols: [null, null, null],
+      wasFullscreen: false, // Track if we were in fullscreen before spinning
     };
     
     // Audio handling with better mobile support
@@ -1616,6 +1670,12 @@
         return;
       }
       
+      // Check and preserve fullscreen state before spinning
+      state.wasFullscreen = !!document.fullscreenElement || 
+                          !!document.webkitFullscreenElement || 
+                          !!document.mozFullScreenElement || 
+                          !!document.msFullscreenElement;
+                          
       // Deduct bet and update display
       state.credits -= state.bet;
       state.win = 0;
@@ -1717,26 +1777,98 @@
       setTimeout(() => {
         state.isSpinning = false;
         elements.spinButton.disabled = false;
+        
+        // Restore fullscreen if it was active before spinning
+        if (state.wasFullscreen && 
+            !document.fullscreenElement && 
+            !document.webkitFullscreenElement && 
+            !document.mozFullScreenElement && 
+            !document.msFullscreenElement) {
+          
+          console.log('Restoring fullscreen state after spin');
+          
+          // Restore fullscreen mode
+          const container = document.querySelector('.slot-machine-container');
+          if (container && container.requestFullscreen) {
+            container.requestFullscreen().catch(err => {
+              console.log(`Error restoring fullscreen: ${err.message}`);
+            });
+          } else if (container && container.webkitRequestFullscreen) {
+            container.webkitRequestFullscreen();
+          } else if (container && container.msRequestFullscreen) {
+            container.msRequestFullscreen();
+          } else if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+          }
+          
+          // Re-apply fullscreen class
+          document.body.classList.add('fullscreen-mode');
+          if (fullscreenIcon) {
+            fullscreenIcon.textContent = '↙️';
+          }
+          
+          // Re-apply scaling
+          setTimeout(() => {
+            const slotMachine = document.querySelector('.slot-machine');
+            if (slotMachine) {
+              const viewportHeight = window.innerHeight;
+              const viewportWidth = window.innerWidth;
+              const machineHeight = slotMachine.offsetHeight / 1.4;
+              const machineWidth = slotMachine.offsetWidth / 1.4;
+              const heightScale = viewportHeight * 0.95 / machineHeight;
+              const widthScale = viewportWidth * 0.95 / machineWidth;
+              const optimalScale = Math.min(heightScale, widthScale);
+              const finalScale = Math.max(1.4, optimalScale);
+              slotMachine.style.transform = `scale(${finalScale})`;
+            }
+          }, 100);
+        }
       }, 800);
     }
 
     // Event Listeners
-    elements.spinButton.addEventListener('click', spinAllReels);
+    elements.spinButton.addEventListener('click', function(e) {
+      // Only prevent default in fullscreen to maintain behavior
+      if (document.fullscreenElement) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      spinAllReels();
+    });
+    
     elements.spinButton.addEventListener('touchstart', function(e) {
       e.preventDefault(); // Prevent double-tap zoom
+      e.stopPropagation(); // Prevent event bubbling that might exit fullscreen
       simulateHaptic(50);
       elements.spinButton.classList.add('touch-active');
       spinAllReels(); // Directly call spinAllReels on touchstart
     });
+    
     elements.spinButton.addEventListener('touchend', function(e) {
-      elements.spinButton.classList.remove('touch-active');
-    });
-    elements.spinButton.addEventListener('touchcancel', function(e) {
+      e.preventDefault(); // Prevent any browser behaviors
+      e.stopPropagation();
       elements.spinButton.classList.remove('touch-active');
     });
     
+    elements.spinButton.addEventListener('touchcancel', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      elements.spinButton.classList.remove('touch-active');
+    });
+    
+    // Add paytable overlay to elements
+    elements.paytableOverlay = document.querySelector('.paytable-overlay');
+    
+    // Show and hide paytable with overlay
     elements.paytableButton.addEventListener('click', () => {
       elements.paytable.classList.toggle('visible');
+      elements.paytableOverlay.classList.toggle('visible');
+    });
+    
+    // Close paytable when clicking overlay
+    elements.paytableOverlay.addEventListener('click', () => {
+      elements.paytable.classList.remove('visible');
+      elements.paytableOverlay.classList.remove('visible');
     });
     
     elements.themeToggle.addEventListener('click', () => {
