@@ -1347,18 +1347,7 @@
         
         // Always stop the spin sound before playing win/lose sounds to prevent overlap
         if (['win', 'win3', 'lose'].includes(soundName)) {
-          // Stop any current spin audio
-          if (audioContext.currentSpinAudio) {
-            audioContext.currentSpinAudio.pause();
-            audioContext.currentSpinAudio.currentTime = 0;
-            audioContext.currentSpinAudio = null;
-          }
-          
-          const spinAudio = document.getElementById('spin-sound');
-          if (spinAudio) {
-            spinAudio.pause();
-            spinAudio.currentTime = 0;
-          }
+          stopAllSpinSounds();
         }
         
         // On iOS, we need special handling for the spin sound
@@ -1443,31 +1432,35 @@
       }
     }
     
-    // Function to unlock audio playback on user interaction
-    function unlockAudio() {
-      const sounds = [
-        document.getElementById('spin-sound'),
-        document.getElementById('stop-sound'),
-        document.getElementById('win-sound'),
-        document.getElementById('win3-sound'),
-        document.getElementById('lose-sound')
-      ];
+    // Function to stop all spin sounds completely
+    function stopAllSpinSounds() {
+      // Stop tracked spin audio
+      if (audioContext.currentSpinAudio) {
+        try {
+          audioContext.currentSpinAudio.pause();
+          audioContext.currentSpinAudio.currentTime = 0;
+        } catch (e) { /* ignore */ }
+        audioContext.currentSpinAudio = null;
+      }
       
-      sounds.forEach(sound => {
-        if (sound) {
-          // Just load the audio without playing it to unlock
-          sound.load();
-          sound.volume = 1.0;
-        }
-      });
+      // Stop DOM spin audio
+      const spinAudio = document.getElementById('spin-sound');
+      if (spinAudio) {
+        try {
+          spinAudio.pause();
+          spinAudio.currentTime = 0;
+        } catch (e) { /* ignore */ }
+      }
       
-      // Remove the event listeners once unlocked
-      document.removeEventListener('click', unlockAudio);
-      document.removeEventListener('touchstart', unlockAudio);
+      // Stop any other spin sounds that might be playing
+      if (audioContext.currentSounds['spin']) {
+        try {
+          audioContext.currentSounds['spin'].pause();
+          audioContext.currentSounds['spin'].currentTime = 0;
+        } catch (e) { /* ignore */ }
+        delete audioContext.currentSounds['spin'];
+      }
     }
-    
-    // Unlock audio on first user interaction (click or touch)
-    window.addEventListener('click', unlockAudio, { once: true });
    
     
     // Preload images to ensure they're available
@@ -1627,6 +1620,9 @@
         alert('Not enough credits!');
         return;
       }
+      
+      // Stop any previous spin sounds before starting new spin
+      stopAllSpinSounds();
       // Check and preserve fullscreen state before spinning
       state.wasFullscreen = !!document.fullscreenElement || 
                           !!document.webkitFullscreenElement || 
@@ -1694,18 +1690,7 @@
             
             // Stop the spin sound immediately when the last reel stops
             if (i === 2) {
-              // Stop any current spin audio
-              if (audioContext.currentSpinAudio) {
-                audioContext.currentSpinAudio.pause();
-                audioContext.currentSpinAudio.currentTime = 0;
-                audioContext.currentSpinAudio = null;
-              }
-              
-              const spinAudio = document.getElementById('spin-sound');
-              if (spinAudio) {
-                spinAudio.pause();
-                spinAudio.currentTime = 0;
-              }
+              stopAllSpinSounds();
             }
             
             // Haptic feedback for each reel stop
