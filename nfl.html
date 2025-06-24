@@ -2,69 +2,116 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFL 4K Slots</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>NFL Championship Slots - Mobile</title>
     <style>
         :root {
-            --machine-width: 3840px;
-            --machine-height: 2160px;
-            --reel-size: 400px;
+            --reel-size: 80px;
+            --reel-gap: 8px;
+            --nfl-blue: #013369;
+            --nfl-red: #D50A0A;
+            --nfl-gold: #FFB81C;
+            --win-green: #00FF00;
         }
 
         body {
             margin: 0;
             padding: 0;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: linear-gradient(180deg, var(--nfl-blue) 0%, #000 50%, var(--nfl-blue) 100%);
             min-height: 100vh;
-            font-family: Arial, sans-serif;
-            overflow: hidden;
+            font-family: 'Arial Black', Arial, sans-serif;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
         }
 
         .slot-machine-4k {
             width: 100vw;
-            max-width: var(--machine-width);
-            height: auto;
-            aspect-ratio: 16/9;
-            background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
+            min-height: 100vh;
+            background: linear-gradient(180deg, #1a1a1a, #2a2a2a, #1a1a1a);
             position: relative;
-            border-radius: 30px;
-            padding: 20px;
+            padding: 10px;
             box-sizing: border-box;
-        }
-
-        .machine-frame {
-            background: linear-gradient(135deg, #444, #222);
-            border-radius: 20px;
-            padding: 20px;
-            height: 100%;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
             display: flex;
             flex-direction: column;
         }
 
-        #reels-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 40px;
-            background: #000;
+        .machine-frame {
+            background: linear-gradient(180deg, #444, #222, #444);
             border-radius: 15px;
-            margin: auto;
-            width: fit-content;
-            flex-grow: 1;
+            padding: 15px;
+            flex: 1;
+            border: 4px solid var(--nfl-gold);
+            box-shadow: 
+                0 0 30px rgba(255, 184, 28, 0.5),
+                inset 0 0 20px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-header {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--nfl-blue), var(--nfl-red));
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 2px solid var(--nfl-gold);
+        }
+
+        .game-title {
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            margin: 0;
+            color: var(--nfl-gold);
+        }
+
+        .game-subtitle {
+            font-size: 14px;
+            margin: 5px 0 0 0;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        #reels-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--reel-gap);
+            padding: 20px 10px;
+            background: linear-gradient(135deg, #000, #111, #000);
+            border-radius: 10px;
+            margin: 10px 0;
+            border: 3px solid var(--nfl-gold);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            flex: 1;
+            align-content: center;
+            position: relative;
+        }
+
+        .win-lines-container {
+            position: absolute;
+            top: 20px;
+            left: 10px;
+            right: 10px;
+            bottom: 20px;
+            pointer-events: none;
+            z-index: 15;
         }
 
         .reel {
             width: var(--reel-size);
-            height: var(--reel-size);
-            background: #fff;
-            border-radius: 10px;
+            height: calc(var(--reel-size) * 3);
+            background: linear-gradient(135deg, #fff, #f0f0f0);
+            border-radius: 8px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 15px rgba(255,255,255,0.3);
+            box-shadow: 
+                0 0 10px rgba(255,255,255,0.3),
+                inset 0 0 5px rgba(0,0,0,0.2);
+            border: 2px solid var(--nfl-blue);
+            justify-self: center;
         }
 
         .reel-strip {
@@ -72,7 +119,11 @@
             width: 100%;
             display: flex;
             flex-direction: column;
-            transition: transform 2s cubic-bezier(0.21, 0.53, 0.29, 0.99);
+            transition: none;
+        }
+
+        .reel.spinning .reel-strip {
+            transition: transform 3s cubic-bezier(0.21, 0.53, 0.29, 0.99);
         }
 
         .symbol {
@@ -81,96 +132,281 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 10%;
+            padding: 6px;
             box-sizing: border-box;
-            background: #fff;
+            background: linear-gradient(135deg, #fff, #f8f8f8);
+            border-bottom: 1px solid #ddd;
+            position: relative;
         }
 
         .symbol img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.2));
+        }
+
+        .symbol.winning {
+            background: linear-gradient(135deg, var(--win-green), #00CC00) !important;
+            animation: win-pulse 1s ease-in-out infinite;
+            border: 2px solid var(--nfl-gold) !important;
+            box-shadow: 0 0 15px var(--win-green);
+        }
+
+        .win-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, var(--nfl-gold), transparent);
+            z-index: 10;
+            border-radius: 3px;
+            box-shadow: 0 0 15px var(--nfl-gold);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+
+        .win-line.active {
+            opacity: 0.8;
+            animation: win-line-glow 1s ease-in-out infinite alternate;
+        }
+
+        .win-line.horizontal {
+            height: 4px;
+            width: calc(100% - 20px);
+            left: 10px;
+        }
+
+        .win-line.diagonal1 {
+            height: 4px;
+            width: calc(100% - 20px);
+            left: 10px;
+            transform-origin: left center;
+        }
+
+        .win-line.diagonal2 {
+            height: 4px;
+            width: calc(100% - 20px);
+            left: 10px;
+            transform-origin: right center;
+        }
+
+        .win-line.zigzag {
+            height: 3px;
+            background: linear-gradient(45deg, transparent, var(--nfl-gold), transparent, var(--nfl-gold), transparent);
         }
 
         .controls {
             display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px 15px;
+            background: linear-gradient(135deg, rgba(1, 51, 105, 0.9), rgba(213, 10, 10, 0.9));
+            border-radius: 10px;
+            border: 3px solid var(--nfl-gold);
+            box-shadow: 0 0 15px rgba(255, 184, 28, 0.3);
+        }
+
+        .top-controls {
+            display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
-            background: rgba(0,0,0,0.8);
-            border-radius: 10px;
-            margin-top: 20px;
         }
 
         .credits {
-            color: #ff0;
-            font-size: 32px;
-            background: #000;
-            padding: 10px 20px;
-            border-radius: 5px;
-            border: 2px solid #333;
-            text-shadow: 0 0 10px rgba(255,255,0,0.5);
-        }
-
-        .bet-display {
-            color: #fff;
-            font-size: 24px;
-            margin: 0 20px;
-        }
-
-        button {
-            background: linear-gradient(to bottom, #4a4a4a, #3a3a3a);
-            border: none;
-            color: #fff;
-            padding: 15px 30px;
-            font-size: 24px;
+            color: var(--nfl-gold);
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #000, #333);
+            padding: 10px 15px;
             border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 0 10px;
+            border: 2px solid var(--nfl-gold);
+            text-shadow: 0 0 8px rgba(255,255,0,0.8);
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
         }
 
-        button:hover {
-            background: linear-gradient(to bottom, #5a5a5a, #4a4a4a);
-            transform: translateY(-2px);
-        }
-
-        button:disabled {
-            background: #333;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        #spin-button {
-            background: linear-gradient(to bottom, #ff4444, #cc0000);
-            font-size: 32px;
-            padding: 20px 40px;
-        }
-
-        #spin-button:hover {
-            background: linear-gradient(to bottom, #ff5555, #dd0000);
-        }
-
-        #spin-button:disabled {
-            background: linear-gradient(to bottom, #882222, #661111);
+        .win-display {
+            color: var(--win-green);
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #000, #333);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid var(--win-green);
+            text-shadow: 0 0 8px rgba(0,255,0,0.8);
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
         }
 
         .bet-controls {
             display: flex;
-            gap: 10px;
+            justify-content: space-between;
             align-items: center;
+            background: rgba(0,0,0,0.5);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid var(--nfl-gold);
+        }
+
+        .bet-display {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .paylines-display {
+            color: var(--nfl-gold);
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        @media (max-width: 480px) {
+            :root {
+                --reel-size: 65px;
+                --reel-gap: 6px;
+            }
+            
+            .game-title {
+                font-size: 20px;
+            }
+            
+            .game-subtitle {
+                font-size: 12px;
+            }
+            
+            .credits, .win-display {
+                font-size: 18px;
+                padding: 8px 12px;
+            }
+            
+            .bet-display {
+                font-size: 16px;
+            }
+            
+            #spin-button {
+                font-size: 24px;
+                padding: 18px 35px;
+            }
+            
+            button {
+                font-size: 14px;
+                padding: 10px 16px;
+                min-width: 50px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            :root {
+                --reel-size: 55px;
+                --reel-gap: 4px;
+            }
+            
+            .machine-frame {
+                padding: 10px;
+            }
+            
+            #reels-container {
+                padding: 15px 5px;
+            }
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--nfl-blue), #0066CC);
+            border: 2px solid var(--nfl-gold);
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+            min-width: 60px;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #0066CC, var(--nfl-blue));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        button:disabled {
+            background: linear-gradient(135deg, #666, #444);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border-color: #666;
+        }
+
+        #spin-button {
+            background: linear-gradient(135deg, var(--nfl-red), #FF3333);
+            font-size: 28px;
+            padding: 20px 40px;
+            border: 3px solid var(--nfl-gold);
+            border-radius: 15px;
+            box-shadow: 
+                0 0 15px rgba(213, 10, 10, 0.5),
+                0 4px 8px rgba(0,0,0,0.4);
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        #spin-button:hover {
+            background: linear-gradient(135deg, #FF3333, var(--nfl-red));
+            box-shadow: 
+                0 0 20px rgba(213, 10, 10, 0.8),
+                0 6px 12px rgba(0,0,0,0.5);
+        }
+
+        #spin-button:disabled {
+            background: linear-gradient(135deg, #884444, #662222);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        }
+
+        .bet-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid var(--nfl-gold);
+        }
+
+        .paylines-display {
+            color: var(--nfl-gold);
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
 
         @media (max-width: 3840px) {
             :root {
-                --reel-size: calc(min(25vw, 400px));
+                --reel-size: calc(min(15vw, 300px));
             }
         }
 
+        @keyframes win-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes win-line-glow {
+            0% { box-shadow: 0 0 10px var(--nfl-gold); }
+            100% { box-shadow: 0 0 25px var(--nfl-gold), 0 0 35px var(--nfl-gold); }
+        }
+
         @keyframes win-flash {
-            0% { box-shadow: 0 0 20px #ff0; }
-            50% { box-shadow: 0 0 40px #ff0; }
-            100% { box-shadow: 0 0 20px #ff0; }
+            0% { box-shadow: 0 0 20px var(--win-green); }
+            50% { box-shadow: 0 0 40px var(--win-green), 0 0 60px var(--win-green); }
+            100% { box-shadow: 0 0 20px var(--win-green); }
         }
 
         .win-celebration {
@@ -178,17 +414,73 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: #fff;
-            font-size: 48px;
-            text-shadow: 0 0 10px #ff0;
+            color: var(--nfl-gold);
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 
+                0 0 15px rgba(255, 184, 28, 0.8),
+                2px 2px 4px rgba(0,0,0,0.8);
             animation: win-flash 1s ease-in-out infinite;
             z-index: 100;
+            background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(1, 51, 105, 0.8));
+            padding: 20px 40px;
+            border-radius: 15px;
+            border: 3px solid var(--nfl-gold);
+            text-align: center;
+            max-width: 90vw;
+            box-sizing: border-box;
+        }
+
+        .spinning-lights {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .spinning-light {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--nfl-gold);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--nfl-gold);
+            animation: spin-light 2s linear infinite;
+        }
+
+        @keyframes spin-light {
+            0% { transform: rotate(0deg) translateX(50px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(50px) rotate(-360deg); }
+        }
+
+        .trophy {
+            font-size: 48px;
+            animation: trophy-bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes trophy-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
     </style>
 </head>
 <body>
+    <!-- Audio elements for enhanced experience -->
+    <audio id="spin-sound" src="sounds/spin.wav"></audio>
+    <audio id="stop-sound" src="sounds/stop.wav"></audio>
+    <audio id="win-sound" src="sounds/win.wav"></audio>
+    <audio id="lose-sound" src="sounds/lose.wav"></audio>
+
     <div class="slot-machine-4k">
         <div class="machine-frame">
+            <div class="game-header">
+                <h1 class="game-title">🏆 NFL SLOTS 🏆</h1>
+                <p class="game-subtitle">5-Reel • 25 Paylines • Big Wins!</p>
+            </div>
+            
             <div id="reels-container">
                 <div class="reel" id="reel1">
                     <div class="reel-strip"></div>
@@ -199,15 +491,36 @@
                 <div class="reel" id="reel3">
                     <div class="reel-strip"></div>
                 </div>
+                <div class="reel" id="reel4">
+                    <div class="reel-strip"></div>
+                </div>
+                <div class="reel" id="reel5">
+                    <div class="reel-strip"></div>
+                </div>
+                <!-- Win line overlays -->
+                <div class="win-lines-container">
+                    <div class="win-line horizontal" id="win-line-0"></div>
+                    <div class="win-line horizontal" id="win-line-1"></div>
+                    <div class="win-line horizontal" id="win-line-2"></div>
+                    <div class="win-line diagonal1" id="win-line-3"></div>
+                    <div class="win-line diagonal2" id="win-line-4"></div>
+                </div>
             </div>
+            
             <div class="controls">
-                <div class="credits">Credits: <span id="credits">1000</span></div>
+                <div class="top-controls">
+                    <div class="credits">Credits: <span id="credits">5000</span></div>
+                    <div class="win-display">Win: <span id="win-amount">0</span></div>
+                </div>
+                
                 <div class="bet-controls">
                     <button id="bet-down">-</button>
-                    <div class="bet-display">Bet: <span id="current-bet">10</span></div>
+                    <div class="bet-display">Bet: <span id="current-bet">25</span></div>
                     <button id="bet-up">+</button>
-                    <button id="bet-max">Max Bet</button>
+                    <div class="paylines-display">Lines: <span id="paylines">25</span></div>
+                    <button id="bet-max">Max</button>
                 </div>
+                
                 <button id="spin-button">SPIN</button>
             </div>
         </div>
@@ -215,30 +528,100 @@
 
     <script>
         const CONFIG = {
-            reels: 3,
+            reels: 5,
+            rows: 3,
             symbols: [
+                // AFC East
                 'bills', 'dolphins', 'patriots', 'jets',
+                // AFC North  
                 'ravens', 'bengals', 'browns', 'steelers',
+                // AFC South
                 'texans', 'colts', 'jaguars', 'titans',
+                // AFC West
                 'broncos', 'chiefs', 'raiders', 'chargers',
+                // NFC East
                 'cowboys', 'giants', 'eagles', 'commanders',
+                // NFC North
                 'bears', 'lions', 'packers', 'vikings',
+                // NFC South
                 'falcons', 'panthers', 'saints', 'buccaneers',
-                'cardinals', 'rams', 'seahawks', '49ers'
+                // NFC West
+                'cardinals', 'rams', 'seahawks', '49ers',
+                // Special symbols
+                'nfl', 'afc', 'nfc', 'trophy'
             ],
-            minBet: 10,
-            maxBet: 100,
-            betStep: 10,
-            initialCredits: 1000
+            minBet: 25,
+            maxBet: 500,
+            betStep: 25,
+            initialCredits: 5000,
+            paylines: [
+                // Horizontal lines (5)
+                [[0,0], [0,1], [0,2], [0,3], [0,4]], // Top row
+                [[1,0], [1,1], [1,2], [1,3], [1,4]], // Middle row
+                [[2,0], [2,1], [2,2], [2,3], [2,4]], // Bottom row
+                
+                // Diagonal lines (2)
+                [[0,0], [1,1], [2,2], [1,3], [0,4]], // Top-left to bottom-right zigzag
+                [[2,0], [1,1], [0,2], [1,3], [2,4]], // Bottom-left to top-right zigzag
+                
+                // V-shapes (4)
+                [[0,0], [1,1], [2,2], [1,1], [0,0]], // V from left
+                [[0,4], [1,3], [2,2], [1,3], [0,4]], // V from right
+                [[2,0], [1,1], [0,2], [1,1], [2,0]], // Inverted V from left
+                [[2,4], [1,3], [0,2], [1,3], [2,4]], // Inverted V from right
+                
+                // W-shapes (4)
+                [[0,0], [2,1], [0,2], [2,3], [0,4]], // W top
+                [[2,0], [0,1], [2,2], [0,3], [2,4]], // W bottom
+                [[1,0], [0,1], [2,2], [0,3], [1,4]], // M top
+                [[1,0], [2,1], [0,2], [2,3], [1,4]], // M bottom
+                
+                // Additional paylines for more winning chances (10)
+                [[0,0], [0,1], [1,2], [2,3], [2,4]], // Stepped down
+                [[2,0], [2,1], [1,2], [0,3], [0,4]], // Stepped up
+                [[0,0], [1,1], [1,2], [1,3], [2,4]], // L-shape
+                [[2,0], [1,1], [1,2], [1,3], [0,4]], // Inverted L
+                [[0,0], [2,1], [1,2], [0,3], [2,4]], // Lightning top
+                [[2,0], [0,1], [1,2], [2,3], [0,4]], // Lightning bottom
+                [[1,0], [0,1], [0,2], [1,3], [2,4]], // Snake top
+                [[1,0], [2,1], [2,2], [1,3], [0,4]], // Snake bottom
+                [[0,0], [1,1], [0,2], [2,3], [1,4]], // Zigzag 1
+                [[2,0], [1,1], [2,2], [0,3], [1,4]]  // Zigzag 2
+            ],
+            symbolValues: {
+                // Special symbols - highest payouts
+                'trophy': { 5: 5000, 4: 1000, 3: 250, 2: 25 },
+                'nfl': { 5: 2500, 4: 500, 3: 125, 2: 15 },
+                'afc': { 5: 1000, 4: 200, 3: 50, 2: 10 },
+                'nfc': { 5: 1000, 4: 200, 3: 50, 2: 10 },
+                
+                // Premium teams - high payouts
+                'chiefs': { 5: 800, 4: 150, 3: 40, 2: 8 },
+                'bills': { 5: 750, 4: 140, 3: 35, 2: 7 },
+                'cowboys': { 5: 700, 4: 130, 3: 30, 2: 6 },
+                '49ers': { 5: 650, 4: 120, 3: 25, 2: 5 },
+                
+                // Good teams - medium payouts
+                'ravens': { 5: 500, 4: 100, 3: 20, 2: 4 },
+                'packers': { 5: 500, 4: 100, 3: 20, 2: 4 },
+                'steelers': { 5: 450, 4: 90, 3: 18, 2: 3 },
+                'patriots': { 5: 400, 4: 80, 3: 15, 2: 3 },
+                
+                // Default for all other teams - standard payouts
+                'default': { 5: 300, 4: 60, 3: 12, 2: 2 }
+            }
         };
 
-        class NFLSlots {
+        class NFLChampionshipSlots {
             constructor() {
                 this.credits = CONFIG.initialCredits;
                 this.currentBet = CONFIG.minBet;
                 this.spinning = false;
                 this.symbols = {};
                 this.reelStrips = [];
+                this.gameGrid = [];
+                this.currentWinAmount = 0;
+                this.spinSound = null;
                 this.init();
             }
 
@@ -247,6 +630,27 @@
                 this.setupReels();
                 this.updateDisplay();
                 this.setupEventListeners();
+                this.setupAudio();
+            }
+
+            setupAudio() {
+                this.spinSound = document.getElementById('spin-sound');
+                this.stopSound = document.getElementById('stop-sound');
+                this.winSound = document.getElementById('win-sound');
+                this.loseSound = document.getElementById('lose-sound');
+            }
+
+            playSound(soundName) {
+                try {
+                    const audio = document.getElementById(soundName + '-sound');
+                    if (audio) {
+                        audio.currentTime = 0;
+                        audio.volume = 0.7;
+                        audio.play().catch(e => console.log('Audio play failed:', e));
+                    }
+                } catch (e) {
+                    console.log('Audio error:', e);
+                }
             }
 
             async preloadImages() {
@@ -268,26 +672,59 @@
 
             setupReels() {
                 this.reelStrips = Array.from(document.querySelectorAll('.reel-strip'));
-                this.reelStrips.forEach(strip => {
+                this.reelStrips.forEach((strip, reelIndex) => {
                     strip.innerHTML = '';
-                    // Double the symbols for seamless spinning
-                    [...CONFIG.symbols, ...CONFIG.symbols].forEach(team => {
+                    // Create extended symbol list for smooth spinning
+                    const extendedSymbols = [...CONFIG.symbols, ...CONFIG.symbols, ...CONFIG.symbols];
+                    
+                    extendedSymbols.forEach((team, symbolIndex) => {
                         const symbol = document.createElement('div');
                         symbol.className = 'symbol';
+                        symbol.dataset.team = team;
+                        symbol.dataset.reel = reelIndex;
+                        symbol.dataset.position = symbolIndex;
+                        
                         if (this.symbols[team]) {
                             const img = this.symbols[team].cloneNode();
                             symbol.appendChild(img);
                         } else {
-                            symbol.textContent = team;
+                            symbol.textContent = team.toUpperCase();
+                            symbol.style.fontSize = '12px';
+                            symbol.style.fontWeight = 'bold';
                         }
                         strip.appendChild(symbol);
                     });
+                    
+                    // Set random initial position for each reel
+                    const randomPosition = -(Math.floor(Math.random() * CONFIG.symbols.length) * 100);
+                    strip.style.transform = `translateY(${randomPosition}px)`;
                 });
+                
+                // Initialize game grid with the random positions
+                this.updateGameGrid();
+            }
+
+            updateGameGrid() {
+                this.gameGrid = [];
+                for (let row = 0; row < CONFIG.rows; row++) {
+                    this.gameGrid[row] = [];
+                    for (let reel = 0; reel < CONFIG.reels; reel++) {
+                        const strip = this.reelStrips[reel];
+                        const transform = strip.style.transform || 'translateY(0px)';
+                        const translateY = parseInt(transform.match(/-?\d+/) || [0])[0];
+                        const symbolIndex = Math.abs(Math.floor(translateY / 100)) + row;
+                        const symbolPos = symbolIndex % CONFIG.symbols.length;
+                        this.gameGrid[row][reel] = CONFIG.symbols[symbolPos];
+                    }
+                }
+                console.log('Current grid:', this.gameGrid); // Debug log
             }
 
             updateDisplay() {
-                document.getElementById('credits').textContent = this.credits;
+                document.getElementById('credits').textContent = this.credits.toLocaleString();
                 document.getElementById('current-bet').textContent = this.currentBet;
+                document.getElementById('paylines').textContent = CONFIG.paylines.length;
+                document.getElementById('win-amount').textContent = this.currentWinAmount.toLocaleString();
                 
                 const spinButton = document.getElementById('spin-button');
                 spinButton.disabled = this.spinning || this.credits < this.currentBet;
@@ -321,64 +758,228 @@
                 
                 this.spinning = true;
                 this.credits -= this.currentBet;
+                this.currentWinAmount = 0;
+                this.clearWinEffects();
                 this.updateDisplay();
+                
+                // Play spin sound
+                this.playSound('spin');
+                if (this.spinSound) {
+                    this.spinSound.loop = true;
+                }
 
-                const spinDurations = [2, 2.2, 2.4];
-                const finalPositions = this.reelStrips.map(() => 
-                    -(Math.floor(Math.random() * CONFIG.symbols.length) * 100)
-                );
+                // Add spinning class for animation
+                this.reelStrips.forEach(strip => {
+                    strip.parentElement.classList.add('spinning');
+                });
+
+                const spinDurations = [2.5, 2.7, 2.9, 3.1, 3.3];
+                const promises = [];
 
                 this.reelStrips.forEach((strip, i) => {
-                    strip.style.transition = `transform ${spinDurations[i]}s cubic-bezier(0.21, 0.53, 0.29, 0.99)`;
-                    strip.style.transform = `translateY(${finalPositions[i]}%)`;
+                    const promise = new Promise(resolve => {
+                        const finalPosition = -(Math.floor(Math.random() * CONFIG.symbols.length) * 100);
+                        
+                        setTimeout(() => {
+                            strip.style.transform = `translateY(${finalPosition}px)`;
+                            
+                            setTimeout(() => {
+                                strip.parentElement.classList.remove('spinning');
+                                this.playSound('stop');
+                                resolve();
+                            }, spinDurations[i] * 1000);
+                        }, 100);
+                    });
+                    promises.push(promise);
                 });
 
-                setTimeout(() => {
-                    this.spinning = false;
-                    this.checkWin();
-                    this.updateDisplay();
-                }, Math.max(...spinDurations) * 1000 + 100);
+                Promise.all(promises).then(() => {
+                    // Stop spin sound
+                    if (this.spinSound) {
+                        this.spinSound.pause();
+                        this.spinSound.currentTime = 0;
+                        this.spinSound.loop = false;
+                    }
+                    
+                    setTimeout(() => {
+                        this.updateGameGrid();
+                        this.checkWins();
+                        this.spinning = false;
+                        this.updateDisplay();
+                    }, 300);
+                });
             }
 
-            checkWin() {
-                const visibleSymbols = this.reelStrips.map(strip => {
-                    const transform = strip.style.transform;
-                    const pos = parseInt(transform.match(/-?\d+/)[0]);
-                    const index = Math.abs(Math.round(pos / 100)) % CONFIG.symbols.length;
-                    return CONFIG.symbols[index];
+            checkWins() {
+                let totalWin = 0;
+                const winningLines = [];
+                
+                CONFIG.paylines.forEach((payline, lineIndex) => {
+                    const lineSymbols = payline.map(([row, reel]) => this.gameGrid[row][reel]);
+                    const winData = this.evaluatePayline(lineSymbols);
+                    
+                    if (winData.win > 0) {
+                        totalWin += winData.win;
+                        winningLines.push({
+                            line: lineIndex,
+                            payline: payline,
+                            symbol: winData.symbol,
+                            count: winData.count,
+                            win: winData.win
+                        });
+                    }
                 });
 
-                const allMatch = visibleSymbols.every(sym => sym === visibleSymbols[0]);
-                if (allMatch) {
-                    const winAmount = this.currentBet * 10;
-                    this.credits += winAmount;
-                    this.celebrateWin(winAmount);
+                if (totalWin > 0) {
+                    this.currentWinAmount = totalWin;
+                    this.credits += totalWin;
+                    this.showWinEffects(winningLines);
+                    this.playSound('win');
+                    this.celebrateWin(totalWin, winningLines.length);
+                } else {
+                    this.playSound('lose');
                 }
             }
 
-            celebrateWin(amount) {
+            evaluatePayline(symbols) {
+                // Count consecutive matching symbols from left
+                let count = 1;
+                const firstSymbol = symbols[0];
+                
+                for (let i = 1; i < symbols.length; i++) {
+                    if (symbols[i] === firstSymbol) {
+                        count++;
+                    } else {
+                        break;
+                    }
+                }
+
+                if (count >= 2) {
+                    const symbolValue = CONFIG.symbolValues[firstSymbol] || CONFIG.symbolValues.default;
+                    const multiplier = symbolValue[count] || 0;
+                    return {
+                        symbol: firstSymbol,
+                        count: count,
+                        win: multiplier * (this.currentBet / CONFIG.minBet)
+                    };
+                }
+
+                return { symbol: null, count: 0, win: 0 };
+            }
+
+            showWinEffects(winningLines) {
+                // Clear previous win effects
+                this.clearWinEffects();
+                
+                winningLines.forEach((winLine, index) => {
+                    // Highlight winning symbols
+                    winLine.payline.forEach(([row, reel]) => {
+                        const reelElement = document.getElementById(`reel${reel + 1}`);
+                        const symbols = reelElement.querySelectorAll('.symbol');
+                        const visibleStartIndex = this.getVisibleStartIndex(reel);
+                        const targetSymbol = symbols[visibleStartIndex + row];
+                        
+                        if (targetSymbol) {
+                            targetSymbol.classList.add('winning');
+                        }
+                    });
+                    
+                    // Show win line overlay for main paylines
+                    if (index < 5) { // Only show lines for first 5 main paylines
+                        this.showWinLine(winLine.line, winLine.payline);
+                    }
+                });
+            }
+
+            getVisibleStartIndex(reelIndex) {
+                const strip = this.reelStrips[reelIndex];
+                const transform = strip.style.transform || 'translateY(0px)';
+                const translateY = parseInt(transform.match(/-?\d+/) || [0])[0];
+                return Math.abs(Math.floor(translateY / 100));
+            }
+
+            showWinLine(lineIndex, payline) {
+                if (lineIndex >= 5) return; // Only show first 5 main win lines
+                
+                const winLineElement = document.getElementById(`win-line-${lineIndex}`);
+                if (!winLineElement) return;
+
+                // Position the win line based on the payline pattern
+                const reelContainer = document.getElementById('reels-container');
+                const containerRect = reelContainer.getBoundingClientRect();
+                const reelSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--reel-size'));
+                const reelGap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--reel-gap'));
+                
+                // Calculate positions for horizontal lines
+                if (lineIndex < 3) {
+                    const row = lineIndex;
+                    const top = 20 + (row * (reelSize + 2)) + (reelSize / 2) - 2;
+                    winLineElement.style.top = `${top}px`;
+                    winLineElement.classList.add('horizontal');
+                } else if (lineIndex === 3) {
+                    // Diagonal top-left to bottom-right
+                    const top = 20 + (reelSize / 2) - 2;
+                    winLineElement.style.top = `${top}px`;
+                    winLineElement.style.transform = `rotate(${Math.atan2(reelSize * 2, reelSize * 4) * 180 / Math.PI}deg)`;
+                    winLineElement.classList.add('diagonal1');
+                } else if (lineIndex === 4) {
+                    // Diagonal bottom-left to top-right
+                    const top = 20 + (reelSize * 2.5) - 2;
+                    winLineElement.style.top = `${top}px`;
+                    winLineElement.style.transform = `rotate(${-Math.atan2(reelSize * 2, reelSize * 4) * 180 / Math.PI}deg)`;
+                    winLineElement.classList.add('diagonal2');
+                }
+                
+                winLineElement.classList.add('active');
+            }
+
+            clearWinEffects() {
+                // Clear winning symbol highlights
+                document.querySelectorAll('.symbol.winning').forEach(symbol => {
+                    symbol.classList.remove('winning');
+                });
+                
+                // Clear win line overlays
+                document.querySelectorAll('.win-line.active').forEach(line => {
+                    line.classList.remove('active');
+                });
+                
+                // Remove existing celebration
+                const existingCelebration = document.querySelector('.win-celebration');
+                if (existingCelebration) {
+                    existingCelebration.remove();
+                }
+            }
+
+            celebrateWin(amount, linesWon) {
                 const celebration = document.createElement('div');
                 celebration.className = 'win-celebration';
-                celebration.textContent = `WIN! +${amount}`;
                 
+                let message = `🏆 TOUCHDOWN! 🏆<br>`;
+                message += `$${amount.toLocaleString()} WIN!<br>`;
+                message += `${linesWon} Line${linesWon > 1 ? 's' : ''} Hit!`;
+                
+                if (amount >= 1000) {
+                    message = `🏆 SUPER BOWL WIN! 🏆<br>$${amount.toLocaleString()}!<br>${linesWon} Line${linesWon > 1 ? 's' : ''}!`;
+                } else if (amount >= 500) {
+                    message = `🏈 PLAYOFF WIN! 🏈<br>$${amount.toLocaleString()}!<br>${linesWon} Line${linesWon > 1 ? 's' : ''}!`;
+                }
+                
+                celebration.innerHTML = message;
                 document.querySelector('.slot-machine-4k').appendChild(celebration);
-                
-                this.reelStrips.forEach(strip => {
-                    strip.style.animation = 'win-flash 1s ease-in-out 3';
-                });
 
                 setTimeout(() => {
-                    celebration.remove();
-                    this.reelStrips.forEach(strip => {
-                        strip.style.animation = '';
-                    });
-                }, 3000);
+                    if (celebration.parentNode) {
+                        celebration.remove();
+                    }
+                    this.clearWinEffects();
+                }, 4000);
             }
         }
 
         // Initialize game when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            new NFLSlots();
+            new NFLChampionshipSlots();
         });
     </script>
 </body>
