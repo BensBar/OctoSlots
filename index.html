@@ -1112,6 +1112,23 @@
       will-change: transform;
       backface-visibility: hidden;
     }
+    
+    .paytable-toggle-btn {
+      margin: 10px auto 0 auto;
+      display: block;
+      font-size: 1.2em;
+      padding: 8px 24px;
+      border-radius: 8px;
+      background: var(--gold, #FFD700);
+      color: #222;
+      border: 2px solid #333;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: background 0.2s;
+    }
+    .paytable-toggle-btn:hover {
+      background: #ffe066;
+    }
   </style>
 </head>
 <body>
@@ -1137,6 +1154,8 @@
     </div>
   </div>
   <div class="slot-machine-container">
+    <!-- Diagnostic: Should show the original Octocat image below. Remove after debugging. -->
+    <img src="images/original.png" alt="Diagnostic Octocat" style="width:80px;display:block;margin:10px auto;">
     <div class="slot-machine">
       <div class="machine-glow"></div>
       <div class="machine-top">
@@ -1184,6 +1203,8 @@
       </div>
     </div>
   </div>
+  <!-- Add Paytable button for user access -->
+  <button class="paytable-toggle-btn" style="margin: 10px auto 0 auto; display: block; font-size: 1.2em; padding: 8px 24px; border-radius: 8px; background: var(--gold, #FFD700); color: #222; border: 2px solid #333; cursor: pointer;">Paytable</button>
   <div class="paytable-overlay"></div>
   <div class="paytable">
     <h3>Paytable</h3>
@@ -1313,6 +1334,14 @@
     
     // Load and play sounds with proper mobile handling
     function playSound(soundName) {
+        // Always stop the spin sound before playing win/lose sounds to prevent overlap
+        if (["win", "win3", "lose"].includes(soundName)) {
+          const spinAudio = document.getElementById('spin-sound');
+          if (spinAudio) {
+            spinAudio.pause();
+            spinAudio.currentTime = 0;
+          }
+        }
       try {
         // Map sound names to audio element IDs
         const audioMap = {
@@ -1422,30 +1451,36 @@
       document.removeEventListener('touchstart', unlockAudio);
     }
     
+    // Unlock audio on first user interaction (click or touch)
+    window.addEventListener('click', unlockAudio, { once: true });
+   
+    
     // Preload images to ensure they're available
     function preloadOctocatImages() {
       console.log("Preloading Octocat images...");
-      const preloadedImages = {};
-      
+      // Verify all image paths are correct
       octocats.forEach(octocat => {
+        // Make sure image paths are absolute from root
+        if (!octocat.image.startsWith('/')) {
+          // Keep the original path for reference
+          octocat.originalPath = octocat.image;
+        }
+        
+        // Create an image element to test loading
         const img = new Image();
         img.src = octocat.image;
+        
+        // Set up error handling
         img.onerror = () => {
           console.error(`Failed to load image: ${octocat.image}`);
           // Set a fallback image for any that fail to load
           octocat.fallbackImage = 'images/original.png';
         };
-        img.onload = () => {
-          console.log(`Successfully loaded: ${octocat.image}`);
-          preloadedImages[octocat.name] = img;
-        };
       });
-      
-      return preloadedImages;
     }
     
-    // Initialize image preloading
-    const preloadedImages = preloadOctocatImages();
+    // Initialize image preloading right away
+    preloadOctocatImages();
     
     // Function to set a random symbol on a slot item
     function setRandomSymbol(slotItem) {
@@ -1471,46 +1506,9 @@
     
     // Initialize slots with random symbols
     function initializeSlots() {
-      console.log("Initializing slots with symbols...");
-      
-      // Make sure image paths are correct
-      // Sometimes paths need to be adjusted based on the current URL
-      if (window.location.href.includes('github.io')) {
-        // Adjust paths for GitHub Pages if needed
-        octocats.forEach(octocat => {
-          octocat.image = octocat.image.replace(/^images\//, './images/');
-        });
-      }
-      
-      try {
-        elements.slotItems.top.forEach(setRandomSymbol);
-        elements.slotItems.middle.forEach(setRandomSymbol);
-        elements.slotItems.bottom.forEach(setRandomSymbol);
-        
-        // Verify images loaded correctly
-        const allSlotItems = [
-          ...elements.slotItems.top,
-          ...elements.slotItems.middle,
-          ...elements.slotItems.bottom
-        ];
-        
-        console.log(`Initialized ${allSlotItems.length} slot items with symbols`);
-      } catch (error) {
-        console.error("Error initializing slots:", error);
-        // Fallback to basic initialization if something goes wrong
-        elements.slotItems.top.forEach(item => {
-          item.innerHTML = '<img src="images/original.png" alt="Original">';
-          item.dataset.name = 'Original';
-        });
-        elements.slotItems.middle.forEach(item => {
-          item.innerHTML = '<img src="images/original.png" alt="Original">';
-          item.dataset.name = 'Original';
-        });
-        elements.slotItems.bottom.forEach(item => {
-          item.innerHTML = '<img src="images/original.png" alt="Original">';
-          item.dataset.name = 'Original';
-        });
-      }
+      elements.slotItems.top.forEach(setRandomSymbol);
+      elements.slotItems.middle.forEach(setRandomSymbol);
+      elements.slotItems.bottom.forEach(setRandomSymbol);
     }
     
     function updateDisplay() {
@@ -1609,41 +1607,34 @@
     
     // Spin all reels
     async function spinAllReels() {
+      playSound('spin'); // Play spin sound immediately for reliability
       if (state.isSpinning) return;
-      
       if (state.credits < state.bet) {
         alert('Not enough credits!');
         return;
       }
-      
       // Check and preserve fullscreen state before spinning
       state.wasFullscreen = !!document.fullscreenElement || 
                           !!document.webkitFullscreenElement || 
                           !!document.mozFullScreenElement || 
                           !!document.msFullscreenElement;
-      
       // Store the current transform if in fullscreen mode
       const slotMachine = document.querySelector('.slot-machine');
       if (slotMachine && state.wasFullscreen) {
         // Get current transform or use default fullscreen transform
         state.originalTransform = slotMachine.style.transform || 'scale(1.4)';
-        
         // Add class to prevent transform changes during spin
         document.body.classList.add('spinning-in-fullscreen');
       }
-                          
       // Deduct bet and update display
       state.credits -= state.bet;
       state.win = 0;
       updateDisplay();
-      
       // Start spinning animation
       state.isSpinning = true;
       elements.spinButton.disabled = true;
       startLights();
-      
       // Add vibration effect to the machine
-      const slotMachine = document.querySelector('.slot-machine');
       if (slotMachine) {
         // Save the current transform style if in fullscreen
         if (document.fullscreenElement) {
@@ -1652,12 +1643,10 @@
             slotMachine.dataset.savedTransform = slotMachine.style.transform;
           }
         }
-        
         slotMachine.classList.add('vibrate');
       }
-      
       // Unlock audio and play spin sound
-      unlockAudio();
+      // unlockAudio(); // Removed to prevent all sounds from playing on first spin
       playSound('spin');
       
       // Add spinning class to reels
@@ -1700,6 +1689,12 @@
       // Stop vibration
       if (slotMachine) {
         slotMachine.classList.remove('vibrate');
+      }
+      // Stop the spin sound immediately after all reels stop
+      const spinAudio = document.getElementById('spin-sound');
+      if (spinAudio) {
+        spinAudio.pause();
+        spinAudio.currentTime = 0;
       }
       
       // Store current symbols for win evaluation
@@ -1920,9 +1915,9 @@
       function handleFullscreenChange() {
         if (!document.fullscreenElement && 
             !document.webkitFullscreenElement && 
-            !document.mozFullScreenElement && 
+                       !document.mozFullScreenElement && 
             !document.msFullscreenElement) {
-          document.body.classList.remove('fullscreen-mode');
+          document.body.classlist.remove('fullscreen-mode');
           fullscreenIcon.textContent = '↔️';
           
           // Reset transform when exiting fullscreen
@@ -1954,6 +1949,15 @@
           }, 100);
         }
       }
+    }
+    
+    // Add event for new Paytable button
+    const paytableToggleBtn = document.querySelector('.paytable-toggle-btn');
+    if (paytableToggleBtn) {
+      paytableToggleBtn.addEventListener('click', () => {
+        elements.paytable.classList.add('visible');
+        elements.paytableOverlay.classList.add('visible');
+      });
     }
     
     // Initialize
