@@ -644,26 +644,26 @@
                 [[2,0], [1,1], [2,2], [0,3], [1,4]]  // Zigzag 2
             ],
             symbolValues: {
-                // Special symbols - highest payouts
-                'trophy': { 5: 5000, 4: 1000, 3: 250, 2: 25 },
-                'nfl': { 5: 2500, 4: 500, 3: 125, 2: 15 },
-                'afc': { 5: 1000, 4: 200, 3: 50, 2: 10 },
-                'nfc': { 5: 1000, 4: 200, 3: 50, 2: 10 },
+                // Special symbols - highest payouts (only 5 in a row wins)
+                'trophy': { 5: 25000 },    // SUPER BOWL JACKPOT!
+                'nfl': { 5: 10000 },
+                'afc': { 5: 5000 },
+                'nfc': { 5: 5000 },
                 
                 // Premium teams - high payouts
-                'chiefs': { 5: 800, 4: 150, 3: 40, 2: 8 },
-                'bills': { 5: 750, 4: 140, 3: 35, 2: 7 },
-                'cowboys': { 5: 700, 4: 130, 3: 30, 2: 6 },
-                '49ers': { 5: 650, 4: 120, 3: 25, 2: 5 },
+                'chiefs': { 5: 4000 },
+                'bills': { 5: 3500 },
+                'cowboys': { 5: 3000 },
+                '49ers': { 5: 2500 },
                 
                 // Good teams - medium payouts
-                'ravens': { 5: 500, 4: 100, 3: 20, 2: 4 },
-                'packers': { 5: 500, 4: 100, 3: 20, 2: 4 },
-                'steelers': { 5: 450, 4: 90, 3: 18, 2: 3 },
-                'patriots': { 5: 400, 4: 80, 3: 15, 2: 3 },
+                'ravens': { 5: 2000 },
+                'packers': { 5: 2000 },
+                'steelers': { 5: 1800 },
+                'patriots': { 5: 1600 },
                 
                 // Default for all other teams - standard payouts
-                'default': { 5: 300, 4: 60, 3: 12, 2: 2 }
+                'default': { 5: 1200 }
             }
         };
 
@@ -871,6 +871,7 @@
             checkWins() {
                 let totalWin = 0;
                 const winningLines = [];
+                let hasSuperBowl = false;
                 
                 CONFIG.paylines.forEach((payline, lineIndex) => {
                     const lineSymbols = payline.map(([row, reel]) => this.gameGrid[row][reel]);
@@ -885,6 +886,11 @@
                             count: winData.count,
                             win: winData.win
                         });
+                        
+                        // Check for Super Bowl win (5 trophies in a row)
+                        if (winData.symbol === 'trophy' && winData.count >= 5) {
+                            hasSuperBowl = true;
+                        }
                     }
                 });
 
@@ -893,7 +899,7 @@
                     this.credits += totalWin;
                     this.showWinEffects(winningLines);
                     this.playSound('win');
-                    this.celebrateWin(totalWin, winningLines.length);
+                    this.celebrateWin(totalWin, winningLines.length, hasSuperBowl);
                 } else {
                     this.playSound('lose');
                 }
@@ -912,9 +918,9 @@
                     }
                 }
 
-                if (count >= 2) {
+                if (count >= 5) {
                     const symbolValue = CONFIG.symbolValues[firstSymbol] || CONFIG.symbolValues.default;
-                    const multiplier = symbolValue[count] || 0;
+                    const multiplier = symbolValue[5] || 0;
                     return {
                         symbol: firstSymbol,
                         count: count,
@@ -1009,7 +1015,7 @@
                 }
             }
 
-            celebrateWin(amount, linesWon) {
+            celebrateWin(amount, linesWon, hasSuperBowl = false) {
                 const celebration = document.createElement('div');
                 celebration.className = 'win-celebration';
                 
@@ -1017,10 +1023,21 @@
                 message += `$${amount.toLocaleString()} WIN!<br>`;
                 message += `${linesWon} Line${linesWon > 1 ? 's' : ''} Hit!`;
                 
-                if (amount >= 1000) {
-                    message = `🏆 SUPER BOWL WIN! 🏆<br>$${amount.toLocaleString()}!<br>${linesWon} Line${linesWon > 1 ? 's' : ''}!`;
-                } else if (amount >= 500) {
-                    message = `🏈 PLAYOFF WIN! 🏈<br>$${amount.toLocaleString()}!<br>${linesWon} Line${linesWon > 1 ? 's' : ''}!`;
+                // Special Super Bowl message for 5 trophies in a row
+                if (hasSuperBowl) {
+                    message = `🏆🏆🏆🏆🏆 SUPER BOWL CHAMPIONS! 🏆🏆🏆🏆🏆<br>`;
+                    message += `🎉 FIVE TROPHY JACKPOT! 🎉<br>`;
+                    message += `$${amount.toLocaleString()} MEGA WIN!<br>`;
+                    message += `YOU WIN THE SUPER BOWL!`;
+                    celebration.style.background = 'linear-gradient(45deg, #FFD700, #FFA500, #FFD700)';
+                    celebration.style.border = '4px solid #FFD700';
+                    celebration.style.boxShadow = '0 0 30px #FFD700, inset 0 0 20px rgba(255,215,0,0.3)';
+                    celebration.style.fontSize = '18px';
+                    celebration.style.fontWeight = 'bold';
+                } else if (amount >= 5000) {
+                    message = `� CHAMPIONSHIP WIN! �<br>$${amount.toLocaleString()}!<br>INCREDIBLE!`;
+                } else if (amount >= 2000) {
+                    message = `🏈 PLAYOFF WIN! 🏈<br>$${amount.toLocaleString()}!<br>AMAZING!`;
                 }
                 
                 celebration.innerHTML = message;
@@ -1031,7 +1048,7 @@
                         celebration.remove();
                     }
                     this.clearWinEffects();
-                }, 4000);
+                }, hasSuperBowl ? 8000 : 4000); // Longer display for Super Bowl wins
             }
         }
 
