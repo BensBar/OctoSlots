@@ -1132,7 +1132,7 @@
   </style>
 </head>
 <body>
-  <!-- Audio elements - no preload to prevent auto-play issues -->
+  <!-- Audio elements - simple approach for iPhone -->
   <audio id="spin-sound" src="sounds/spin.wav"></audio>
   <audio id="stop-sound" src="sounds/stop.wav"></audio>
   <audio id="win-sound" src="sounds/win.wav"></audio>
@@ -1305,10 +1305,11 @@
       wasFullscreen: false // Track if we were in fullscreen before spinning
     };
     
-    // Simple audio system - no complex tracking
+    // Audio system optimized for iPhone/iOS
     let currentSpinSound = null;
+    let isAudioUnlocked = false;
     
-    // Simple sound playing function
+    // Simple and reliable sound playing function
     function playSound(soundName) {
       try {
         const audioMap = {
@@ -1325,34 +1326,64 @@
         const audio = document.getElementById(audioId);
         if (!audio) return;
         
-        // If this is a spin sound, stop any previous spin first
+        // Mark audio as unlocked on first play attempt
+        isAudioUnlocked = true;
+        
+        // Stop conflicting sounds
         if (soundName === 'spin') {
+          // Stop any existing spin sound
           stopSpinSound();
           currentSpinSound = audio;
-        }
-        
-        // If this is a win/lose sound, stop spin first
-        if (['win', 'win3', 'lose'].includes(soundName)) {
+          audio.loop = true;
+        } else if (soundName === 'win' || soundName === 'lose') {
+          // Stop spin sound before playing win/lose
           stopSpinSound();
         }
         
+        // Reset and play
         audio.currentTime = 0;
         audio.volume = 1.0;
-        audio.play().catch(e => {
-          console.log(`Sound '${soundName}' failed to play:`, e);
-        });
+        
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(e => {
+            console.log(`Sound '${soundName}' failed to play:`, e);
+          });
+        }
         
       } catch (e) {
         console.log('Error playing sound:', e);
       }
     }
     
-    // Function to stop spin sound completely
+    // Stop all sounds except the one specified
+    function stopAllSoundsExcept(exceptSound) {
+      const audioElements = ['spin-sound', 'stop-sound', 'win-sound', 'win3-sound', 'lose-sound'];
+      audioElements.forEach(id => {
+        if (id !== exceptSound) {
+          const audio = document.getElementById(id);
+          if (audio) {
+            try {
+              audio.pause();
+              audio.currentTime = 0;
+              audio.loop = false;
+            } catch (e) { /* ignore */ }
+          }
+        }
+      });
+      
+      if (exceptSound !== 'spin-sound') {
+        currentSpinSound = null;
+      }
+    }
+    
+    // Function to stop spin sound specifically
     function stopSpinSound() {
       if (currentSpinSound) {
         try {
           currentSpinSound.pause();
           currentSpinSound.currentTime = 0;
+          currentSpinSound.loop = false;
         } catch (e) { /* ignore */ }
         currentSpinSound = null;
       }
@@ -1363,6 +1394,7 @@
         try {
           spinAudio.pause();
           spinAudio.currentTime = 0;
+          spinAudio.loop = false;
         } catch (e) { /* ignore */ }
       }
     }
@@ -1561,7 +1593,6 @@
         slotMachine.classList.add('vibrate');
       }
       // Unlock audio and play spin sound - play only once here
-      // unlockAudio(); // Removed to prevent all sounds from playing on first spin
       playSound('spin');
       
       // Add spinning class to reels
@@ -1591,11 +1622,17 @@
             setRandomSymbol(elements.slotItems.bottom[i]);
             
             elements.reels[i].classList.remove('spinning');
-            playSound('stop');
             
-            // Stop the spin sound immediately when the last reel stops
+            // CRITICAL: Stop spin sound BEFORE playing stop sound on the last reel
             if (i === 2) {
               stopSpinSound();
+              // Wait a moment for spin to fully stop, then play final stop sound
+              setTimeout(() => {
+                playSound('stop');
+              }, 100);
+            } else {
+              // Play stop sound immediately for first two reels
+              playSound('stop');
             }
             
             // Haptic feedback for each reel stop
@@ -1622,29 +1659,32 @@
       const win = evaluateWin(state.currentSymbols);
       state.win = win.amount;
       
-      if (win.amount > 0) {
-        state.credits += win.amount;
-        playSound(win.sound);
-        startLights(true);
-        
-        // Highlight the win line
-        if (elements.winLine) {
-          elements.winLine.classList.add('highlight');
+      // Wait longer after the last reel stops before playing win/lose sound
+      setTimeout(() => {
+        if (win.amount > 0) {
+          state.credits += win.amount;
+          playSound(win.sound);
+          startLights(true);
+          
+          // Highlight the win line
+          if (elements.winLine) {
+            elements.winLine.classList.add('highlight');
+          }
+          
+          // Big win haptic feedback
+          if (win.amount >= 250) {
+            simulateHaptic([200, 100, 200, 100, 200]);
+          }
+        } else {
+          playSound('lose');
+          stopLights();
+          if (elements.winLine) {
+            elements.winLine.classList.remove('highlight');
+          }
         }
         
-        // Big win haptic feedback
-        if (win.amount >= 250) {
-          simulateHaptic([200, 100, 200, 100, 200]);
-        }
-      } else {
-        playSound('lose');
-        stopLights();
-        if (elements.winLine) {
-          elements.winLine.classList.remove('highlight');
-        }
-      }
-      
-      updateDisplay();
+        updateDisplay();
+      }, 500); // Longer delay to ensure clean audio separation
       
       // Reset state
       setTimeout(() => {
