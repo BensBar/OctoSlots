@@ -1132,12 +1132,12 @@
   </style>
 </head>
 <body>
-  <!-- Audio elements -->
-  <audio id="spin-sound" src="sounds/spin.wav" preload="auto"></audio>
-  <audio id="stop-sound" src="sounds/stop.wav" preload="auto"></audio>
-  <audio id="win-sound" src="sounds/win.wav" preload="auto"></audio>
-  <audio id="win3-sound" src="sounds/win3.wav" preload="auto"></audio>
-  <audio id="lose-sound" src="sounds/lose.wav" preload="auto"></audio>
+  <!-- Audio elements - no preload to prevent auto-play issues -->
+  <audio id="spin-sound" src="sounds/spin.wav"></audio>
+  <audio id="stop-sound" src="sounds/stop.wav"></audio>
+  <audio id="win-sound" src="sounds/win.wav"></audio>
+  <audio id="win3-sound" src="sounds/win3.wav"></audio>
+  <audio id="lose-sound" src="sounds/lose.wav"></audio>
   
   <!-- Paytable overlay for better UX -->
   <div class="paytable-overlay"></div>
@@ -1305,38 +1305,12 @@
       wasFullscreen: false // Track if we were in fullscreen before spinning
     };
     
-    // Audio handling with better mobile support
-    const audioContext = {
-      initialized: false,
-      context: null,
-      sounds: {},
-      currentSounds: {},
-      currentSpinAudio: null, // Track the current spin audio specifically
-      isIOS: /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
-    };
+    // Simple audio system - no complex tracking
+    let currentSpinSound = null;
     
-    // Initialize Web Audio API if supported
-    function initAudio() {
-      try {
-        if (audioContext.initialized) return true;
-        
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (AudioContext) {
-          audioContext.context = new AudioContext();
-          audioContext.initialized = true;
-          return true;
-        }
-        return false;
-      } catch (e) {
-        console.log('Web Audio API not supported:', e);
-        return false;
-      }
-    }
-    
-    // Load and play sounds with proper mobile handling
+    // Simple sound playing function
     function playSound(soundName) {
       try {
-        // Map sound names to audio element IDs
         const audioMap = {
           'spin': 'spin-sound',
           'stop': 'stop-sound',
@@ -1345,120 +1319,51 @@
           'lose': 'lose-sound'
         };
         
-        // Always stop the spin sound before playing win/lose sounds to prevent overlap
-        if (['win', 'win3', 'lose'].includes(soundName)) {
-          stopAllSpinSounds();
-        }
-        
-        // On iOS, we need special handling for the spin sound
-        // because it often gets interrupted by other sounds
-        if (audioContext.isIOS && soundName === 'spin') {
-          // Stop any previous spin audio first
-          if (audioContext.currentSpinAudio) {
-            audioContext.currentSpinAudio.pause();
-            audioContext.currentSpinAudio = null;
-          }
-          
-          // Create a new Audio instance for spin sound on iOS
-          const tempAudio = new Audio('sounds/spin.wav');
-          tempAudio.volume = 1.0;
-          audioContext.currentSpinAudio = tempAudio;
-          tempAudio.play().catch(e => {
-            console.log('Spin sound fallback failed:', e);
-          });
-          return tempAudio;
-        }
-        
-        // For other sounds, use the pre-loaded audio elements
         const audioId = audioMap[soundName];
         if (!audioId) return;
         
         const audio = document.getElementById(audioId);
         if (!audio) return;
         
-        // Stop any currently playing sound of this type
-        if (audioContext.currentSounds[soundName]) {
-          try {
-            audioContext.currentSounds[soundName].pause();
-          } catch (e) { /* Ignore errors on pause */ }
+        // If this is a spin sound, stop any previous spin first
+        if (soundName === 'spin') {
+          stopSpinSound();
+          currentSpinSound = audio;
         }
         
-        // On mobile, especially iOS, it's better to clone for overlapping sounds
-        if (audioContext.isIOS && (soundName === 'stop')) {
-          const clone = audio.cloneNode(true);
-          clone.volume = 1.0;
-          clone.play().catch(e => {
-            console.log('Cloned audio play failed:', e);
-          });
-          
-          // Clean up clones after they finish
-          clone.onended = function() {
-            clone.onended = null;
-            clone.remove();
-          };
-          
-          return clone;
+        // If this is a win/lose sound, stop spin first
+        if (['win', 'win3', 'lose'].includes(soundName)) {
+          stopSpinSound();
         }
         
-        // For non-iOS or non-overlapping sounds
         audio.currentTime = 0;
         audio.volume = 1.0;
+        audio.play().catch(e => {
+          console.log(`Sound '${soundName}' failed to play:`, e);
+        });
         
-        // Track spin audio specifically
-        if (soundName === 'spin') {
-          // Stop any previous spin audio
-          if (audioContext.currentSpinAudio) {
-            audioContext.currentSpinAudio.pause();
-            audioContext.currentSpinAudio = null;
-          }
-          audioContext.currentSpinAudio = audio;
-        }
-        
-        // Play with promise handling
-        const playPromise = audio.play();
-        audioContext.currentSounds[soundName] = audio;
-        
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            console.log(`Audio '${soundName}' play failed:`, error);
-            delete audioContext.currentSounds[soundName];
-          });
-        }
-        
-        return audio;
       } catch (e) {
-        console.error('Error playing sound:', e);
-        return null;
+        console.log('Error playing sound:', e);
       }
     }
     
-    // Function to stop all spin sounds completely
-    function stopAllSpinSounds() {
-      // Stop tracked spin audio
-      if (audioContext.currentSpinAudio) {
+    // Function to stop spin sound completely
+    function stopSpinSound() {
+      if (currentSpinSound) {
         try {
-          audioContext.currentSpinAudio.pause();
-          audioContext.currentSpinAudio.currentTime = 0;
+          currentSpinSound.pause();
+          currentSpinSound.currentTime = 0;
         } catch (e) { /* ignore */ }
-        audioContext.currentSpinAudio = null;
+        currentSpinSound = null;
       }
       
-      // Stop DOM spin audio
+      // Also stop the DOM element directly as backup
       const spinAudio = document.getElementById('spin-sound');
       if (spinAudio) {
         try {
           spinAudio.pause();
           spinAudio.currentTime = 0;
         } catch (e) { /* ignore */ }
-      }
-      
-      // Stop any other spin sounds that might be playing
-      if (audioContext.currentSounds['spin']) {
-        try {
-          audioContext.currentSounds['spin'].pause();
-          audioContext.currentSounds['spin'].currentTime = 0;
-        } catch (e) { /* ignore */ }
-        delete audioContext.currentSounds['spin'];
       }
     }
    
@@ -1622,7 +1527,7 @@
       }
       
       // Stop any previous spin sounds before starting new spin
-      stopAllSpinSounds();
+      stopSpinSound();
       // Check and preserve fullscreen state before spinning
       state.wasFullscreen = !!document.fullscreenElement || 
                           !!document.webkitFullscreenElement || 
@@ -1690,7 +1595,7 @@
             
             // Stop the spin sound immediately when the last reel stops
             if (i === 2) {
-              stopAllSpinSounds();
+              stopSpinSound();
             }
             
             // Haptic feedback for each reel stop
