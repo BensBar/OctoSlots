@@ -235,7 +235,56 @@
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
     }
     
-    /* Dark Mode Specific Overrides */
+    /* Base paytable styles - hidden by default */
+    .paytable {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      max-width: 400px;
+      background: var(--machine-body);
+      border: 6px solid var(--gold);
+      color: white;
+      border-radius: 10px;
+      padding: 20px;
+      z-index: 2000;
+      display: none; /* Hidden by default */
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    /* Visible state for paytable */
+    .paytable.visible {
+      display: block;
+      opacity: 1;
+    }
+    
+    /* Paytable overlay to prevent clicking through */
+    .paytable-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1999;
+      display: none;
+    }
+    
+    /* Show overlay when paytable is visible */
+    .paytable-overlay.visible {
+      display: block;
+    }
+    
+    /* Position paytable inside fullscreen mode properly */
+    .fullscreen-mode .paytable {
+      z-index: 3000;
+    }
+    
+    /* Light Mode Specific Overrides */
     body:not(.light-mode) .slot-machine {
       border: 8px solid #000 !important;
     }
@@ -1034,205 +1083,34 @@
     body:not(.light-mode) .lever-base {
       border: 3px solid #000 !important;
     }
-    /* Touchscreen optimizations for the spin button */
-    @media (hover: none) and (pointer: coarse) {
-      /* This media query targets touch devices */
-      .spin-button {
-        padding: 30px 65px; /* Increased padding for larger touch target */
-        font-size: 36px;    /* Larger text */
-        min-width: 220px;   /* Wider button */
-        min-height: 100px;  /* Taller button */
-        /* Add a subtle indicator that the button is touchable */
-        box-shadow: 
-          0 8px 20px rgba(0, 0, 0, 0.5),
-          inset 0 0 20px rgba(255, 255, 255, 0.2),
-          0 0 15px rgba(255, 0, 0, 0.3);
-      }
-      
-      /* Improve tap highlight behavior */
-      .spin-button.touch-active {
-        transform: translateY(3px) scale(0.98);
-        box-shadow: 
-          0 4px 10px rgba(0, 0, 0, 0.4),
-          inset 0 0 15px rgba(255, 255, 255, 0.1);
-        transition: transform 0.1s ease, box-shadow 0.1s ease;
-      }
+    
+    /* Enhanced vibration that preserves scale in fullscreen mode */
+    .fullscreen-mode .slot-machine.vibrate {
+      animation: none !important; /* Disable standard vibration */
     }
     
-    /* iPhone and Mobile Optimizations */
-    @media (max-width: 480px) {
-      :root {
-        --machine-width: 95vw;
-        --machine-height: auto;
-      }
-      
-      body {
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        height: 100%;
-        position: relative;
-      }
-      
-      .app-header {
-        height: 60px;
-        padding: 0 10px;
-      }
-      
-      .game-title {
-        font-size: 24px;
-      }
-      
-      .user-info, .date-info {
-        font-size: 14px;
-      }
-      
-      .slot-machine-container {
-        padding: 10px;
-        height: auto;
-      }
-      
-      .slot-machine {
-        width: 100%;
-        height: auto;
-        padding: 15px;
-      }
-      
-      .machine-top {
-        margin-bottom: 15px;
-        padding: 10px;
-      }
-      
-      .jackpot-display {
-        font-size: 24px;
-      }
-      
-      .reels-container {
-        gap: 10px;
-        padding: 10px;
-      }
-      
-      .reel {
-        height: 180px;
-      }
-      
-      .spin-button {
-        padding: 15px 30px;
-        font-size: 24px;
-        min-width: 160px;
-        min-height: 60px;
-      }
-      
-      .score-display {
-        flex-direction: row;
-        gap: 10px;
-      }
-      
-      .score-card {
-        padding: 10px;
-      }
-      
-      .score-card h3 {
-        font-size: 14px;
-      }
-      
-      .score-value {
-        font-size: 20px;
-      }
+    .fullscreen-mode .slot-machine.vibrate::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      animation: overlay-vibrate 0.1s linear infinite;
+      pointer-events: none;
+      z-index: 10;
     }
     
-    /* iPhone landscape */
-    @media (max-width: 896px) and (orientation: landscape) {
-      .app-header {
-        height: 50px;
-      }
-      
-      .slot-machine {
-        height: auto;
-        max-height: 80vh;
-      }
-      
-      .reel {
-        height: 120px;
-      }
-      
-      .score-display {
-        flex-direction: row;
-        margin-bottom: 15px;
-      }
-      
-      .spin-button {
-        padding: 10px 20px;
-        font-size: 20px;
-        min-height: 50px;
-      }
+    @keyframes overlay-vibrate {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-2px); }
+      75% { transform: translateX(2px); }
     }
     
-    /* iPhone portrait - smaller devices */
-    @media (max-width: 380px) {
-      .app-header {
-        height: 50px;
-        padding: 0 5px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-      
-      .game-title {
-        font-size: 20px;
-        width: 100%;
-        text-align: center;
-        margin: 0;
-        order: 1;
-      }
-      
-      .user-info {
-        font-size: 12px;
-        order: 2;
-      }
-      
-      .date-info {
-        font-size: 12px;
-        order: 4;
-      }
-      
-      #theme-toggle {
-        order: 3;
-        margin: 5px;
-        min-width: 40px;
-        min-height: 40px;
-      }
-      
-      .reel {
-        height: 150px;
-      }
-      
-      .score-card {
-        padding: 8px;
-      }
-      
-      .score-card h3 {
-        font-size: 12px;
-        margin-bottom: 4px;
-      }
-      
-      .score-value {
-        font-size: 18px;
-      }
-    }
-    
-    /* Handle notched iPhones */
-    @supports (padding: max(0px)) {
-      body {
-        padding-top: max(var(--header-height), env(safe-area-inset-top));
-        padding-bottom: env(safe-area-inset-bottom);
-        padding-left: env(safe-area-inset-left);
-        padding-right: env(safe-area-inset-right);
-      }
-      
-      .app-header {
-        padding-top: max(0px, env(safe-area-inset-top));
-        padding-left: max(10px, env(safe-area-inset-left));
-        padding-right: max(10px, env(safe-area-inset-right));
-      }
+    /* Ensure transforms are preserved in fullscreen */
+    .fullscreen-mode .slot-machine {
+      will-change: transform;
+      backface-visibility: hidden;
     }
   </style>
 </head>
@@ -1403,7 +1281,7 @@
       win: 0,
       jackpot: 1000000,
       currentSymbols: [null, null, null],
-      wasFullscreen: false, // Track if we were in fullscreen before spinning
+      wasFullscreen: false // Track if we were in fullscreen before spinning
     };
     
     // Audio handling with better mobile support
@@ -1544,10 +1422,38 @@
       document.removeEventListener('touchstart', unlockAudio);
     }
     
+    // Preload images to ensure they're available
+    function preloadOctocatImages() {
+      console.log("Preloading Octocat images...");
+      const preloadedImages = {};
+      
+      octocats.forEach(octocat => {
+        const img = new Image();
+        img.src = octocat.image;
+        img.onerror = () => {
+          console.error(`Failed to load image: ${octocat.image}`);
+          // Set a fallback image for any that fail to load
+          octocat.fallbackImage = 'images/original.png';
+        };
+        img.onload = () => {
+          console.log(`Successfully loaded: ${octocat.image}`);
+          preloadedImages[octocat.name] = img;
+        };
+      });
+      
+      return preloadedImages;
+    }
+    
+    // Initialize image preloading
+    const preloadedImages = preloadOctocatImages();
+    
     // Function to set a random symbol on a slot item
     function setRandomSymbol(slotItem) {
       const randomOctocat = octocats[Math.floor(Math.random() * octocats.length)];
-      slotItem.innerHTML = `<img src="${randomOctocat.image}" alt="${randomOctocat.name}">`;
+      const imagePath = randomOctocat.fallbackImage || randomOctocat.image;
+      
+      // Create the image with error handling
+      slotItem.innerHTML = `<img src="${imagePath}" alt="${randomOctocat.name}" onerror="this.onerror=null; this.src='images/original.png';">`;
       slotItem.dataset.name = randomOctocat.name;
       return randomOctocat;
     }
@@ -1555,16 +1461,56 @@
     // Function to set a specific symbol on a slot item
     function setSymbol(slotItem, symbolName) {
       const octocat = octocats.find(o => o.name === symbolName) || octocats[0];
-      slotItem.innerHTML = `<img src="${octocat.image}" alt="${octocat.name}">`;
+      const imagePath = octocat.fallbackImage || octocat.image;
+      
+      // Create the image with error handling
+      slotItem.innerHTML = `<img src="${imagePath}" alt="${octocat.name}" onerror="this.onerror=null; this.src='images/original.png';">`;
       slotItem.dataset.name = octocat.name;
       return octocat;
     }
     
     // Initialize slots with random symbols
     function initializeSlots() {
-      elements.slotItems.top.forEach(setRandomSymbol);
-      elements.slotItems.middle.forEach(setRandomSymbol);
-      elements.slotItems.bottom.forEach(setRandomSymbol);
+      console.log("Initializing slots with symbols...");
+      
+      // Make sure image paths are correct
+      // Sometimes paths need to be adjusted based on the current URL
+      if (window.location.href.includes('github.io')) {
+        // Adjust paths for GitHub Pages if needed
+        octocats.forEach(octocat => {
+          octocat.image = octocat.image.replace(/^images\//, './images/');
+        });
+      }
+      
+      try {
+        elements.slotItems.top.forEach(setRandomSymbol);
+        elements.slotItems.middle.forEach(setRandomSymbol);
+        elements.slotItems.bottom.forEach(setRandomSymbol);
+        
+        // Verify images loaded correctly
+        const allSlotItems = [
+          ...elements.slotItems.top,
+          ...elements.slotItems.middle,
+          ...elements.slotItems.bottom
+        ];
+        
+        console.log(`Initialized ${allSlotItems.length} slot items with symbols`);
+      } catch (error) {
+        console.error("Error initializing slots:", error);
+        // Fallback to basic initialization if something goes wrong
+        elements.slotItems.top.forEach(item => {
+          item.innerHTML = '<img src="images/original.png" alt="Original">';
+          item.dataset.name = 'Original';
+        });
+        elements.slotItems.middle.forEach(item => {
+          item.innerHTML = '<img src="images/original.png" alt="Original">';
+          item.dataset.name = 'Original';
+        });
+        elements.slotItems.bottom.forEach(item => {
+          item.innerHTML = '<img src="images/original.png" alt="Original">';
+          item.dataset.name = 'Original';
+        });
+      }
     }
     
     function updateDisplay() {
@@ -1675,6 +1621,16 @@
                           !!document.webkitFullscreenElement || 
                           !!document.mozFullScreenElement || 
                           !!document.msFullscreenElement;
+      
+      // Store the current transform if in fullscreen mode
+      const slotMachine = document.querySelector('.slot-machine');
+      if (slotMachine && state.wasFullscreen) {
+        // Get current transform or use default fullscreen transform
+        state.originalTransform = slotMachine.style.transform || 'scale(1.4)';
+        
+        // Add class to prevent transform changes during spin
+        document.body.classList.add('spinning-in-fullscreen');
+      }
                           
       // Deduct bet and update display
       state.credits -= state.bet;
@@ -1689,6 +1645,14 @@
       // Add vibration effect to the machine
       const slotMachine = document.querySelector('.slot-machine');
       if (slotMachine) {
+        // Save the current transform style if in fullscreen
+        if (document.fullscreenElement) {
+          // Store the current transform for restoration
+          if (slotMachine.style.transform) {
+            slotMachine.dataset.savedTransform = slotMachine.style.transform;
+          }
+        }
+        
         slotMachine.classList.add('vibrate');
       }
       
