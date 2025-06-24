@@ -8,8 +8,8 @@
     <title>NFL Championship Slots - Mobile</title>
     <style>
         :root {
-            --reel-size: 60px;
-            --reel-gap: 4px;
+            --reel-size: 55px;
+            --reel-gap: 2px;
             --nfl-blue: #013369;
             --nfl-red: #D50A0A;
             --nfl-gold: #FFB81C;
@@ -77,45 +77,47 @@
 
         #reels-container {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(5, minmax(0, 1fr));
             gap: var(--reel-gap);
-            padding: 15px 5px;
+            padding: 10px 2px;
             background: linear-gradient(135deg, #000, #111, #000);
-            border-radius: 10px;
-            margin: 10px 0;
-            border: 3px solid var(--nfl-gold);
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            border-radius: 8px;
+            margin: 8px 0;
+            border: 2px solid var(--nfl-gold);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
             flex: 1;
             align-content: center;
             position: relative;
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
+            overflow: hidden;
         }
 
         .win-lines-container {
             position: absolute;
-            top: 15px;
-            left: 5px;
-            right: 5px;
-            bottom: 15px;
+            top: 10px;
+            left: 2px;
+            right: 2px;
+            bottom: 10px;
             pointer-events: none;
             z-index: 15;
         }
 
         .reel {
-            width: var(--reel-size);
+            width: 100%;
+            max-width: var(--reel-size);
             height: calc(var(--reel-size) * 3);
             background: linear-gradient(135deg, #fff, #f0f0f0);
-            border-radius: 6px;
+            border-radius: 4px;
             position: relative;
             overflow: hidden;
             box-shadow: 
-                0 0 8px rgba(255,255,255,0.3),
-                inset 0 0 4px rgba(0,0,0,0.2);
-            border: 2px solid var(--nfl-blue);
+                0 0 6px rgba(255,255,255,0.3),
+                inset 0 0 3px rgba(0,0,0,0.2);
+            border: 1px solid var(--nfl-blue);
             justify-self: center;
-            min-width: 0; /* Prevents grid overflow */
+            min-width: 0;
         }
 
         .reel-strip {
@@ -131,15 +133,15 @@
         }
 
         .symbol {
-            width: var(--reel-size);
+            width: 100%;
             height: var(--reel-size);
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 4px;
+            padding: 2px;
             box-sizing: border-box;
             background: linear-gradient(135deg, #fff, #f8f8f8);
-            border-bottom: 1px solid #ddd;
+            border-bottom: 0.5px solid #ddd;
             position: relative;
         }
 
@@ -265,76 +267,7 @@
 
         @media (max-width: 480px) {
             :root {
-                --reel-size: 50px;
-                --reel-gap: 3px;
-            }
-            
-            .game-title {
-                font-size: 18px;
-            }
-            
-            .game-subtitle {
-                font-size: 11px;
-            }
-            
-            .credits, .win-display {
-                font-size: 16px;
-                padding: 6px 10px;
-            }
-            
-            .bet-display {
-                font-size: 14px;
-            }
-            
-            #spin-button {
-                font-size: 22px;
-                padding: 16px 30px;
-            }
-            
-            button {
-                font-size: 13px;
-                padding: 8px 12px;
-                min-width: 40px;
-            }
-            
-            #reels-container {
-                padding: 10px 3px;
-            }
-        }
-
-        @media (max-width: 360px) {
-            :root {
                 --reel-size: 45px;
-                --reel-gap: 2px;
-            }
-            
-            .machine-frame {
-                padding: 8px;
-            }
-            
-            #reels-container {
-                padding: 8px 2px;
-                margin: 8px 0;
-            }
-            
-            .game-header {
-                padding: 10px;
-                margin-bottom: 10px;
-            }
-            
-            .controls {
-                padding: 15px 10px;
-                gap: 10px;
-            }
-            
-            .bet-controls {
-                padding: 12px;
-            }
-        }
-
-        @media (max-width: 320px) {
-            :root {
-                --reel-size: 40px;
                 --reel-gap: 1px;
             }
             
@@ -346,13 +279,87 @@
                 font-size: 10px;
             }
             
+            .credits, .win-display {
+                font-size: 14px;
+                padding: 5px 8px;
+            }
+            
+            .bet-display {
+                font-size: 12px;
+            }
+            
             #spin-button {
                 font-size: 20px;
                 padding: 14px 25px;
             }
             
-            .credits, .win-display {
+            button {
+                font-size: 11px;
+                padding: 6px 10px;
+                min-width: 35px;
+            }
+            
+            #reels-container {
+                padding: 8px 1px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            :root {
+                --reel-size: 40px;
+                --reel-gap: 1px;
+            }
+            
+            .machine-frame {
+                padding: 6px;
+            }
+            
+            #reels-container {
+                padding: 6px 1px;
+                margin: 6px 0;
+            }
+            
+            .game-header {
+                padding: 8px;
+                margin-bottom: 8px;
+            }
+            
+            .controls {
+                padding: 12px 8px;
+                gap: 8px;
+            }
+            
+            .bet-controls {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 320px) {
+            :root {
+                --reel-size: 35px;
+                --reel-gap: 1px;
+            }
+            
+            .game-title {
                 font-size: 14px;
+            }
+            
+            .game-subtitle {
+                font-size: 9px;
+            }
+            
+            #spin-button {
+                font-size: 18px;
+                padding: 12px 20px;
+            }
+            
+            .credits, .win-display {
+                font-size: 12px;
+                padding: 4px 6px;
+            }
+            
+            button {
+                font-size: 10px;
                 padding: 5px 8px;
             }
         }
@@ -737,19 +744,22 @@
                             symbol.appendChild(img);
                         } else {
                             symbol.textContent = team.toUpperCase();
-                            symbol.style.fontSize = '8px';
+                            symbol.style.fontSize = '7px';
                             symbol.style.fontWeight = 'bold';
                         }
                         strip.appendChild(symbol);
                     });
                     
-                    // Set random initial position for each reel
+                    // Set different random initial position for each reel
                     const randomPosition = -(Math.floor(Math.random() * CONFIG.symbols.length) * 100);
                     strip.style.transform = `translateY(${randomPosition}px)`;
+                    console.log(`Reel ${reelIndex + 1} positioned at: ${randomPosition}px`);
                 });
                 
                 // Initialize game grid with the random positions
-                this.updateGameGrid();
+                setTimeout(() => {
+                    this.updateGameGrid();
+                }, 50);
             }
 
             updateGameGrid() {
