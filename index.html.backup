@@ -6,12 +6,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="OctoSlots">
-  <meta name="apple-touch-fullscreen" content="yes">
-  <meta name="format-detection" content="telephone=no">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
-  <meta name="msapplication-tap-highlight" content="no">
+  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#000000">
   <title>OctoSlots - Professional Slot Machine</title>
   <style>
     :root {
@@ -27,11 +24,12 @@
       --blue-led: #0066FF;
       --border-color: #333;
       --text-color: #FFFFFF;
+      --highlight-color: #FFD700;
+      --gold-color: #FFD700;
       --win-color: #00FF00;
-      --header-height: 60px;
+      --header-height: 60px; /* Reduced header height to move machine closer to top */
       --machine-width: 900px;
       --machine-height: 950px;
-      --dark-border: #000;
     }
     body.light-mode {
       /* Light Mode - Bright Casino/Arcade Theme */
@@ -46,6 +44,8 @@
       --blue-led: #2196F3;
       --border-color: #E0E0E0;
       --text-color: #212121;
+      --highlight-color: #FF9800;
+      --gold-color: #FF9800;
       --win-color: #4CAF50;
     }
     
@@ -286,71 +286,71 @@
     
     /* Light Mode Specific Overrides */
     body:not(.light-mode) .slot-machine {
-      border: 8px solid var(--dark-border) !important;
+      border: 8px solid #000 !important;
     }
     
     body:not(.light-mode) .machine-top {
-      border: 4px solid var(--dark-border) !important;
+      border: 4px solid #000 !important;
     }
     
     body:not(.light-mode) .reels-container {
-      border: 4px solid var(--dark-border) !important;
+      border: 4px solid #000 !important;
     }
     
     body:not(.light-mode) .reel {
-      border: 3px solid var(--dark-border) !important;
+      border: 3px solid #000 !important;
     }
     
     body:not(.light-mode) .controls {
-      border: 4px solid var(--dark-border) !important;
+      border: 4px solid #000 !important;
     }
     
     body:not(.light-mode) .score-card {
-      border: 3px solid var(--dark-border) !important;
+      border: 3px solid #000 !important;
     }
     
     body:not(.light-mode) .spin-button {
-      border: 6px solid var(--dark-border) !important;
+      border: 6px solid #000 !important;
     }
     
     body:not(.light-mode) .win-message {
-      border: 6px solid var(--dark-border) !important;
+      border: 6px solid #000 !important;
     }
     
     body:not(.light-mode) .win-message button {
-      border: 4px solid var(--dark-border) !important;
+      border: 4px solid #000 !important;
     }
     
     body:not(.light-mode) #theme-toggle {
-      border: 3px solid var(--dark-border) !important;
+      border: 3px solid #000 !important;
     }
     
     body:not(.light-mode) .paytable-button {
-      border: 4px solid var(--dark-border) !important;
+      border: 4px solid #000 !important;
     }
     
     body:not(.light-mode) .paytable {
-      border: 4px solid var(--dark-border) !important;
+      border: 4px solid #000 !important;
     }
     
     body:not(.light-mode) .paytable-item {
-      border: 1px solid var(--dark-border) !important;
+      border: 1px solid #000 !important;
     }
     
     body:not(.light-mode) .light {
-      border: 2px solid var(--dark-border) !important;
+      border: 2px solid #000 !important;
     }
     
     body:not(.light-mode) .lever {
-      border: 3px solid var(--dark-border) !important;
+      border: 3px solid #000 !important;
     }
     
     body:not(.light-mode) .lever::after {
-      border: 3px solid var(--dark-border) !important;
+      border: 3px solid #000 !important;
     }
     
     body:not(.light-mode) .lever-base {
-      border: 3px solid var(--dark-border) !important;
+      border: 3px solid #000 !important;
     }
     * {
       margin: 0;
@@ -365,11 +365,6 @@
       -moz-user-select: none;
       -ms-user-select: none;
       touch-action: manipulation;
-      /* Performance optimizations */
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden;
-      -webkit-perspective: 1000px;
-      perspective: 1000px;
     }
     
     body {
@@ -595,8 +590,8 @@
     }
     
     @keyframes glow-pulse {
-      0% { opacity: 0.5; transform: translateZ(0); }
-      100% { opacity: 0.8; transform: translateZ(0); }
+      0% { opacity: 0.5; }
+      100% { opacity: 0.8; }
     }
     .machine-top {
       text-align: center;
@@ -624,14 +619,8 @@
     }
     
     @keyframes jackpot-glow {
-      0% { 
-        text-shadow: 0 0 20px var(--gold), 0 0 40px var(--gold), 2px 2px 4px rgba(0, 0, 0, 0.8);
-        transform: translateZ(0);
-      }
-      100% { 
-        text-shadow: 0 0 30px var(--gold), 0 0 60px var(--gold), 2px 2px 4px rgba(0, 0, 0, 0.8);
-        transform: translateZ(0);
-      }
+      0% { text-shadow: 0 0 20px var(--gold), 0 0 40px var(--gold), 2px 2px 4px rgba(0, 0, 0, 0.8); }
+      100% { text-shadow: 0 0 30px var(--gold), 0 0 60px var(--gold), 2px 2px 4px rgba(0, 0, 0, 0.8); }
     }
     .flashing-lights {
       position: absolute;
@@ -1028,71 +1017,71 @@
     
     /* Light Mode Specific Overrides */
     body:not(.light-mode) .slot-machine {
-      border: 8px solid var(--dark-border) !important;
+      border: 8px solid #000 !important;
     }
     
     body:not(.light-mode) .machine-top {
-      border: 4px solid var(--dark-border) !important;
+      border: 4px solid #000 !important;
     }
     
     body:not(.light-mode) .reels-container {
-      border: 4px solid var(--dark-border) !important;
+      border: 4px solid #000 !important;
     }
     
     body:not(.light-mode) .reel {
-      border: 3px solid var(--dark-border) !important;
+      border: 3px solid #000 !important;
     }
     
     body:not(.light-mode) .controls {
-      border: 4px solid var(--dark-border) !important;
+      border: 4px solid #000 !important;
     }
     
     body:not(.light-mode) .score-card {
-      border: 3px solid var(--dark-border) !important;
+      border: 3px solid #000 !important;
     }
     
     body:not(.light-mode) .spin-button {
-      border: 6px solid var(--dark-border) !important;
+      border: 6px solid #000 !important;
     }
     
     body:not(.light-mode) .win-message {
-      border: 6px solid var(--dark-border) !important;
+      border: 6px solid #000 !important;
     }
     
     body:not(.light-mode) .win-message button {
-      border: 4px solid var(--dark-border) !important;
+      border: 4px solid #000 !important;
     }
     
     body:not(.light-mode) #theme-toggle {
-      border: 3px solid var(--dark-border) !important;
+      border: 3px solid #000 !important;
     }
     
     body:not(.light-mode) .paytable-button {
-      border: 4px solid var(--dark-border) !important;
+      border: 4px solid #000 !important;
     }
     
     body:not(.light-mode) .paytable {
-      border: 4px solid var(--dark-border) !important;
+      border: 4px solid #000 !important;
     }
     
     body:not(.light-mode) .paytable-item {
-      border: 1px solid var(--dark-border) !important;
+      border: 1px solid #000 !important;
     }
     
     body:not(.light-mode) .light {
-      border: 2px solid var(--dark-border) !important;
+      border: 2px solid #000 !important;
     }
     
     body:not(.light-mode) .lever {
-      border: 3px solid var(--dark-border) !important;
+      border: 3px solid #000 !important;
     }
     
     body:not(.light-mode) .lever::after {
-      border: 3px solid var(--dark-border) !important;
+      border: 3px solid #000 !important;
     }
     
     body:not(.light-mode) .lever-base {
-      border: 3px solid var(--dark-border) !important;
+      border: 3px solid #000 !important;
     }
     
     /* Enhanced vibration that preserves scale in fullscreen mode */
@@ -1153,18 +1142,18 @@
   <!-- Paytable overlay for better UX -->
   <div class="paytable-overlay"></div>
   
-  <div class="app-header" role="banner">
-    <div class="user-info" aria-label="Current user">User: BensBar</div>
-    <div class="date-info" id="current-time" aria-label="Current date and time">Loading...</div>
-    <div class="game-title" aria-label="Game title">OctoSlots</div>
-    <button id="fullscreen-toggle" aria-label="Toggle fullscreen mode" role="button">
+  <div class="app-header">
+    <div class="user-info">User: Player1</div>
+    <div class="date-info">Date: 2023-10-05</div>
+    <div class="game-title">OctoSlots</div>
+    <div id="fullscreen-toggle">
       <div id="fullscreen-icon">↔️</div>
-    </button>
-    <button id="theme-toggle" aria-label="Toggle theme" role="button">
+    </div>
+    <div id="theme-toggle">
       <div id="theme-icon">🎰</div>
-    </button>
+    </div>
   </div>
-  <main class="slot-machine-container" role="main" aria-label="Slot machine game area">
+  <div class="slot-machine-container">
     <!-- Diagnostic: Should show the original Octocat image below. Remove after debugging. -->
     <img src="images/original.png" alt="Diagnostic Octocat" style="width:80px;display:block;margin:10px auto;">
     <div class="slot-machine">
@@ -1177,7 +1166,7 @@
           <div class="light"></div>
         </div>
       </div>
-      <div class="reels-container" role="region" aria-label="Slot machine reels">
+      <div class="reels-container">
         <div id="reel1" class="reel">
           <div class="slot-item top" id="reel1-top"></div>
           <div class="slot-item middle" id="reel1-middle"></div>
@@ -1210,12 +1199,12 @@
             <div class="score-value" id="win-amount">0</div>
           </div>
         </div>
-        <button class="spin-button" id="spin-button" aria-label="Spin the slot machine reels" role="button">SPIN</button>
+        <button class="spin-button" id="spin-button">SPIN</button>
       </div>
     </div>
   </div>
   <!-- Add Paytable button for user access -->
-  <button class="paytable-toggle-btn" aria-label="Show paytable" role="button" style="margin: 10px auto 0 auto; display: block; font-size: 1.2em; padding: 8px 24px; border-radius: 8px; background: var(--gold, #FFD700); color: #222; border: 2px solid #333; cursor: pointer;">Paytable</button>
+  <button class="paytable-toggle-btn" style="margin: 10px auto 0 auto; display: block; font-size: 1.2em; padding: 8px 24px; border-radius: 8px; background: var(--gold, #FFD700); color: #222; border: 2px solid #333; cursor: pointer;">Paytable</button>
   <div class="paytable-overlay"></div>
   <div class="paytable">
     <h3>Paytable</h3>
@@ -1924,28 +1913,6 @@
         elements.paytableOverlay.classList.add('visible');
       });
     }
-    
-    // Update timestamp every second
-    function updateTimestamp() {
-      const now = new Date();
-      const timeString = now.toLocaleString('en-US', {
-        year: 'numeric',
-        month: '2-digit', 
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        timeZoneName: 'short'
-      });
-      const timeElement = document.getElementById('current-time');
-      if (timeElement) {
-        timeElement.textContent = timeString;
-      }
-    }
-    
-    // Initialize timestamp and update every second
-    updateTimestamp();
-    setInterval(updateTimestamp, 1000);
     
     // Initialize
     initializeSlots();
