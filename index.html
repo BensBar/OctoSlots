@@ -88,6 +88,24 @@
       -webkit-backface-visibility: hidden;
     }
     
+    /* iOS-specific scrolling and interaction optimizations */
+    body {
+      /* Improve iOS Safari scrolling behavior */
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: none;
+      /* Disable iOS text selection during interactions */
+      -webkit-user-select: none;
+      user-select: none;
+      /* Disable iOS callouts on touch */
+      -webkit-touch-callout: none;
+    }
+    
+    /* Optimize iOS tap highlights */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      tap-highlight-color: transparent;
+    }
+    
     /* Use CSS custom property for dynamic viewport height */
     .slot-machine-container {
       /* Fallback for browsers that don't support env() */
