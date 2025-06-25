@@ -352,6 +352,53 @@
     body:not(.light-mode) .lever-base {
       border: 3px solid #000 !important;
     }
+    
+    /* Mobile Performance Optimizations */
+    @media (max-width: 480px) {
+      * {
+        /* Optimize rendering performance on mobile */
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        -webkit-perspective: 1000;
+        perspective: 1000;
+      }
+      
+      /* Reduce animation complexity on mobile */
+      .slot-item,
+      .spin-button,
+      .reels-container {
+        will-change: transform;
+      }
+      
+      /* Optimize images for mobile */
+      .slot-item img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: optimize-contrast;
+      }
+      
+      /* Reduce visual effects that impact performance */
+      .machine-glow,
+      .reels-container::before {
+        opacity: 0.5;
+      }
+      
+      /* Simplify shadows on mobile */
+      .slot-machine {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+    }
+    
+    /* Reduce motion for users who prefer it */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01s !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01s !important;
+      }
+    }
+    
     * {
       margin: 0;
       padding: 0;
@@ -464,15 +511,199 @@
       transform: scale(0.9);
     }
     
-    /* Smaller buttons on mobile */
+    /* Enhanced Mobile Touch Feedback */
     @media (max-width: 480px) {
-      #fullscreen-toggle, #theme-toggle {
-        min-width: 50px;
-        min-height: 50px;
-        padding: 8px 12px;
-        font-size: 20px;
+      /* Touch feedback for all interactive buttons */
+      #fullscreen-toggle.touch-active,
+      #theme-toggle.touch-active,
+      .paytable-button.touch-active {
+        transform: scale(0.95);
+        opacity: 0.8;
+        transition: all 0.1s ease;
+      }
+      
+      /* Larger touch targets for accessibility */
+      #fullscreen-toggle,
+      #theme-toggle {
+        position: relative;
+      }
+      
+      #fullscreen-toggle::after,
+      #theme-toggle::after {
+        content: '';
+        position: absolute;
+        top: -8px;
+        left: -8px;
+        right: -8px;
+        bottom: -8px;
+        z-index: -1;
+      }
+      
+      /* Prevent text selection on mobile */
+      .spin-button,
+      #fullscreen-toggle,
+      #theme-toggle,
+      .paytable-button {
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+      }
+      
+      /* Mobile-optimized hover effects (disable on touch devices) */
+      @media (hover: none) {
+        .spin-button:hover,
+        #fullscreen-toggle:hover,
+        #theme-toggle:hover {
+          transform: none;
+        }
       }
     }
+    
+    /* iPhone and Mobile Optimizations */
+    /* iPhone SE and smaller devices */
+    @media (max-width: 414px) {
+      #fullscreen-toggle, #theme-toggle {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 8px;
+        font-size: 18px;
+        border-radius: 8px;
+      }
+      
+      .spin-button {
+        min-width: 200px;
+        min-height: 60px;
+        padding: 15px 40px;
+        font-size: 24px;
+        border-radius: 20px;
+      }
+      
+      .slot-machine {
+        transform: scale(0.8);
+        margin: 10px 0;
+      }
+      
+      .slot-machine-container {
+        padding: 0 10px 10px 10px;
+      }
+    }
+    
+    /* Standard iPhone sizes (iPhone 12/13/14) */
+    @media (max-width: 480px) and (min-width: 415px) {
+      #fullscreen-toggle, #theme-toggle {
+        min-width: 48px;
+        min-height: 48px;
+        padding: 10px 12px;
+        font-size: 20px;
+      }
+      
+      .spin-button {
+        min-width: 220px;
+        min-height: 70px;
+        padding: 20px 50px;
+        font-size: 28px;
+      }
+      
+      .slot-machine {
+        transform: scale(0.85);
+      }
+    }
+    
+    /* iPhone Pro Max and larger phones */
+    @media (max-width: 480px) and (min-width: 415px) {
+      .spin-button {
+        min-width: 240px;
+        min-height: 80px;
+        padding: 25px 60px;
+        font-size: 32px;
+      }
+    }
+    
+    /* General mobile improvements */
+    @media (max-width: 480px) {
+      /* Ensure all interactive elements meet Apple's 44px minimum */
+      .paytable-button {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 8px;
+      }
+      
+      /* Optimize text size for mobile reading */
+      .jackpot-display {
+        font-size: 1.8rem;
+      }
+      
+      .score-value {
+        font-size: 18px;
+      }
+      
+      /* Better spacing for touch */
+      .controls {
+        gap: 15px;
+        padding: 15px;
+      }
+      
+      .score-display {
+        gap: 12px;
+        margin-bottom: 15px;
+      }
+    }
+    
+    /* iPhone Safe Area Support */
+    @supports (padding: max(0px)) {
+      .slot-machine-container {
+        padding-left: max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+      }
+      
+      .app-header {
+        padding-left: max(15px, env(safe-area-inset-left));
+        padding-right: max(15px, env(safe-area-inset-right));
+        padding-top: env(safe-area-inset-top);
+        height: calc(var(--header-height) + env(safe-area-inset-top));
+      }
+    }
+    
+    /* Enhanced orientation support for iPhones */
+    @media (orientation: portrait) and (max-width: 480px) {
+      .slot-machine {
+        max-width: 90vw;
+        transform: scale(0.75);
+      }
+      
+      .slot-machine-container {
+        justify-content: flex-start;
+        padding-top: 10px;
+      }
+      
+      /* Optimize for iPhone's longer aspect ratios */
+      .reels-container {
+        height: auto;
+        min-height: 280px;
+      }
+    }
+    
+    @media (orientation: landscape) and (max-width: 736px) {
+      .slot-machine {
+        transform: scale(0.6);
+        margin: 5px 0;
+      }
+      
+      .slot-machine-container {
+        justify-content: center;
+        padding: 5px 10px;
+      }
+      
+      .app-header {
+        height: 50px;
+      }
+      
+      :root {
+        --header-height: 50px;
+      }
+    }
+    
     .slot-machine-container {
       display: flex;
       flex-direction: column;
@@ -1768,6 +1999,49 @@
       e.stopPropagation();
       elements.spinButton.classList.remove('touch-active');
     });
+    
+    // Enhanced touch handling for fullscreen and theme buttons
+    const fullscreenButton = document.getElementById('fullscreen-toggle');
+    const themeButton = document.getElementById('theme-toggle');
+    
+    [fullscreenButton, themeButton].forEach(button => {
+      if (button) {
+        button.addEventListener('touchstart', function(e) {
+          e.preventDefault();
+          this.classList.add('touch-active');
+          simulateHaptic(30);
+        });
+        
+        button.addEventListener('touchend', function(e) {
+          e.preventDefault();
+          this.classList.remove('touch-active');
+        });
+        
+        button.addEventListener('touchcancel', function(e) {
+          e.preventDefault();
+          this.classList.remove('touch-active');
+        });
+      }
+    });
+    
+    // Enhanced touch handling for paytable button
+    if (elements.paytableButton) {
+      elements.paytableButton.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        this.classList.add('touch-active');
+        simulateHaptic(30);
+      });
+      
+      elements.paytableButton.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        this.classList.remove('touch-active');
+      });
+      
+      elements.paytableButton.addEventListener('touchcancel', function(e) {
+        e.preventDefault();
+        this.classList.remove('touch-active');
+      });
+    }
     
     // Add paytable overlay to elements
     elements.paytableOverlay = document.querySelector('.paytable-overlay');
