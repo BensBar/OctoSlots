@@ -559,6 +559,19 @@
       }
     }
     
+    /* Mobile device specific optimizations */
+    .mobile-device .machine-glow {
+      display: none; /* Remove glow effect on mobile for better performance */
+    }
+    
+    .mobile-device .lights .light {
+      animation: none; /* Disable light animations on mobile */
+    }
+    
+    .mobile-device .reels-container::before {
+      display: none; /* Remove pseudo-element overlays on mobile */
+    }
+    
     /* iPhone and Mobile Optimizations */
     /* iPhone SE and smaller devices */
     @media (max-width: 414px) {
@@ -2179,6 +2192,54 @@
       }
     }
     
+    // Mobile-specific initialization
+    function initializeMobile() {
+      // Set proper theme icon on load
+      const isLightMode = document.body.classList.contains('light-mode');
+      if (elements.themeIcon) {
+        elements.themeIcon.textContent = isLightMode ? '🌞' : '🌙';
+      }
+      
+      // Prevent zoom on double-tap for critical elements
+      const criticalElements = [
+        elements.spinButton,
+        elements.themeToggle,
+        elements.fullscreenToggle,
+        elements.paytableButton
+      ];
+      
+      criticalElements.forEach(element => {
+        if (element) {
+          element.addEventListener('touchend', function(e) {
+            e.preventDefault();
+          }, { passive: false });
+        }
+      });
+      
+      // Optimize for mobile performance
+      if (window.innerWidth <= 480) {
+        // Reduce visual effects on smaller screens
+        const slotMachine = document.querySelector('.slot-machine');
+        if (slotMachine) {
+          slotMachine.style.willChange = 'transform';
+        }
+        
+        // Add mobile class for additional styling hooks
+        document.body.classList.add('mobile-device');
+      }
+      
+      // Handle orientation changes
+      window.addEventListener('orientationchange', function() {
+        setTimeout(() => {
+          // Force recalculation of viewport on orientation change
+          const viewportMeta = document.querySelector('meta[name="viewport"]');
+          if (viewportMeta) {
+            viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+          }
+        }, 100);
+      });
+    }
+    
     // Add event for new Paytable button
     const paytableToggleBtn = document.querySelector('.paytable-toggle-btn');
     if (paytableToggleBtn) {
@@ -2191,6 +2252,7 @@
     // Initialize
     initializeSlots();
     updateDisplay();
+    initializeMobile();
   </script>
 </body>
 </html>
