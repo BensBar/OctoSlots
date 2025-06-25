@@ -114,6 +114,124 @@
       height: calc(var(--vh, 1vh) * 100 - var(--header-height));
     }
     
+    /* 4K Retina Display Optimizations for iPhone 16 Pro Max (430x932px) */
+    @media only screen and (-webkit-device-pixel-ratio: 3) and (max-width: 430px) {
+      :root {
+        /* Enhance variables for 4K Retina */
+        --header-height: 64px; /* Slightly larger for better touch targets */
+        --machine-width: 380px; /* Optimized for 430px width */
+        --machine-height: 800px; /* Optimized for portrait orientation */
+      }
+      
+      /* Optimize touch targets for high DPI */
+      #fullscreen-toggle, #theme-toggle {
+        min-width: 48px; /* 44pt * 1.09 for better visibility on Retina */
+        min-height: 48px;
+        font-size: max(26px, 6vw); /* Responsive font size for 4K displays */
+        border-width: 2px; /* Thinner borders look better on Retina */
+      }
+      
+      .spin-button {
+        min-width: 220px; /* Enhanced for Retina clarity */
+        min-height: 88px; /* Double 44pt for better touch */
+        font-size: max(22px, 5.2vw); /* Responsive scaling for 4K */
+        font-weight: 700; /* Bolder text for better contrast on Retina */
+        border-width: 3px;
+      }
+      
+      /* Improve text rendering on 4K display */
+      body, .game-title, .user-info, .date-info {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+      }
+      
+      .game-title {
+        font-size: max(20px, 4.7vw); /* Responsive for 4K display */
+        font-weight: 800;
+      }
+      
+      .user-info, .date-info {
+        font-size: max(15px, 3.5vw); /* Responsive scaling */
+        font-weight: 600;
+      }
+      
+      .jackpot-display {
+        font-size: max(48px, 11vw); /* Scale jackpot display for 4K */
+        font-weight: 900;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8); /* Enhanced contrast */
+      }
+      
+      /* Enhance paytable for 4K displays */
+      .paytable h3 {
+        font-size: max(18px, 4.2vw);
+        font-weight: 700;
+      }
+      
+      .paytable-item {
+        font-size: max(16px, 3.7vw);
+        font-weight: 600;
+      }
+    }
+    
+    /* Additional optimizations for Super Retina XDR displays (4K) */
+    @media only screen and (-webkit-device-pixel-ratio: 3) and (min-resolution: 458dpi) {
+      /* Enhanced image rendering for 4K displays */
+      .slot-item img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+        transform: translateZ(0); /* Force hardware acceleration */
+      }
+      
+      /* Better button rendering on 4K */
+      .spin-button, #fullscreen-toggle, #theme-toggle {
+        transform: translateZ(0); /* Hardware acceleration */
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+      }
+      
+      /* Optimize for 4K text clarity and enhanced contrast */
+      * {
+        -webkit-font-smoothing: subpixel-antialiased;
+        font-feature-settings: "liga" 1, "kern" 1;
+      }
+      
+      /* Enhanced contrast for text on 4K Retina */
+      .app-header {
+        background: linear-gradient(135deg, #654321 0%, #834D1E 100%);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.7); /* Stronger shadow for depth */
+      }
+      
+      .user-info, .date-info, .game-title {
+        text-shadow: 2px 2px 6px rgba(0,0,0,0.9); /* Enhanced text shadow */
+        color: #FFFFFF;
+      }
+      
+      /* Better button contrast on 4K */
+      .spin-button {
+        background: linear-gradient(135deg, #FF0000 0%, #CC0000 50%, #990000 100%);
+        color: #FFFFFF;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        border: 3px solid #FFFFFF;
+      }
+      
+      #fullscreen-toggle, #theme-toggle {
+        background: linear-gradient(135deg, var(--gold) 0%, #DAA520 100%);
+        color: #000000;
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        border: 3px solid #000000;
+      }
+      
+      /* Enhanced jackpot display contrast */
+      .jackpot-display {
+        color: #FFD700;
+        text-shadow: 
+          0 0 10px #FFD700,
+          2px 2px 4px rgba(0,0,0,0.9),
+          -1px -1px 2px rgba(0,0,0,0.5);
+      }
+    }
+    
     /* Light Mode Body - only applied when light-mode class is present */
     body.light-mode {
       background: radial-gradient(circle at center, #F5F5F5 0%, #FFFFFF 100%);
@@ -632,6 +750,24 @@
         /* In portrait, optimize for height */
         max-width: 98vw;
         transform-origin: center center;
+      }
+    }
+    
+    /* iPhone 16 Pro Max 4K optimization in fullscreen */
+    @media only screen and (-webkit-device-pixel-ratio: 3) and (max-width: 430px) and (orientation: portrait) {
+      .fullscreen-mode .slot-machine {
+        /* Optimized scaling for iPhone 16 Pro Max 4K display (430x932px) */
+        transform: scale(1.6) !important; /* Larger scale for better 4K utilization */
+        max-width: 95vw;
+        max-height: 95vh;
+      }
+      
+      .fullscreen-mode .slot-machine-container {
+        /* Ensure proper centering on 4K display */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2vh 2vw; /* Small padding for safety */
       }
     }
     
@@ -1241,8 +1377,8 @@
   <div class="paytable-overlay"></div>
   
   <div class="app-header">
-    <div class="user-info">User: Player1</div>
-    <div class="date-info">Date: 2023-10-05</div>
+    <div class="user-info">User: BensBar</div>
+    <div class="date-info">Date: 2025-06-25 23:31:43</div>
     <div class="game-title">OctoSlots</div>
     <div id="fullscreen-toggle">
       <div id="fullscreen-icon">↔️</div>
@@ -1302,7 +1438,7 @@
     </div>
   </div>
   <!-- Add Paytable button for user access -->
-  <button class="paytable-toggle-btn" style="margin: 10px auto 0 auto; display: block; font-size: 1.2em; padding: 8px 24px; border-radius: 8px; background: var(--gold, #FFD700); color: #222; border: 2px solid #333; cursor: pointer;">Paytable</button>
+  <button class="paytable-toggle-btn" style="margin: 10px auto 0 auto; display: block; font-size: max(1.2em, 3.5vw); padding: max(8px, 2vw) max(24px, 5.5vw); border-radius: 8px; background: var(--gold, #FFD700); color: #222; border: 2px solid #333; cursor: pointer; min-width: 44px; min-height: 44px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;">Paytable</button>
   <div class="paytable-overlay"></div>
   <div class="paytable">
     <h3>Paytable</h3>
