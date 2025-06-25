@@ -119,7 +119,7 @@
       :root {
         /* Enhance variables for 4K Retina */
         --header-height: 64px; /* Slightly larger for better touch targets */
-        --machine-width: 380px; /* Optimized for 430px width */
+        --machine-width: 340px; /* Further reduced to ensure all reels fit */
         --machine-height: 800px; /* Optimized for portrait orientation */
       }
       
@@ -900,6 +900,38 @@
         0 4px 8px rgba(0, 0, 0, 0.3);
       cursor: pointer; /* Add pointer cursor */
       transition: all 0.2s ease;
+    }
+    
+    /* Optimize reels layout for iPhone 16 Pro Max */
+    @media only screen and (-webkit-device-pixel-ratio: 3) and (max-width: 430px) {
+      .reels-container {
+        gap: 8px; /* Reduce gap between reels */
+        padding: 12px; /* Reduce padding */
+        border-width: 2px; /* Thinner border */
+      }
+      
+      .reel {
+        border-width: 2px; /* Thinner reel borders */
+        border-radius: 10px; /* Smaller border radius */
+      }
+      
+      .slot-machine {
+        padding: 20px; /* Reduce machine padding */
+        border-width: 6px; /* Thinner machine border */
+      }
+    }
+    
+    /* General small screen optimizations for narrow viewports */
+    @media only screen and (max-width: 430px) {
+      .slot-machine {
+        max-width: 95vw; /* Ensure machine fits in viewport */
+        padding: 15px; /* Reduce padding for narrow screens */
+      }
+      
+      .reels-container {
+        gap: 10px; /* Reduce gap for all small screens */
+        padding: 15px; /* Reduce padding for all small screens */
+      }
     }
     
     /* Add visual feedback for touch interaction */
