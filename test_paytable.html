@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script>
+        window.onload = function() {
+            // Open original page in iframe
+            const iframe = document.createElement('iframe');
+            iframe.src = 'http://localhost:8000';
+            iframe.style.width = '100%';
+            iframe.style.height = '600px';
+            document.body.appendChild(iframe);
+            
+            // Add button to test paytable
+            const testBtn = document.createElement('button');
+            testBtn.textContent = 'Test Paytable';
+            testBtn.onclick = function() {
+                iframe.contentWindow.postMessage('showPaytable', '*');
+            };
+            document.body.appendChild(testBtn);
+        };
+    </script>
+</head>
+<body>
+    <h1>Paytable Test</h1>
+</body>
+</html>
