@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, minimal-ui">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="OctoSlots">
@@ -47,6 +47,71 @@
       --highlight-color: #FF9800;
       --gold-color: #FF9800;
       --win-color: #4CAF50;
+    }
+    
+    /* iOS Dark Mode Support - respects system preference */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        /* Enhance dark mode colors for iOS */
+        --primary-bg: #000000;
+        --secondary-bg: #1c1c1e;
+        --chrome: #2c2c2e;
+        --text-color: #ffffff;
+        --border-color: #38383a;
+      }
+    }
+    
+    @media (prefers-color-scheme: light) {
+      :root {
+        /* iOS light mode optimization */
+        --primary-bg: #ffffff;
+        --secondary-bg: #f2f2f7;
+        --chrome: #c7c7cc;
+        --text-color: #000000;
+        --border-color: #c6c6c8;
+      }
+    }
+    
+    /* iOS Performance Optimizations */
+    * {
+      /* Enable hardware acceleration for smoother animations */
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      /* Optimize for 60fps animations */
+      will-change: auto;
+    }
+    
+    /* Optimize specific elements that will animate */
+    .spin-button, .reel, .slot-item, .score-card {
+      will-change: transform, opacity;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    
+    /* iOS-specific scrolling and interaction optimizations */
+    body {
+      /* Improve iOS Safari scrolling behavior */
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: none;
+      /* Disable iOS text selection during interactions */
+      -webkit-user-select: none;
+      user-select: none;
+      /* Disable iOS callouts on touch */
+      -webkit-touch-callout: none;
+    }
+    
+    /* Optimize iOS tap highlights */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      tap-highlight-color: transparent;
+    }
+    
+    /* Use CSS custom property for dynamic viewport height */
+    .slot-machine-container {
+      /* Fallback for browsers that don't support env() */
+      height: calc(100vh - var(--header-height));
+      /* Use dynamic viewport height if available */
+      height: calc(var(--vh, 1vh) * 100 - var(--header-height));
     }
     
     /* Light Mode Body - only applied when light-mode class is present */
@@ -444,6 +509,15 @@
       min-width: 60px;
       min-height: 60px;
       justify-content: center;
+      /* iOS-style enhancements */
+      -webkit-appearance: none;
+      touch-action: manipulation;
+      /* Ensure touch target meets Apple's 44pt guideline */
+      min-width: max(60px, 44px);
+      min-height: max(60px, 44px);
+      /* Glassmorphism effect */
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     
     #fullscreen-toggle:hover {
@@ -464,13 +538,18 @@
       transform: scale(0.9);
     }
     
-    /* Smaller buttons on mobile */
+    /* Enhanced mobile buttons for better iOS touch targets */
     @media (max-width: 480px) {
       #fullscreen-toggle, #theme-toggle {
-        min-width: 50px;
-        min-height: 50px;
+        min-width: max(50px, 44px);
+        min-height: max(50px, 44px);
         padding: 8px 12px;
         font-size: 20px;
+        /* iOS-style enhancements */
+        -webkit-appearance: none;
+        touch-action: manipulation;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
       }
     }
     .slot-machine-container {
@@ -481,7 +560,11 @@
       height: calc(100vh - var(--header-height));
       width: 100vw;
       padding: 0px 20px 20px 20px; /* No top padding, normal padding on sides and bottom */
-      margin-top: var(--header-height);
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: calc(20px + env(safe-area-inset-bottom));
+      padding-left: calc(20px + env(safe-area-inset-left));
+      padding-right: calc(20px + env(safe-area-inset-right));
+      margin-top: calc(var(--header-height) + env(safe-area-inset-top));
       background: radial-gradient(ellipse at center, rgba(101, 67, 33, 0.2) 0%, transparent 70%);
       transition: all 0.3s ease;
     }
@@ -843,6 +926,14 @@
       box-shadow: 
         inset 0 0 20px rgba(0, 0, 0, 0.8),
         0 4px 8px rgba(0, 0, 0, 0.3);
+      /* iOS-style glassmorphism effects */
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      background-color: rgba(0, 0, 0, 0.3);
+      background-blend-mode: overlay;
+      /* Improved touch targets */
+      min-height: 44px;
+      touch-action: manipulation;
     }
     
     .score-card h3 {
@@ -882,6 +973,13 @@
       letter-spacing: 3px;
       min-width: 200px;
       min-height: 80px;
+      /* iOS-style enhancements */
+      -webkit-appearance: none;
+      touch-action: manipulation;
+      will-change: transform, box-shadow;
+      /* Ensure touch target meets Apple's 44pt guideline */
+      min-width: max(200px, 44px);
+      min-height: max(80px, 44px);
     }
     
     .spin-button:hover {
@@ -1469,9 +1567,35 @@
     }
     
     function simulateHaptic(duration) {
-      // Simulate haptic feedback for touch devices
+      // Enhanced haptic feedback for iOS and other touch devices
       if (navigator.vibrate) {
-        navigator.vibrate(duration);
+        // Handle different vibration patterns for iOS
+        if (Array.isArray(duration)) {
+          // For complex patterns, use the array directly
+          navigator.vibrate(duration);
+        } else {
+          // For simple duration, create an iOS-appropriate pattern
+          if (duration <= 50) {
+            // Light tap - single short vibration
+            navigator.vibrate(25);
+          } else if (duration <= 100) {
+            // Medium tap - slightly longer
+            navigator.vibrate(50);
+          } else {
+            // Heavy feedback - pattern for emphasis
+            navigator.vibrate([100, 50, 100]);
+          }
+        }
+      }
+      
+      // Try to use iOS Haptic Feedback API if available
+      try {
+        if (window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
+          // This is iOS - we could potentially implement additional haptic patterns
+          // For now, rely on navigator.vibrate with optimized patterns
+        }
+      } catch (e) {
+        // Fallback handled by navigator.vibrate above
       }
     }
     
@@ -1865,6 +1989,41 @@
       document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
       document.addEventListener('mozfullscreenchange', handleFullscreenChange);
       document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+      
+      // iOS-specific optimizations
+      // Add orientation change handling for better iOS support
+      window.addEventListener('orientationchange', function() {
+        setTimeout(() => {
+          // Force a re-layout after orientation change
+          const slotMachine = document.querySelector('.slot-machine');
+          if (slotMachine && document.body.classList.contains('fullscreen-mode')) {
+            // Recalculate scaling for new orientation
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+            const machineHeight = slotMachine.offsetHeight / 1.4;
+            const machineWidth = slotMachine.offsetWidth / 1.4;
+            const heightScale = viewportHeight * 0.95 / machineHeight;
+            const widthScale = viewportWidth * 0.95 / machineWidth;
+            const optimalScale = Math.min(heightScale, widthScale);
+            const finalScale = Math.max(1.4, optimalScale);
+            slotMachine.style.transform = `scale(${finalScale})`;
+          }
+        }, 100);
+      }, { passive: true });
+      
+      // Add passive touch listeners for performance
+      document.addEventListener('touchstart', function() {
+        // This helps with iOS touch responsiveness
+      }, { passive: true });
+      
+      // Add viewport change handling for iOS Safari
+      window.addEventListener('resize', function() {
+        // Handle viewport changes (like iOS Safari hiding/showing UI)
+        setTimeout(() => {
+          const vh = window.innerHeight * 0.01;
+          document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }, 100);
+      }, { passive: true });
       
       function handleFullscreenChange() {
         if (!document.fullscreenElement && 
