@@ -656,18 +656,43 @@
       transform: scale(0.9);
     }
     
-    /* Enhanced mobile buttons for better iOS touch targets */
-    @media (max-width: 480px) {
+    /* Enhanced mobile buttons for better touch targets across all mobile devices */
+    @media (max-width: 768px) {
       #fullscreen-toggle, #theme-toggle {
-        min-width: max(50px, 44px);
-        min-height: max(50px, 44px);
-        padding: 8px 12px;
-        font-size: 20px;
-        /* iOS-style enhancements */
+        min-width: max(56px, 44px);
+        min-height: max(56px, 44px);
+        padding: 10px 14px;
+        font-size: 22px;
+        margin: 0 8px;
+        /* Enhanced touch-friendly styling */
         -webkit-appearance: none;
         touch-action: manipulation;
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
+        border-radius: 16px;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+      }
+    }
+    
+    /* Medium mobile devices (most common phones) */
+    @media (max-width: 480px) {
+      #fullscreen-toggle, #theme-toggle {
+        min-width: max(52px, 44px);
+        min-height: max(52px, 44px);
+        padding: 8px 12px;
+        font-size: 20px;
+        margin: 0 6px;
+      }
+    }
+    
+    /* Small mobile devices */
+    @media (max-width: 360px) {
+      #fullscreen-toggle, #theme-toggle {
+        min-width: max(48px, 44px);
+        min-height: max(48px, 44px);
+        padding: 6px 10px;
+        font-size: 18px;
+        margin: 0 4px;
       }
     }
     .slot-machine-container {
@@ -796,6 +821,71 @@
       cursor: pointer; /* Add pointer cursor to indicate interactivity */
     }
     
+    /* Mobile-first responsive machine scaling */
+    @media (max-width: 768px) {
+      :root {
+        --machine-width: min(95vw, 700px);
+        --machine-height: min(90vh, 800px);
+      }
+      
+      .slot-machine {
+        padding: 20px;
+        border-radius: 20px;
+        border: 6px solid var(--chrome);
+        transform: scale(0.9);
+        transform-origin: center center;
+      }
+      
+      .machine-top {
+        margin-bottom: 20px;
+        padding: 15px;
+        border-radius: 15px;
+        border: 3px solid var(--chrome);
+      }
+    }
+    
+    @media (max-width: 480px) {
+      :root {
+        --machine-width: min(98vw, 400px);
+        --machine-height: min(85vh, 650px);
+      }
+      
+      .slot-machine {
+        padding: 15px;
+        border-radius: 15px;
+        border: 4px solid var(--chrome);
+        transform: scale(0.85);
+      }
+      
+      .machine-top {
+        margin-bottom: 15px;
+        padding: 12px;
+        border-radius: 12px;
+        border: 2px solid var(--chrome);
+      }
+    }
+    
+    @media (max-width: 360px) {
+      :root {
+        --machine-width: min(98vw, 340px);
+        --machine-height: min(82vh, 580px);
+      }
+      
+      .slot-machine {
+        padding: 12px;
+        border-radius: 12px;
+        border: 3px solid var(--chrome);
+        transform: scale(0.8);
+      }
+      
+      .machine-top {
+        margin-bottom: 12px;
+        padding: 10px;
+        border-radius: 10px;
+        border: 2px solid var(--chrome);
+      }
+    }
+    
     .machine-glow {
       position: absolute;
       top: -20px;
@@ -840,6 +930,33 @@
     @keyframes jackpot-glow {
       0% { text-shadow: 0 0 20px var(--gold), 0 0 40px var(--gold), 2px 2px 4px rgba(0, 0, 0, 0.8); }
       100% { text-shadow: 0 0 30px var(--gold), 0 0 60px var(--gold), 2px 2px 4px rgba(0, 0, 0, 0.8); }
+    }
+    
+    /* Mobile-responsive jackpot display */
+    @media (max-width: 768px) {
+      .jackpot-display {
+        font-size: clamp(36px, 8vw, 44px);
+        font-weight: 800;
+        letter-spacing: 3px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .jackpot-display {
+        font-size: clamp(30px, 7vw, 38px);
+        font-weight: 700;
+        letter-spacing: 2px;
+        margin-bottom: 10px;
+      }
+    }
+    
+    @media (max-width: 360px) {
+      .jackpot-display {
+        font-size: clamp(26px, 6.5vw, 32px);
+        font-weight: 600;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+      }
     }
     .flashing-lights {
       position: absolute;
@@ -960,6 +1077,49 @@
       object-fit: contain;
       transition: transform 0.5s cubic-bezier(.4,1.6,.6,.8);
       filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+    }
+    
+    /* Mobile-responsive slot symbols */
+    @media (max-width: 768px) {
+      .slot-item img {
+        max-width: 80%;
+        max-height: 80%;
+        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3));
+      }
+      
+      .slot-item.middle img {
+        max-width: 90%;
+        max-height: 90%;
+        filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.4));
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .slot-item img {
+        max-width: 75%;
+        max-height: 75%;
+        filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.3));
+      }
+      
+      .slot-item.middle img {
+        max-width: 85%;
+        max-height: 85%;
+        filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4));
+      }
+    }
+    
+    @media (max-width: 360px) {
+      .slot-item img {
+        max-width: 70%;
+        max-height: 70%;
+        filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
+      }
+      
+      .slot-item.middle img {
+        max-width: 80%;
+        max-height: 80%;
+        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4));
+      }
     }
     
     .slot-item.middle img {
@@ -1319,6 +1479,124 @@
         inset 0 0 10px rgba(255, 255, 255, 0.05);
       transform: translateY(0);
     }
+    
+    /* Mobile-friendly control sizing */
+    @media (max-width: 768px) {
+      .controls {
+        padding: 15px;
+        border-radius: 15px;
+        border: 3px solid var(--chrome);
+      }
+      
+      .spin-button {
+        padding: 20px 50px;
+        font-size: 28px;
+        border-radius: 20px;
+        border: 5px solid var(--chrome);
+        letter-spacing: 4px;
+        min-width: max(180px, 44px);
+        min-height: max(70px, 44px);
+      }
+      
+      .score-display {
+        gap: 12px;
+        margin-bottom: 15px;
+      }
+      
+      .score-card {
+        padding: 12px 18px;
+        border-radius: 12px;
+        border: 3px solid var(--chrome);
+        min-width: 85px;
+      }
+      
+      .score-card h3 {
+        font-size: 14px;
+        margin-bottom: 6px;
+      }
+      
+      .score-value {
+        font-size: 18px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .controls {
+        padding: 12px;
+        border-radius: 12px;
+        border: 2px solid var(--chrome);
+      }
+      
+      .spin-button {
+        padding: 18px 40px;
+        font-size: 24px;
+        border-radius: 15px;
+        border: 4px solid var(--chrome);
+        letter-spacing: 3px;
+        min-width: max(160px, 44px);
+        min-height: max(60px, 44px);
+      }
+      
+      .score-display {
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      
+      .score-card {
+        padding: 10px 15px;
+        border-radius: 10px;
+        border: 2px solid var(--chrome);
+        min-width: 75px;
+      }
+      
+      .score-card h3 {
+        font-size: 12px;
+        margin-bottom: 4px;
+      }
+      
+      .score-value {
+        font-size: 16px;
+      }
+    }
+    
+    @media (max-width: 360px) {
+      .controls {
+        padding: 10px;
+        border-radius: 10px;
+        border: 2px solid var(--chrome);
+      }
+      
+      .spin-button {
+        padding: 15px 35px;
+        font-size: 20px;
+        border-radius: 12px;
+        border: 3px solid var(--chrome);
+        letter-spacing: 2px;
+        min-width: max(140px, 44px);
+        min-height: max(50px, 44px);
+      }
+      
+      .score-display {
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+      
+      .score-card {
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 2px solid var(--chrome);
+        min-width: 65px;
+      }
+      
+      .score-card h3 {
+        font-size: 11px;
+        margin-bottom: 3px;
+      }
+      
+      .score-value {
+        font-size: 14px;
+      }
+    }
     /* Light Mode Win Message */
     body.light-mode .win-message {
       background: linear-gradient(135deg, var(--gold) 0%, #F57C00 100%) !important;
@@ -1536,9 +1814,52 @@
       cursor: pointer;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       transition: background 0.2s;
+      /* Enhanced touch support */
+      min-width: 44px;
+      min-height: 44px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
+    
     .paytable-toggle-btn:hover {
       background: #ffe066;
+    }
+    
+    /* Mobile-friendly paytable button */
+    @media (max-width: 768px) {
+      .paytable-toggle-btn {
+        font-size: max(1.1em, 4vw);
+        padding: max(10px, 2.5vw) max(28px, 6vw);
+        border-radius: 12px;
+        margin: 15px auto 5px auto;
+        min-width: max(120px, 44px);
+        min-height: max(48px, 44px);
+        border: 3px solid #333;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .paytable-toggle-btn {
+        font-size: max(1.0em, 3.8vw);
+        padding: max(12px, 3vw) max(32px, 7vw);
+        border-radius: 10px;
+        margin: 12px auto 8px auto;
+        min-width: max(110px, 44px);
+        min-height: max(46px, 44px);
+        font-weight: 600;
+      }
+    }
+    
+    @media (max-width: 360px) {
+      .paytable-toggle-btn {
+        font-size: max(0.9em, 3.5vw);
+        padding: max(10px, 2.8vw) max(28px, 6.5vw);
+        border-radius: 8px;
+        margin: 10px auto 10px auto;
+        min-width: max(100px, 44px);
+        min-height: max(44px, 44px);
+      }
     }
   </style>
 </head>
