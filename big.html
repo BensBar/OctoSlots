@@ -1,0 +1,2533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OctoSlots">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#000000">
+  <title>OctoSlots - Professional Slot Machine</title>
+  <style>
+    :root {
+      /* Dark Mode - Casino Night Theme (Default) */
+      --primary-bg: #000000;
+      --secondary-bg: #111111;
+      --machine-body: #654321;
+      --machine-face: #000000;
+      --chrome: #2a2a2a;
+      --gold: #FFD700;
+      --red-led: #FF0000;
+      --green-led: #00FF00;
+      --blue-led: #0066FF;
+      --border-color: #333;
+      --text-color: #FFFFFF;
+      --highlight-color: #FFD700;
+      --gold-color: #FFD700;
+      --win-color: #00FF00;
+      --header-height: 60px; /* Reduced header height to move machine closer to top */
+      --machine-width: 900px;
+      --machine-height: 950px;
+    }
+    body.light-mode {
+      /* Light Mode - Bright Casino/Arcade Theme */
+      --primary-bg: #FFFFFF;
+      --secondary-bg: #F8F9FA;
+      --machine-body: #E3F2FD;
+      --machine-face: #FFFFFF;
+      --chrome: #607D8B;
+      --gold: #FF9800;
+      --red-led: #F44336;
+      --green-led: #4CAF50;
+      --blue-led: #2196F3;
+      --border-color: #E0E0E0;
+      --text-color: #212121;
+      --highlight-color: #FF9800;
+      --gold-color: #FF9800;
+      --win-color: #4CAF50;
+    }
+    
+    /* iOS Dark Mode Support - respects system preference */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        /* Enhance dark mode colors for iOS */
+        --primary-bg: #000000;
+        --secondary-bg: #1c1c1e;
+        --chrome: #2c2c2e;
+        --text-color: #ffffff;
+        --border-color: #38383a;
+      }
+    }
+    
+    @media (prefers-color-scheme: light) {
+      :root {
+        /* iOS light mode optimization */
+        --primary-bg: #ffffff;
+        --secondary-bg: #f2f2f7;
+        --chrome: #c7c7cc;
+        --text-color: #000000;
+        --border-color: #c6c6c8;
+      }
+    }
+    
+    /* iOS Performance Optimizations */
+    * {
+      /* Enable hardware acceleration for smoother animations */
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      /* Optimize for 60fps animations */
+      will-change: auto;
+    }
+    
+    /* Optimize specific elements that will animate */
+    .spin-button, .reel, .slot-item, .score-card {
+      will-change: transform, opacity;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    
+    /* iOS-specific scrolling and interaction optimizations */
+    body {
+      /* Improve iOS Safari scrolling behavior */
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: none;
+      /* Disable iOS text selection during interactions */
+      -webkit-user-select: none;
+      user-select: none;
+      /* Disable iOS callouts on touch */
+      -webkit-touch-callout: none;
+    }
+    
+    /* Optimize iOS tap highlights */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      tap-highlight-color: transparent;
+    }
+    
+    /* Use CSS custom property for dynamic viewport height */
+    .slot-machine-container {
+      /* Fallback for browsers that don't support env() */
+      height: calc(100vh - var(--header-height));
+      /* Use dynamic viewport height if available */
+      height: calc(var(--vh, 1vh) * 100 - var(--header-height));
+    }
+    
+    /* 4K Retina Display Optimizations for iPhone 16 Pro Max (430x932px) */
+    @media only screen and (-webkit-device-pixel-ratio: 3) and (max-width: 430px) {
+      :root {
+        /* Enhance variables for 4K Retina */
+        --header-height: 64px; /* Slightly larger for better touch targets */
+        --machine-width: 380px; /* Optimized for 430px width */
+        --machine-height: 800px; /* Optimized for portrait orientation */
+      }
+      
+      /* Optimize touch targets for high DPI */
+      #fullscreen-toggle, #theme-toggle {
+        min-width: 48px; /* 44pt * 1.09 for better visibility on Retina */
+        min-height: 48px;
+        font-size: max(26px, 6vw); /* Responsive font size for 4K displays */
+        border-width: 2px; /* Thinner borders look better on Retina */
+      }
+      
+      .spin-button {
+        min-width: 220px; /* Enhanced for Retina clarity */
+        min-height: 88px; /* Double 44pt for better touch */
+        font-size: max(22px, 5.2vw); /* Responsive scaling for 4K */
+        font-weight: 700; /* Bolder text for better contrast on Retina */
+        border-width: 3px;
+      }
+      
+      /* Improve text rendering on 4K display */
+      body, .game-title, .user-info, .date-info {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+      }
+      
+      .game-title {
+        font-size: max(20px, 4.7vw); /* Responsive for 4K display */
+        font-weight: 800;
+      }
+      
+      .user-info, .date-info {
+        font-size: max(15px, 3.5vw); /* Responsive scaling */
+        font-weight: 600;
+      }
+      
+      .jackpot-display {
+        font-size: max(48px, 11vw); /* Scale jackpot display for 4K */
+        font-weight: 900;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8); /* Enhanced contrast */
+      }
+      
+      /* Enhance paytable for 4K displays */
+      .paytable h3 {
+        font-size: max(18px, 4.2vw);
+        font-weight: 700;
+      }
+      
+      .paytable-item {
+        font-size: max(16px, 3.7vw);
+        font-weight: 600;
+      }
+    }
+    
+    /* Additional optimizations for Super Retina XDR displays (4K) */
+    @media only screen and (-webkit-device-pixel-ratio: 3) and (min-resolution: 458dpi) {
+      /* Enhanced image rendering for 4K displays */
+      .slot-item img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+        transform: translateZ(0); /* Force hardware acceleration */
+      }
+      
+      /* Better button rendering on 4K */
+      .spin-button, #fullscreen-toggle, #theme-toggle {
+        transform: translateZ(0); /* Hardware acceleration */
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+      }
+      
+      /* Optimize for 4K text clarity and enhanced contrast */
+      * {
+        -webkit-font-smoothing: subpixel-antialiased;
+        font-feature-settings: "liga" 1, "kern" 1;
+      }
+      
+      /* Enhanced contrast for text on 4K Retina */
+      .app-header {
+        background: linear-gradient(135deg, #654321 0%, #834D1E 100%);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.7); /* Stronger shadow for depth */
+      }
+      
+      .user-info, .date-info, .game-title {
+        text-shadow: 2px 2px 6px rgba(0,0,0,0.9); /* Enhanced text shadow */
+        color: #FFFFFF;
+      }
+      
+      /* Better button contrast on 4K */
+      .spin-button {
+        background: linear-gradient(135deg, #FF0000 0%, #CC0000 50%, #990000 100%);
+        color: #FFFFFF;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        border: 3px solid #FFFFFF;
+      }
+      
+      #fullscreen-toggle, #theme-toggle {
+        background: linear-gradient(135deg, var(--gold) 0%, #DAA520 100%);
+        color: #000000;
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        border: 3px solid #000000;
+      }
+      
+      /* Enhanced jackpot display contrast */
+      .jackpot-display {
+        color: #FFD700;
+        text-shadow: 
+          0 0 10px #FFD700,
+          2px 2px 4px rgba(0,0,0,0.9),
+          -1px -1px 2px rgba(0,0,0,0.5);
+      }
+    }
+    
+    /* Light Mode Body - only applied when light-mode class is present */
+    body.light-mode {
+      background: radial-gradient(circle at center, #F5F5F5 0%, #FFFFFF 100%);
+    }
+    
+    /* Light Mode Slot Machine Container */
+    body.light-mode .slot-machine-container {
+      background: radial-gradient(ellipse at center, rgba(33, 150, 243, 0.1) 0%, transparent 70%);
+    }
+    
+    /* Light Mode Machine Styling */
+    body.light-mode .slot-machine {
+      background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 50%, #E3F2FD 100%);
+      border: 8px solid var(--chrome);
+      box-shadow: 
+        0 0 40px rgba(0, 0, 0, 0.2),
+        inset 0 0 20px rgba(33, 150, 243, 0.1),
+        inset 0 -10px 20px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Light Mode Machine Glow */
+    body.light-mode .machine-glow {
+      background: radial-gradient(ellipse at center, rgba(33, 150, 243, 0.3) 0%, transparent 70%);
+    }
+    
+    /* Light Mode Machine Top */
+    body.light-mode .machine-top {
+      background: linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%);
+      border: 4px solid var(--chrome);
+      box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Light Mode Jackpot Display */
+    body.light-mode .jackpot-display {
+      color: var(--gold);
+      text-shadow: 
+        0 0 20px rgba(255, 152, 0, 0.8),
+        0 0 40px rgba(255, 152, 0, 0.6),
+        2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Light Mode Reels Container */
+    body.light-mode .reels-container {
+      background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+      border: 4px solid var(--chrome);
+      box-shadow: 
+        inset 0 0 30px rgba(0, 0, 0, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Light Mode Reels */
+    body.light-mode .reel {
+      background: linear-gradient(135deg, #FAFAFA 0%, #F0F0F0 50%, #FAFAFA 100%);
+      border: 3px solid var(--chrome);
+      box-shadow: 
+        inset 0 0 30px rgba(0, 0, 0, 0.1),
+        0 0 10px rgba(33, 150, 243, 0.2);
+    }
+    
+    /* Light Mode Controls */
+    body.light-mode .controls {
+      background: linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%);
+      border: 4px solid var(--chrome);
+      box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Light Mode Score Cards */
+    body.light-mode .score-card {
+      background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+      border: 3px solid var(--chrome);
+      color: var(--text-color);
+      box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.05),
+        0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Light Mode Score Card Text */
+    body.light-mode .score-card h3 {
+      color: var(--text-color);
+      text-shadow: none;
+    }
+    
+    body.light-mode .score-value {
+      color: var(--gold);
+      text-shadow: 
+        0 0 10px rgba(255, 152, 0, 0.8),
+        2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    /* Light Mode Header */
+    body.light-mode .app-header {
+      background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+      border-bottom: 4px solid var(--gold);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    
+    body.light-mode .user-info, 
+    body.light-mode .date-info,
+    body.light-mode .game-title {
+      color: #FFFFFF;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    /* Light Mode Theme Toggle */
+    body.light-mode #theme-toggle {
+      background: linear-gradient(135deg, var(--gold) 0%, #F57C00 100%);
+      border: 3px solid #FFFFFF;
+      color: #FFFFFF;
+    }
+    /* Light Mode Spin Button */
+    body.light-mode .spin-button {
+      background: linear-gradient(135deg, var(--red-led) 0%, #D32F2F 50%, #C62828 100%);
+      border: 6px solid var(--chrome);
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+    
+    body.light-mode .spin-button:hover {
+      background: linear-gradient(135deg, #FF5722 0%, var(--red-led) 50%, #D32F2F 100%);
+    }
+    
+    body.light-mode .spin-button:disabled {
+      background: linear-gradient(135deg, #BDBDBD 0%, #9E9E9E 50%, #757575 100%);
+      color: #FFFFFF;
+    }
+    /* Light Mode Win Message */
+    body.light-mode .win-message {
+      background: linear-gradient(135deg, var(--gold) 0%, #F57C00 100%) !important;
+      border: 6px solid #FFFFFF !important;
+      color: #FFFFFF !important;
+      box-shadow: 
+        0 0 50px rgba(255, 152, 0, 0.8),
+        0 0 100px rgba(255, 152, 0, 0.4),
+        inset 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+    
+    body.light-mode .win-message h2 {
+      color: #FFFFFF !important;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+    
+    body.light-mode .win-message p {
+      color: #FFFFFF !important;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    }
+    
+    body.light-mode .win-message button {
+      background: linear-gradient(135deg, var(--red-led) 0%, #D32F2F 100%);
+      border: 4px solid #FFFFFF;
+    }
+    
+    /* Light Mode Paytable */
+    body.light-mode .paytable {
+      background: linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%) !important;
+      border: 4px solid var(--chrome) !important;
+      color: var(--text-color) !important;
+      box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.15),
+        inset 0 0 20px rgba(33, 150, 243, 0.1);
+    }
+    
+    body.light-mode .paytable h3 {
+      color: var(--gold) !important;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+    
+    body.light-mode .paytable-item {
+      background: rgba(33, 150, 243, 0.05);
+      border: 1px solid var(--chrome);
+    }
+    
+    body.light-mode .paytable-item span {
+      color: var(--text-color) !important;
+      text-shadow: none;
+    }
+    
+    body.light-mode .paytable-button {
+      background: linear-gradient(135deg, var(--gold) 0%, #F57C00 100%) !important;
+      border: 4px solid var(--chrome) !important;
+      color: #FFFFFF !important;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    }
+    
+    /* Base paytable styles - hidden by default */
+    .paytable {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      max-width: 400px;
+      background: var(--machine-body);
+      border: 6px solid var(--gold);
+      color: white;
+      border-radius: 10px;
+      padding: 20px;
+      z-index: 2000;
+      display: none; /* Hidden by default */
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    /* Visible state for paytable */
+    .paytable.visible {
+      display: block;
+      opacity: 1;
+    }
+    
+    /* Paytable overlay to prevent clicking through */
+    .paytable-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1999;
+      display: none;
+    }
+    
+    /* Show overlay when paytable is visible */
+    .paytable-overlay.visible {
+      display: block;
+    }
+    
+    /* Position paytable inside fullscreen mode properly */
+    .fullscreen-mode .paytable {
+      z-index: 3000;
+    }
+    
+    /* Light Mode Specific Overrides */
+    body:not(.light-mode) .slot-machine {
+      border: 8px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .machine-top {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .reels-container {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .reel {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .controls {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .score-card {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .spin-button {
+      border: 6px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .win-message {
+      border: 6px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .win-message button {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) #theme-toggle {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .paytable-button {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .paytable {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .paytable-item {
+      border: 1px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .light {
+      border: 2px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .lever {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .lever::after {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .lever-base {
+      border: 3px solid #000 !important;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      touch-action: manipulation;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--primary-bg);
+      color: var(--text-color);
+      font-family: 'Arial', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+      /* Dark Theme - Default */
+      background: radial-gradient(circle at center, #333333 0%, #000000 100%);
+    }
+    
+    .app-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: var(--header-height);
+      background: linear-gradient(135deg, #654321 0%, #834D1E 100%);
+      border-bottom: 4px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-sizing: border-box;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    
+    /* Move the slot machine container up (much closer to the top) */
+    .slot-machine-container {
+      margin-top: var(--header-height); /* No extra gap after header */
+      padding-top: 0; /* Remove top padding to move it up */
+    }
+    
+    /* Adjust the machine size and position for better visibility */
+    .slot-machine {
+      margin-top: -20px; /* Increased negative margin to move it up more */
+      margin-bottom: auto; /* Push everything up */
+      transform: translateY(-20px); /* Increased negative transform to move it even closer to header */
+    }
+    
+    /* Additional positioning to move the slot machine as close as possible to the header */
+    @media (min-height: 700px) {
+      .slot-machine-container {
+        padding-top: 0;
+      }
+      
+      .slot-machine {
+        margin-top: -25px; /* Even more negative margin for taller screens */
+        transform: translateY(-25px); /* More negative transform for taller screens */
+      }
+    }
+    
+    /* Reduce the size of the top section of the machine to save vertical space */
+    .machine-top {
+      padding: 3px 15px !important; /* Further reduced padding */
+      margin-bottom: 5px !important; /* Even less margin */
+    }
+    /* Fullscreen button styles */
+    #fullscreen-toggle {
+      background: linear-gradient(135deg, var(--gold) 0%, #DAA520 100%);
+      border: 3px solid var(--chrome);
+      cursor: pointer;
+      font-size: 24px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      outline: none;
+      transition: all 0.3s;
+      margin: 0 10px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      min-width: 60px;
+      min-height: 60px;
+      justify-content: center;
+      /* iOS-style enhancements */
+      -webkit-appearance: none;
+      touch-action: manipulation;
+      /* Ensure touch target meets Apple's 44pt guideline */
+      min-width: max(60px, 44px);
+      min-height: max(60px, 44px);
+      /* Glassmorphism effect */
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    
+    #fullscreen-toggle:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+    }
+    
+    #fullscreen-toggle:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    #fullscreen-icon {
+      transition: transform 0.3s;
+    }
+    
+    #fullscreen-toggle:active #fullscreen-icon {
+      transform: scale(0.9);
+    }
+    
+    /* Enhanced mobile buttons for better iOS touch targets */
+    @media (max-width: 480px) {
+      #fullscreen-toggle, #theme-toggle {
+        min-width: max(50px, 44px);
+        min-height: max(50px, 44px);
+        padding: 8px 12px;
+        font-size: 20px;
+        /* iOS-style enhancements */
+        -webkit-appearance: none;
+        touch-action: manipulation;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+    }
+    .slot-machine-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start; /* Align content to the top */
+      align-items: center;
+      height: calc(100vh - var(--header-height));
+      width: 100vw;
+      padding: 0px 20px 20px 20px; /* No top padding, normal padding on sides and bottom */
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: calc(20px + env(safe-area-inset-bottom));
+      padding-left: calc(20px + env(safe-area-inset-left));
+      padding-right: calc(20px + env(safe-area-inset-right));
+      margin-top: calc(var(--header-height) + env(safe-area-inset-top));
+      background: radial-gradient(ellipse at center, rgba(101, 67, 33, 0.2) 0%, transparent 70%);
+      transition: all 0.3s ease;
+    }
+    
+    /* Fullscreen mode styles */
+    .fullscreen-mode .slot-machine-container {
+      padding: 0;
+      margin: 0;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      overflow: hidden; /* Prevent scrolling in fullscreen */
+      background: var(--primary-bg); /* Apply background color from variables */
+    }
+    
+    .fullscreen-mode .slot-machine {
+      transform: scale(1.4); /* Make the machine bigger in fullscreen mode */
+      margin: auto;
+      max-height: none; /* Allow machine to be as tall as needed */
+      max-width: none; /* Allow machine to be as wide as needed */
+      height: auto;
+      transform-origin: center center;
+    }
+    
+    .fullscreen-mode .app-header {
+      transform: translateY(-100%); /* Hide header in fullscreen */
+      transition: transform 0.3s ease;
+    }
+    
+    .fullscreen-mode {
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+    
+    /* Keep controls and reels properly sized in fullscreen */
+    .fullscreen-mode .reels-container {
+      height: auto; /* Allow natural height */
+      max-height: none; /* No limit on height */
+    }
+    
+    /* Ensure images in reels scale properly in fullscreen */
+    .fullscreen-mode .slot-item img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    /* Optimize fullscreen in different orientations */
+    @media (orientation: landscape) {
+      .fullscreen-mode .slot-machine {
+        /* In landscape, optimize for width */
+        max-height: 98vh;
+        transform-origin: center center;
+      }
+    }
+    
+    @media (orientation: portrait) {
+      .fullscreen-mode .slot-machine {
+        /* In portrait, optimize for height */
+        max-width: 98vw;
+        transform-origin: center center;
+      }
+    }
+    
+    /* iPhone 16 Pro Max 4K optimization in fullscreen */
+    @media only screen and (-webkit-device-pixel-ratio: 3) and (max-width: 430px) and (orientation: portrait) {
+      .fullscreen-mode .slot-machine {
+        /* Optimized scaling for iPhone 16 Pro Max 4K display (430x932px) */
+        transform: scale(1.6) !important; /* Larger scale for better 4K utilization */
+        max-width: 95vw;
+        max-height: 95vh;
+      }
+      
+      .fullscreen-mode .slot-machine-container {
+        /* Ensure proper centering on 4K display */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2vh 2vw; /* Small padding for safety */
+      }
+    }
+    
+    /* Square monitor optimizations */
+    @media (min-aspect-ratio: 0.9/1) and (max-aspect-ratio: 1.1/1) {
+      .fullscreen-mode .slot-machine {
+        /* For square-ish monitors, make it as large as possible */
+        transform: scale(1.5) !important;
+      }
+    }
+    
+    .slot-machine {
+      position: relative;
+      width: var(--machine-width);
+      height: var(--machine-height);
+      background: linear-gradient(135deg, var(--machine-body) 0%, #4A2C17 50%, var(--machine-body) 100%);
+      border-radius: 30px;
+      border: 8px solid var(--chrome);
+      box-shadow: 
+        0 0 40px rgba(0, 0, 0, 0.9),
+        inset 0 0 20px rgba(255, 255, 255, 0.1),
+        inset 0 -10px 20px rgba(0, 0, 0, 0.8);
+      padding: 30px;
+      overflow: visible;
+      max-width: none;
+      cursor: pointer; /* Add pointer cursor to indicate interactivity */
+    }
+    
+    .machine-glow {
+      position: absolute;
+      top: -20px;
+      left: -20px;
+      right: -20px;
+      bottom: -20px;
+      background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.3) 0%, rgba(0, 0, 0, 0) 70%);
+      border-radius: 50px;
+      z-index: -1;
+      animation: glow-pulse 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes glow-pulse {
+      0% { opacity: 0.5; }
+      100% { opacity: 0.8; }
+    }
+    .machine-top {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: linear-gradient(135deg, var(--machine-face) 0%, #333 100%);
+      border-radius: 20px;
+      border: 4px solid var(--chrome);
+      position: relative;
+      box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.5),
+        0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .jackpot-display {
+      font-size: 48px;
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 
+        0 0 20px var(--gold),
+        0 0 40px var(--gold),
+        2px 2px 4px rgba(0, 0, 0, 0.8);
+      letter-spacing: 4px;
+      animation: jackpot-glow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes jackpot-glow {
+      0% { text-shadow: 0 0 20px var(--gold), 0 0 40px var(--gold), 2px 2px 4px rgba(0, 0, 0, 0.8); }
+      100% { text-shadow: 0 0 30px var(--gold), 0 0 60px var(--gold), 2px 2px 4px rgba(0, 0, 0, 0.8); }
+    }
+    .flashing-lights {
+      position: absolute;
+      top: -8px;
+      left: 10px;
+      right: 10px;
+      height: 16px;
+      display: flex;
+      justify-content: space-around;
+      z-index: 5;
+    }
+    
+    .light {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: #222;
+      border: 2px solid var(--chrome);
+      box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.8);
+      transition: all 0.2s;
+    }
+    
+    .light.on {
+      background-color: var(--red-led);
+      box-shadow: 
+        0 0 20px var(--red-led),
+        0 0 40px var(--red-led),
+        inset 0 0 8px rgba(255, 255, 255, 0.3);
+    }
+    
+    .light:nth-child(2n).on {
+      background-color: var(--blue-led);
+      box-shadow: 
+        0 0 20px var(--blue-led),
+        0 0 40px var(--blue-led),
+        inset 0 0 8px rgba(255, 255, 255, 0.3);
+    }
+    
+    .light:nth-child(3n).on {
+      background-color: var(--green-led);
+      box-shadow: 
+        0 0 20px var(--green-led),
+        0 0 40px var(--green-led),
+        inset 0 0 8px rgba(255, 255, 255, 0.3);
+    }
+    .reels-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 30px;
+      position: relative;
+      background: linear-gradient(135deg, var(--machine-face) 0%, #1a1a1a 100%);
+      padding: 20px;
+      border-radius: 20px;
+      border: 4px solid var(--chrome);
+      box-shadow: 
+        inset 0 0 30px rgba(0, 0, 0, 0.8),
+        0 4px 8px rgba(0, 0, 0, 0.3);
+      cursor: pointer; /* Add pointer cursor */
+      transition: all 0.2s ease;
+    }
+    
+    /* Add visual feedback for touch interaction */
+    .reels-container:active {
+      transform: scale(0.98);
+      box-shadow: 
+        inset 0 0 40px rgba(0, 0, 0, 0.9),
+        0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .reel {
+      position: relative;
+      flex: 1;
+      height: 300px;
+      background: linear-gradient(135deg, #000 0%, #1a1a1a 50%, #000 100%);
+      border-radius: 15px;
+      border: 3px solid var(--chrome);
+      overflow: hidden;
+      box-shadow: 
+        inset 0 0 30px rgba(0, 0, 0, 0.9),
+        0 0 10px rgba(255, 215, 0, 0.3);
+    }
+    
+    .reel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 100%
+      );
+      pointer-events: none;
+      z-index: 2;
+    }
+    .slot-item {
+      position: absolute;
+      width: 100%;
+      height: 33.33%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: top 0.8s cubic-bezier(.4,1.6,.6,.8);
+      background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    }
+    
+    .slot-item.top { top: 0; }
+    .slot-item.middle { top: 33.33%; }
+    .slot-item.bottom { top: 66.66%; }
+    
+    .slot-item img {
+      max-width: 85%;
+      max-height: 85%;
+      object-fit: contain;
+      transition: transform 0.5s cubic-bezier(.4,1.6,.6,.8);
+      filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+    }
+    
+    .slot-item.middle img {
+      max-width: 95%;
+      max-height: 95%;
+      filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
+    }
+    
+    .spinning .slot-item {
+      animation: spin-blur 0.05s infinite linear;
+    }
+    
+    /* Spinning animations */
+    @keyframes spin-blur {
+      0% { filter: blur(0px); }
+      50% { filter: blur(3px); }
+      100% { filter: blur(0px); }
+    }
+    
+    .reel.spinning .slot-item img {
+      animation: spin-blur 0.1s infinite;
+    }
+    
+    /* Enhanced Win line highlight */
+    .win-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 8px;
+      background: linear-gradient(90deg, transparent 0%, var(--red-led) 50%, transparent 100%);
+      transform: translateY(-50%);
+      z-index: 5;
+      pointer-events: none;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      border-radius: 4px;
+      box-shadow: 0 0 20px var(--red-led);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    
+    .win-line.highlight {
+      background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--gold) 20%, 
+        var(--green-led) 50%, 
+        var(--gold) 80%, 
+        transparent 100%);
+      border: 3px solid rgba(255, 255, 255, 1);
+      box-shadow: 
+        0 0 30px var(--green-led),
+        0 0 60px var(--gold),
+        0 0 90px var(--green-led);
+      opacity: 1;
+      height: 12px;
+      animation: win-line-pulse 0.6s infinite alternate, win-line-shimmer 2s infinite;
+    }
+    
+    @keyframes win-line-pulse {
+      0% { 
+        opacity: 0.8;
+        box-shadow: 0 0 30px var(--green-led), 0 0 60px var(--gold);
+        transform: translateY(-50%) scaleY(1);
+      }
+      100% { 
+        opacity: 1;
+        box-shadow: 0 0 50px var(--green-led), 0 0 100px var(--gold), 0 0 150px var(--green-led);
+        transform: translateY(-50%) scaleY(1.2);
+      }
+    }
+    
+    @keyframes win-line-shimmer {
+      0% { 
+        background: linear-gradient(90deg, 
+          transparent 0%, 
+          var(--gold) 20%, 
+          var(--green-led) 50%, 
+          var(--gold) 80%, 
+          transparent 100%);
+      }
+      50% { 
+        background: linear-gradient(90deg, 
+          transparent 0%, 
+          var(--green-led) 20%, 
+          var(--gold) 50%, 
+          var(--green-led) 80%, 
+          transparent 100%);
+      }
+      100% { 
+        background: linear-gradient(90deg, 
+          transparent 0%, 
+          var(--gold) 20%, 
+          var(--green-led) 50%, 
+          var(--gold) 80%, 
+          transparent 100%);
+      }
+    }
+    
+    /* Winning Symbol Glow Effects */
+    .slot-item.winning {
+      animation: symbol-glow 1.2s infinite alternate, symbol-pulse 0.8s infinite;
+    }
+    
+    .slot-item.winning img {
+      filter: drop-shadow(0 0 15px var(--gold)) 
+              drop-shadow(0 0 30px var(--green-led)) 
+              drop-shadow(0 0 45px var(--gold));
+      transform: scale(1.1);
+      transition: all 0.3s ease;
+    }
+    
+    @keyframes symbol-glow {
+      0% { 
+        box-shadow: 
+          0 0 20px var(--gold),
+          0 0 40px var(--green-led),
+          0 0 60px var(--gold),
+          inset 0 0 20px rgba(255, 215, 0, 0.3);
+      }
+      100% { 
+        box-shadow: 
+          0 0 30px var(--green-led),
+          0 0 60px var(--gold),
+          0 0 90px var(--green-led),
+          inset 0 0 30px rgba(0, 255, 0, 0.3);
+      }
+    }
+    
+    @keyframes symbol-pulse {
+      0% { transform: scale(1.05); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1.05); }
+    }
+    
+    /* Particle Effects */
+    .particle {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      pointer-events: none;
+      z-index: 15;
+      border-radius: 50%;
+    }
+    
+    .particle.sparkle {
+      background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+      animation: sparkle-float 2s ease-out forwards;
+    }
+    
+    .particle.star {
+      background: radial-gradient(circle, var(--green-led) 0%, transparent 70%);
+      animation: star-float 2.5s ease-out forwards;
+    }
+    
+    .particle.glow {
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, var(--gold) 30%, transparent 70%);
+      animation: glow-float 1.8s ease-out forwards;
+    }
+    
+    @keyframes sparkle-float {
+      0% { 
+        opacity: 1; 
+        transform: scale(0) rotate(0deg) translateY(0px); 
+      }
+      20% { 
+        opacity: 1; 
+        transform: scale(1.2) rotate(90deg) translateY(-20px); 
+      }
+      100% { 
+        opacity: 0; 
+        transform: scale(0.5) rotate(360deg) translateY(-80px); 
+      }
+    }
+    
+    @keyframes star-float {
+      0% { 
+        opacity: 1; 
+        transform: scale(0) rotate(0deg) translateY(0px) translateX(0px); 
+      }
+      30% { 
+        opacity: 1; 
+        transform: scale(1.5) rotate(180deg) translateY(-30px) translateX(20px); 
+      }
+      100% { 
+        opacity: 0; 
+        transform: scale(0.3) rotate(540deg) translateY(-100px) translateX(-40px); 
+      }
+    }
+    
+    @keyframes glow-float {
+      0% { 
+        opacity: 1; 
+        transform: scale(0) translateY(0px); 
+      }
+      25% { 
+        opacity: 1; 
+        transform: scale(1.8) translateY(-15px); 
+      }
+      100% { 
+        opacity: 0; 
+        transform: scale(0.2) translateY(-60px); 
+      }
+    }
+    
+    /* Celebration Effects */
+    .celebration-burst {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 20;
+    }
+    
+    .burst-ray {
+      position: absolute;
+      width: 4px;
+      height: 60px;
+      background: linear-gradient(to top, transparent, var(--gold), transparent);
+      transform-origin: bottom center;
+      animation: ray-burst 1.5s ease-out forwards;
+    }
+    
+    @keyframes ray-burst {
+      0% { 
+        opacity: 1; 
+        transform: scale(0.1) rotate(var(--rotation)); 
+      }
+      50% { 
+        opacity: 1; 
+        transform: scale(1.5) rotate(var(--rotation)); 
+      }
+      100% { 
+        opacity: 0; 
+        transform: scale(2) rotate(var(--rotation)); 
+      }
+    }
+    
+    /* Vibration simulation */
+    .slot-machine.vibrate {
+      animation: vibrate 0.1s linear infinite;
+    }
+    
+    @keyframes vibrate {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-2px); }
+      75% { transform: translateX(2px); }
+    }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      background: linear-gradient(135deg, var(--machine-face) 0%, #333 100%);
+      border-radius: 20px;
+      border: 4px solid var(--chrome);
+      box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.5),
+        0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .score-display {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 30px;
+      gap: 20px;
+    }
+    
+    .score-card {
+      background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+      padding: 20px 25px;
+      border-radius: 15px;
+      border: 3px solid var(--chrome);
+      text-align: center;
+      flex: 1;
+      box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.8),
+        0 4px 8px rgba(0, 0, 0, 0.3);
+      /* iOS-style glassmorphism effects */
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      background-color: rgba(0, 0, 0, 0.3);
+      background-blend-mode: overlay;
+      /* Improved touch targets */
+      min-height: 44px;
+      touch-action: manipulation;
+    }
+    
+    .score-card h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: var(--gold);
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+      letter-spacing: 1px;
+    }
+    
+    .score-value {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 
+        0 0 10px var(--gold),
+        2px 2px 4px rgba(0, 0, 0, 0.8);
+      font-family: "Courier New", monospace;
+    }
+    .spin-button {
+      background: linear-gradient(135deg, var(--red-led) 0%, #CC0000 50%, var(--red-led) 100%);
+      color: white;
+      border: 6px solid var(--chrome);
+      border-radius: 25px;
+      padding: 25px 60px;
+      font-size: 32px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.5),
+        inset 0 0 20px rgba(255, 255, 255, 0.2);
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+      letter-spacing: 3px;
+      min-width: 200px;
+      min-height: 80px;
+      /* iOS-style enhancements */
+      -webkit-appearance: none;
+      touch-action: manipulation;
+      will-change: transform, box-shadow;
+      /* Ensure touch target meets Apple's 44pt guideline */
+      min-width: max(200px, 44px);
+      min-height: max(80px, 44px);
+    }
+    
+    .spin-button:hover {
+      transform: translateY(-4px);
+      box-shadow: 
+        0 12px 30px rgba(0, 0, 0, 0.6),
+        inset 0 0 30px rgba(255, 255, 255, 0.3);
+      background: linear-gradient(135deg, #FF3333 0%, #FF0000 50%, #CC0000 100%);
+    }
+    
+    .spin-button:active, .spin-button.touch-active {
+      transform: translateY(2px);
+      box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.4),
+        inset 0 0 15px rgba(255, 255, 255, 0.1);
+    }
+    
+    .spin-button:disabled {
+      background: linear-gradient(135deg, #666 0%, #444 50%, #333 100%);
+      color: #999;
+      cursor: not-allowed;
+      box-shadow: 
+        0 4px 10px rgba(0, 0, 0, 0.3),
+        inset 0 0 10px rgba(255, 255, 255, 0.05);
+      transform: translateY(0);
+    }
+    /* Light Mode Win Message */
+    body.light-mode .win-message {
+      background: linear-gradient(135deg, var(--gold) 0%, #F57C00 100%) !important;
+      border: 6px solid #FFFFFF !important;
+      color: #FFFFFF !important;
+      box-shadow: 
+        0 0 50px rgba(255, 152, 0, 0.8),
+        0 0 100px rgba(255, 152, 0, 0.4),
+        inset 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+    
+    body.light-mode .win-message h2 {
+      color: #FFFFFF !important;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+    
+    body.light-mode .win-message p {
+      color: #FFFFFF !important;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    }
+    
+    body.light-mode .win-message button {
+      background: linear-gradient(135deg, var(--red-led) 0%, #D32F2F 100%);
+      border: 4px solid #FFFFFF;
+    }
+    
+    /* Light Mode Paytable */
+    body.light-mode .paytable {
+      background: linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%) !important;
+      border: 4px solid var(--chrome) !important;
+      color: var(--text-color) !important;
+      box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.15),
+        inset 0 0 20px rgba(33, 150, 243, 0.1);
+    }
+    
+    body.light-mode .paytable h3 {
+      color: var(--gold) !important;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+    
+    body.light-mode .paytable-item {
+      background: rgba(33, 150, 243, 0.05);
+      border: 1px solid var(--chrome);
+    }
+    
+    body.light-mode .paytable-item span {
+      color: var(--text-color) !important;
+      text-shadow: none;
+    }
+    
+    body.light-mode .paytable-button {
+      background: linear-gradient(135deg, var(--gold) 0%, #F57C00 100%) !important;
+      border: 4px solid var(--chrome) !important;
+      color: #FFFFFF !important;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    }
+    
+    /* Base paytable styles - hidden by default */
+    .paytable {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      max-width: 400px;
+      background: var(--machine-body);
+      border: 6px solid var(--gold);
+      color: white;
+      border-radius: 10px;
+      padding: 20px;
+      z-index: 2000;
+      display: none; /* Hidden by default */
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    /* Visible state for paytable */
+    .paytable.visible {
+      display: block;
+      opacity: 1;
+    }
+    
+    /* Paytable overlay to prevent clicking through */
+    .paytable-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1999;
+      display: none;
+    }
+    
+    /* Show overlay when paytable is visible */
+    .paytable-overlay.visible {
+      display: block;
+    }
+    
+    /* Position paytable inside fullscreen mode properly */
+    .fullscreen-mode .paytable {
+      z-index: 3000;
+    }
+    
+    /* Light Mode Specific Overrides */
+    body:not(.light-mode) .slot-machine {
+      border: 8px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .machine-top {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .reels-container {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .reel {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .controls {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .score-card {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .spin-button {
+      border: 6px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .win-message {
+      border: 6px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .win-message button {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) #theme-toggle {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .paytable-button {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .paytable {
+      border: 4px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .paytable-item {
+      border: 1px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .light {
+      border: 2px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .lever {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .lever::after {
+      border: 3px solid #000 !important;
+    }
+    
+    body:not(.light-mode) .lever-base {
+      border: 3px solid #000 !important;
+    }
+    
+    /* Enhanced vibration that preserves scale in fullscreen mode */
+    .fullscreen-mode .slot-machine.vibrate {
+      animation: none !important; /* Disable standard vibration */
+    }
+    
+    .fullscreen-mode .slot-machine.vibrate::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      animation: overlay-vibrate 0.1s linear infinite;
+      pointer-events: none;
+      z-index: 10;
+    }
+    
+    @keyframes overlay-vibrate {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-2px); }
+      75% { transform: translateX(2px); }
+    }
+    
+    /* Ensure transforms are preserved in fullscreen */
+    .fullscreen-mode .slot-machine {
+      will-change: transform;
+      backface-visibility: hidden;
+    }
+    
+    .paytable-toggle-btn {
+      margin: 10px auto 0 auto;
+      display: block;
+      font-size: 1.2em;
+      padding: 8px 24px;
+      border-radius: 8px;
+      background: var(--gold, #FFD700);
+      color: #222;
+      border: 2px solid #333;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: background 0.2s;
+    }
+    .paytable-toggle-btn:hover {
+      background: #ffe066;
+    }
+  </style>
+</head>
+<body>
+  <!-- Audio elements - simple approach for iPhone -->
+  <audio id="spin-sound" src="sounds/spin.wav"></audio>
+  <audio id="stop-sound" src="sounds/stop.wav"></audio>
+  <audio id="win-sound" src="sounds/win.wav"></audio>
+  <audio id="win3-sound" src="sounds/win3.wav"></audio>
+  <audio id="lose-sound" src="sounds/lose.wav"></audio>
+  
+  <!-- Paytable overlay for better UX -->
+  <div class="paytable-overlay"></div>
+  
+  <div class="app-header">
+    <div class="user-info">User: BensBar</div>
+    <div class="date-info">Date: 2025-06-25 23:31:43</div>
+    <div class="game-title">OctoSlots</div>
+    <div id="fullscreen-toggle">
+      <div id="fullscreen-icon">↔️</div>
+    </div>
+    <div id="theme-toggle">
+      <div id="theme-icon">🎰</div>
+    </div>
+  </div>
+  <div class="slot-machine-container">
+    <!-- Diagnostic: Should show the original Octocat image below. Remove after debugging. -->
+    <img src="images/original.png" alt="Diagnostic Octocat" style="width:80px;display:block;margin:10px auto;">
+    <div class="slot-machine">
+      <div class="machine-glow"></div>
+      <div class="machine-top">
+        <div class="jackpot-display">Jackpot: <span class="jackpot-amount">1,000,000</span></div>
+        <div class="flashing-lights">
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+        </div>
+      </div>
+      <div class="reels-container">
+        <div id="reel1" class="reel">
+          <div class="slot-item top" id="reel1-top"></div>
+          <div class="slot-item middle" id="reel1-middle"></div>
+          <div class="slot-item bottom" id="reel1-bottom"></div>
+        </div>
+        <div id="reel2" class="reel">
+          <div class="slot-item top" id="reel2-top"></div>
+          <div class="slot-item middle" id="reel2-middle"></div>
+          <div class="slot-item bottom" id="reel2-bottom"></div>
+        </div>
+        <div id="reel3" class="reel">
+          <div class="slot-item top" id="reel3-top"></div>
+          <div class="slot-item middle" id="reel3-middle"></div>
+          <div class="slot-item bottom" id="reel3-bottom"></div>
+        </div>
+        <div id="win-line" class="win-line"></div>
+      </div>
+      <div class="controls">
+        <div class="score-display">
+          <div class="score-card">
+            <h3>CREDITS</h3>
+            <div class="score-value" id="credits">500</div>
+          </div>
+          <div class="score-card">
+            <h3>BET</h3>
+            <div class="score-value" id="bet-amount">10</div>
+          </div>
+          <div class="score-card">
+            <h3>WIN</h3>
+            <div class="score-value" id="win-amount">0</div>
+          </div>
+        </div>
+        <button class="spin-button" id="spin-button">SPIN</button>
+      </div>
+    </div>
+  </div>
+  <!-- Add Paytable button for user access -->
+  <button class="paytable-toggle-btn" style="margin: 10px auto 0 auto; display: block; font-size: max(1.2em, 3.5vw); padding: max(8px, 2vw) max(24px, 5.5vw); border-radius: 8px; background: var(--gold, #FFD700); color: #222; border: 2px solid #333; cursor: pointer; min-width: 44px; min-height: 44px; touch-action: manipulation; -webkit-tap-highlight-color: transparent;">Paytable</button>
+  <div class="paytable-overlay"></div>
+  <div class="paytable">
+    <h3>Paytable</h3>
+    <div class="paytable-item">
+      <img src="images/original.png" alt="Original">
+      <span class="payout">x3: 1000 pts</span>
+    </div>
+    <div class="paytable-item">
+      <img src="images/octobiwan.png" alt="Octobiwan">
+      <span class="payout">x3: 500 pts</span>
+    </div>
+    <div class="paytable-item">
+      <span class="payout">Any 3 matching: 250 pts</span>
+    </div>
+    <div class="paytable-item">
+      <span class="payout">Any 2 matching: 50 pts</span>
+    </div>
+    <div class="paytable-button">Close</div>
+  </div>
+  <script>
+    // JavaScript code for interactivity
+    const elements = {
+      spinButton: document.getElementById('spin-button'),
+      reels: [
+        document.getElementById('reel1'),
+        document.getElementById('reel2'),
+        document.getElementById('reel3')
+      ],
+      jackpotDisplay: document.querySelector('.jackpot-display'),
+      creditsDisplay: document.getElementById('credits'),
+      betDisplay: document.getElementById('bet-amount'),
+      winDisplay: document.getElementById('win-amount'),
+      paytableButton: document.querySelector('.paytable-button'),
+      paytable: document.querySelector('.paytable'),
+      themeToggle: document.getElementById('theme-toggle'),
+      themeIcon: document.getElementById('theme-icon'),
+      fullscreenToggle: document.getElementById('fullscreen-toggle'),
+      fullscreenIcon: document.getElementById('fullscreen-icon'),
+      slotItems: {
+        top: [
+          document.getElementById('reel1-top'),
+          document.getElementById('reel2-top'),
+          document.getElementById('reel3-top')
+        ],
+        middle: [
+          document.getElementById('reel1-middle'),
+          document.getElementById('reel2-middle'),
+          document.getElementById('reel3-middle')
+        ],
+        bottom: [
+          document.getElementById('reel1-bottom'),
+          document.getElementById('reel2-bottom'),
+          document.getElementById('reel3-bottom')
+        ]
+      },
+      winLine: document.getElementById('win-line'),
+      lights: document.querySelectorAll('.light')
+    };
+    
+    // Define the Octocats array
+    const octocats = [
+      { name: 'Original', image: 'images/original.png', value: 10 },
+      { name: 'Surftocat', image: 'images/surftocat.png', value: 5 },
+      { name: 'Yogitocat', image: 'images/yogitocat.png', value: 5 },
+      { name: 'Boxer', image: 'images/boxertocat_octodex.png', value: 5 },
+      { name: 'Dinotocat', image: 'images/dinotocat.png', value: 5 },
+      { name: 'Plumber', image: 'images/plumber.png', value: 5 },
+      { name: 'Security', image: 'images/securitocat.png', value: 8 },
+      { name: 'Inspectocat', image: 'images/inspectocat.png', value: 5 },
+      { name: 'Daftpunktocat', image: 'images/daftpunktocat-guy.gif', value: 5 },
+      { name: 'Minion', image: 'images/minion.png', value: 5 },
+      { name: 'Droidtocat', image: 'images/droidtocat.png', value: 5 },
+      { name: 'Ironcat', image: 'images/ironcat.png', value: 5 },
+      { name: 'TopGun', image: 'images/topguntocat.png', value: 5 },
+      { name: 'Megacat', image: 'images/megacat.png', value: 5 },
+      { name: 'Repo', image: 'images/repo.png', value: 5 }
+    ];
+    
+    const config = {
+      spinCost: 10,
+      spinDuration: 2000,
+      reelStopDelay: 500,
+      prizes: {
+        jackpot: 1000,
+        threeOriginal: 1000,
+        threeMatching: 250,
+        twoMatching: 50
+      }
+    };
+    
+    const state = {
+      isSpinning: false,
+      credits: 1000,
+      bet: config.spinCost,
+      win: 0,
+      jackpot: 1000000,
+      currentSymbols: [null, null, null],
+      wasFullscreen: false // Track if we were in fullscreen before spinning
+    };
+    
+    // Audio system optimized for iPhone/iOS
+    let currentSpinSound = null;
+    let isAudioUnlocked = false;
+    
+    // Simple and reliable sound playing function
+    function playSound(soundName) {
+      try {
+        const audioMap = {
+          'spin': 'spin-sound',
+          'stop': 'stop-sound',
+          'win': 'win-sound',
+          'win3': 'win3-sound',
+          'lose': 'lose-sound'
+        };
+        
+        const audioId = audioMap[soundName];
+        if (!audioId) return;
+        
+        const audio = document.getElementById(audioId);
+        if (!audio) return;
+        
+        // Mark audio as unlocked on first play attempt
+        isAudioUnlocked = true;
+        
+        // Stop conflicting sounds
+        if (soundName === 'spin') {
+          // Stop any existing spin sound
+          stopSpinSound();
+          currentSpinSound = audio;
+          audio.loop = true;
+        } else if (soundName === 'win' || soundName === 'lose') {
+          // Stop spin sound before playing win/lose
+          stopSpinSound();
+        }
+        
+        // Reset and play
+        audio.currentTime = 0;
+        audio.volume = 1.0;
+        
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(e => {
+            console.log(`Sound '${soundName}' failed to play:`, e);
+          });
+        }
+        
+      } catch (e) {
+        console.log('Error playing sound:', e);
+      }
+    }
+    
+    // Stop all sounds except the one specified
+    function stopAllSoundsExcept(exceptSound) {
+      const audioElements = ['spin-sound', 'stop-sound', 'win-sound', 'win3-sound', 'lose-sound'];
+      audioElements.forEach(id => {
+        if (id !== exceptSound) {
+          const audio = document.getElementById(id);
+          if (audio) {
+            try {
+              audio.pause();
+              audio.currentTime = 0;
+              audio.loop = false;
+            } catch (e) { /* ignore */ }
+          }
+        }
+      });
+      
+      if (exceptSound !== 'spin-sound') {
+        currentSpinSound = null;
+      }
+    }
+    
+    // Function to stop spin sound specifically
+    function stopSpinSound() {
+      if (currentSpinSound) {
+        try {
+          currentSpinSound.pause();
+          currentSpinSound.currentTime = 0;
+          currentSpinSound.loop = false;
+        } catch (e) { /* ignore */ }
+        currentSpinSound = null;
+      }
+      
+      // Also stop the DOM element directly as backup
+      const spinAudio = document.getElementById('spin-sound');
+      if (spinAudio) {
+        try {
+          spinAudio.pause();
+          spinAudio.currentTime = 0;
+          spinAudio.loop = false;
+        } catch (e) { /* ignore */ }
+      }
+    }
+   
+    
+    // Preload images to ensure they're available
+    function preloadOctocatImages() {
+      console.log("Preloading Octocat images...");
+      // Verify all image paths are correct
+      octocats.forEach(octocat => {
+        // Make sure image paths are absolute from root
+        if (!octocat.image.startsWith('/')) {
+          // Keep the original path for reference
+          octocat.originalPath = octocat.image;
+        }
+        
+        // Create an image element to test loading
+        const img = new Image();
+        img.src = octocat.image;
+        
+        // Set up error handling
+        img.onerror = () => {
+          console.error(`Failed to load image: ${octocat.image}`);
+          // Set a fallback image for any that fail to load
+          octocat.fallbackImage = 'images/original.png';
+        };
+      });
+    }
+    
+    // Initialize image preloading right away
+    preloadOctocatImages();
+    
+    // Function to set a random symbol on a slot item
+    function setRandomSymbol(slotItem) {
+      const randomOctocat = octocats[Math.floor(Math.random() * octocats.length)];
+      const imagePath = randomOctocat.fallbackImage || randomOctocat.image;
+      
+      // Create the image with error handling
+      slotItem.innerHTML = `<img src="${imagePath}" alt="${randomOctocat.name}" onerror="this.onerror=null; this.src='images/original.png';">`;
+      slotItem.dataset.name = randomOctocat.name;
+      return randomOctocat;
+    }
+    
+    // Function to set a specific symbol on a slot item
+    function setSymbol(slotItem, symbolName) {
+      const octocat = octocats.find(o => o.name === symbolName) || octocats[0];
+      const imagePath = octocat.fallbackImage || octocat.image;
+      
+      // Create the image with error handling
+      slotItem.innerHTML = `<img src="${imagePath}" alt="${octocat.name}" onerror="this.onerror=null; this.src='images/original.png';">`;
+      slotItem.dataset.name = octocat.name;
+      return octocat;
+    }
+    
+    // Initialize slots with random symbols
+    function initializeSlots() {
+      elements.slotItems.top.forEach(setRandomSymbol);
+      elements.slotItems.middle.forEach(setRandomSymbol);
+      elements.slotItems.bottom.forEach(setRandomSymbol);
+    }
+    
+    function updateDisplay() {
+      elements.creditsDisplay.textContent = state.credits;
+      elements.betDisplay.textContent = state.bet;
+      elements.winDisplay.textContent = state.win;
+      const jackpotAmount = elements.jackpotDisplay.querySelector('.jackpot-amount');
+      if (jackpotAmount) {
+        jackpotAmount.textContent = state.jackpot.toLocaleString();
+      } else {
+        elements.jackpotDisplay.textContent = `JACKPOT: ${state.jackpot.toLocaleString()}`;
+      }
+    }
+    
+    function simulateHaptic(duration) {
+      // Enhanced haptic feedback for iOS and other touch devices
+      if (navigator.vibrate) {
+        // Handle different vibration patterns for iOS
+        if (Array.isArray(duration)) {
+          // For complex patterns, use the array directly
+          navigator.vibrate(duration);
+        } else {
+          // For simple duration, create an iOS-appropriate pattern
+          if (duration <= 50) {
+            // Light tap - single short vibration
+            navigator.vibrate(25);
+          } else if (duration <= 100) {
+            // Medium tap - slightly longer
+            navigator.vibrate(50);
+          } else {
+            // Heavy feedback - pattern for emphasis
+            navigator.vibrate([100, 50, 100]);
+          }
+        }
+      }
+      
+      // Try to use iOS Haptic Feedback API if available
+      try {
+        if (window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
+          // This is iOS - we could potentially implement additional haptic patterns
+          // For now, rely on navigator.vibrate with optimized patterns
+        }
+      } catch (e) {
+        // Fallback handled by navigator.vibrate above
+      }
+    }
+    
+    // Determine winning combinations
+    function determineWinningSymbols() {
+      const randomValue = Math.random();
+      let symbols = [];
+      
+      if (randomValue < 0.1) {
+        // 10% chance of all 3 matching
+        const symbolName = octocats[Math.floor(Math.random() * octocats.length)].name;
+        symbols = [symbolName, symbolName, symbolName];
+      } else if (randomValue < 0.3) {
+        // 20% chance of 2 matching
+        const symbolName1 = octocats[Math.floor(Math.random() * octocats.length)].name;
+        let symbolName2;
+        do {
+          symbolName2 = octocats[Math.floor(Math.random() * octocats.length)].name;
+        } while (symbolName2 === symbolName1);
+        
+        symbols = [symbolName1, symbolName1, symbolName2];
+        // Randomize the positions a bit
+        if (Math.random() > 0.5) {
+          symbols = [symbolName1, symbolName2, symbolName1];
+        } else if (Math.random() > 0.5) {
+          symbols = [symbolName2, symbolName1, symbolName1];
+        }
+      } else {
+        // 70% chance of all different
+        symbols = Array(3).fill().map(() => 
+          octocats[Math.floor(Math.random() * octocats.length)].name
+        );
+      }
+      
+      return symbols;
+    }
+    
+    // Evaluate the win based on the symbols
+    function evaluateWin(symbols) {
+      if (symbols[0] === 'Original' && symbols[1] === 'Original' && symbols[2] === 'Original') {
+        return { amount: config.prizes.threeOriginal, sound: 'win' };
+      }
+      if (symbols[0] === symbols[1] && symbols[1] === symbols[2]) {
+        return { amount: config.prizes.threeMatching, sound: 'win' };
+      }
+      if (symbols[0] === symbols[1] || symbols[1] === symbols[2] || symbols[0] === symbols[2]) {
+        return { amount: config.prizes.twoMatching, sound: 'win' };
+      }
+      return { amount: 0, sound: 'lose' };
+    }
+    
+    // Enhanced Visual Effects for Wins
+    function createParticleEffect(symbolElements) {
+      const particleTypes = ['sparkle', 'star', 'glow'];
+      const particleCount = 25;
+      
+      symbolElements.forEach(element => {
+        const rect = element.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        for (let i = 0; i < particleCount; i++) {
+          setTimeout(() => {
+            const particle = document.createElement('div');
+            particle.className = `particle ${particleTypes[Math.floor(Math.random() * particleTypes.length)]}`;
+            
+            // Random position around the symbol
+            const offsetX = (Math.random() - 0.5) * rect.width;
+            const offsetY = (Math.random() - 0.5) * rect.height;
+            
+            particle.style.left = (centerX + offsetX) + 'px';
+            particle.style.top = (centerY + offsetY) + 'px';
+            
+            document.body.appendChild(particle);
+            
+            // Remove particle after animation
+            setTimeout(() => {
+              if (particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+              }
+            }, 2500);
+          }, i * 100); // Stagger particle creation
+        }
+      });
+    }
+    
+    function createCelebrationBurst() {
+      const burst = document.createElement('div');
+      burst.className = 'celebration-burst';
+      
+      // Create rays in different directions
+      for (let i = 0; i < 12; i++) {
+        const ray = document.createElement('div');
+        ray.className = 'burst-ray';
+        ray.style.setProperty('--rotation', `${i * 30}deg`);
+        burst.appendChild(ray);
+      }
+      
+      document.body.appendChild(burst);
+      
+      // Remove burst after animation
+      setTimeout(() => {
+        if (burst.parentNode) {
+          burst.parentNode.removeChild(burst);
+        }
+      }, 1500);
+    }
+    
+    function highlightWinningSymbols(symbols) {
+      // Clear previous winning highlights
+      document.querySelectorAll('.slot-item.winning').forEach(item => {
+        item.classList.remove('winning');
+      });
+      
+      // Determine which symbols are winning
+      const winningPositions = [];
+      
+      if (symbols[0] === symbols[1] && symbols[1] === symbols[2]) {
+        // All three match
+        winningPositions.push(0, 1, 2);
+      } else if (symbols[0] === symbols[1]) {
+        // First two match
+        winningPositions.push(0, 1);
+      } else if (symbols[1] === symbols[2]) {
+        // Last two match
+        winningPositions.push(1, 2);
+      } else if (symbols[0] === symbols[2]) {
+        // First and last match
+        winningPositions.push(0, 2);
+      }
+      
+      // Apply winning glow to matching symbols
+      const winningElements = [];
+      winningPositions.forEach(pos => {
+        const symbolElement = elements.slotItems.middle[pos];
+        if (symbolElement) {
+          symbolElement.classList.add('winning');
+          winningElements.push(symbolElement);
+        }
+      });
+      
+      return winningElements;
+    }
+    
+    function clearWinEffects() {
+      // Remove win line highlight
+      if (elements.winLine) {
+        elements.winLine.classList.remove('highlight');
+      }
+      
+      // Remove symbol glow effects
+      document.querySelectorAll('.slot-item.winning').forEach(item => {
+        item.classList.remove('winning');
+      });
+      
+      // Remove any remaining particles
+      document.querySelectorAll('.particle').forEach(particle => {
+        if (particle.parentNode) {
+          particle.parentNode.removeChild(particle);
+        }
+      });
+      
+      // Remove any celebration bursts
+      document.querySelectorAll('.celebration-burst').forEach(burst => {
+        if (burst.parentNode) {
+          burst.parentNode.removeChild(burst);
+        }
+      });
+    }
+    
+    // Flashing lights animation
+    let lightInterval = null;
+    function startLights(winning = false) {
+      if (lightInterval) clearInterval(lightInterval);
+      
+      elements.lights.forEach(light => light.classList.remove('on'));
+      
+      let idx = 0;
+      lightInterval = setInterval(() => {
+        elements.lights.forEach((light, i) => {
+          if (winning) {
+            // Random flashing for winning
+            light.classList.toggle('on', Math.random() > 0.5);
+          } else {
+            // Sequential flashing for spinning
+            light.classList.toggle('on', i === idx % elements.lights.length);
+          }
+        });
+        idx++;
+      }, 100);
+    }
+    
+    function stopLights() {
+      if (lightInterval) clearInterval(lightInterval);
+      elements.lights.forEach(light => light.classList.remove('on'));
+    }
+    
+    // Spin all reels
+    async function spinAllReels() {
+      if (state.isSpinning) return;
+      if (state.credits < state.bet) {
+        alert('Not enough credits!');
+        return;
+      }
+      
+      // Stop any previous spin sounds before starting new spin
+      stopSpinSound();
+      // Check and preserve fullscreen state before spinning
+      state.wasFullscreen = !!document.fullscreenElement || 
+                          !!document.webkitFullscreenElement || 
+                          !!document.mozFullScreenElement || 
+                          !!document.msFullscreenElement;
+      // Store the current transform if in fullscreen mode
+      const slotMachine = document.querySelector('.slot-machine');
+      if (slotMachine && state.wasFullscreen) {
+        // Get current transform or use default fullscreen transform
+        state.originalTransform = slotMachine.style.transform || 'scale(1.4)';
+        // Add class to prevent transform changes during spin
+        document.body.classList.add('spinning-in-fullscreen');
+      }
+      // Clear any previous win effects
+      clearWinEffects();
+      
+      // Deduct bet and update display
+      state.credits -= state.bet;
+      state.win = 0;
+      updateDisplay();
+      // Start spinning animation
+      state.isSpinning = true;
+      elements.spinButton.disabled = true;
+      startLights();
+      // Add vibration effect to the machine
+      if (slotMachine) {
+        // Save the current transform style if in fullscreen
+        if (document.fullscreenElement) {
+          // Store the current transform for restoration
+          if (slotMachine.style.transform) {
+            slotMachine.dataset.savedTransform = slotMachine.style.transform;
+          }
+        }
+        slotMachine.classList.add('vibrate');
+      }
+      // Unlock audio and play spin sound - play only once here
+      playSound('spin');
+      
+      // Add spinning class to reels
+      elements.reels.forEach(reel => reel.classList.add('spinning'));
+      
+      // Set up spinning intervals for random symbols
+      const spinningIntervals = elements.reels.map((reel, reelIndex) => {
+        return setInterval(() => {
+          setRandomSymbol(elements.slotItems.top[reelIndex]);
+          setRandomSymbol(elements.slotItems.middle[reelIndex]);
+          setRandomSymbol(elements.slotItems.bottom[reelIndex]);
+        }, 80);
+      });
+      
+      // Determine the final result
+      const finalSymbols = determineWinningSymbols();
+      
+      // Stop each reel with a delay
+      for (let i = 0; i < 3; i++) {
+        await new Promise(resolve => {
+          setTimeout(() => {
+            clearInterval(spinningIntervals[i]);
+            
+            // Set the final symbols
+            setRandomSymbol(elements.slotItems.top[i]);
+            setSymbol(elements.slotItems.middle[i], finalSymbols[i]);
+            setRandomSymbol(elements.slotItems.bottom[i]);
+            
+            elements.reels[i].classList.remove('spinning');
+            
+            // CRITICAL: Stop spin sound BEFORE playing stop sound on the last reel
+            if (i === 2) {
+              stopSpinSound();
+              // Wait a moment for spin to fully stop, then play final stop sound
+              setTimeout(() => {
+                playSound('stop');
+              }, 100);
+            } else {
+              // Play stop sound immediately for first two reels
+              playSound('stop');
+            }
+            
+            // Haptic feedback for each reel stop
+            simulateHaptic(50);
+            
+            resolve();
+          }, config.spinDuration + i * config.reelStopDelay);
+        });
+      }
+      
+      // Stop vibration
+      if (slotMachine) {
+        slotMachine.classList.remove('vibrate');
+      }
+      
+      // Store current symbols for win evaluation
+      state.currentSymbols = [
+        elements.slotItems.middle[0].dataset.name,
+        elements.slotItems.middle[1].dataset.name,
+        elements.slotItems.middle[2].dataset.name
+      ];
+      
+      // Evaluate win
+      const win = evaluateWin(state.currentSymbols);
+      state.win = win.amount;
+      
+      // Wait longer after the last reel stops before playing win/lose sound
+      setTimeout(() => {
+        if (win.amount > 0) {
+          state.credits += win.amount;
+          playSound(win.sound);
+          startLights(true);
+          
+          // Enhanced visual effects for wins
+          const winningElements = highlightWinningSymbols(state.currentSymbols);
+          
+          // Highlight the win line
+          if (elements.winLine) {
+            elements.winLine.classList.add('highlight');
+          }
+          
+          // Create particle effects around winning symbols
+          if (winningElements.length > 0) {
+            createParticleEffect(winningElements);
+          }
+          
+          // Create celebration burst for big wins
+          if (win.amount >= 100) {
+            setTimeout(() => createCelebrationBurst(), 300);
+          }
+          
+          // Extra celebration for jackpot wins
+          if (win.amount >= 1000) {
+            setTimeout(() => createCelebrationBurst(), 600);
+            setTimeout(() => createCelebrationBurst(), 900);
+          }
+          
+          // Big win haptic feedback
+          if (win.amount >= 250) {
+            simulateHaptic([200, 100, 200, 100, 200]);
+          }
+        } else {
+          playSound('lose');
+          stopLights();
+          clearWinEffects();
+        }
+        
+        updateDisplay();
+      }, 500); // Longer delay to ensure clean audio separation
+      
+      // Reset state
+      setTimeout(() => {
+        state.isSpinning = false;
+        elements.spinButton.disabled = false;
+        
+        // Restore fullscreen if it was active before spinning
+        if (state.wasFullscreen && 
+            !document.fullscreenElement && 
+            !document.webkitFullscreenElement && 
+            !document.mozFullScreenElement && 
+            !document.msFullscreenElement) {
+          
+          console.log('Restoring fullscreen state after spin');
+          
+          // Restore fullscreen mode
+          const container = document.querySelector('.slot-machine-container');
+          if (container && container.requestFullscreen) {
+            container.requestFullscreen().catch(err => {
+              console.log(`Error restoring fullscreen: ${err.message}`);
+            });
+          } else if (container && container.webkitRequestFullscreen) {
+            container.webkitRequestFullscreen();
+          } else if (container && container.msRequestFullscreen) {
+            container.msRequestFullscreen();
+          } else if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+          }
+          
+          // Re-apply fullscreen class
+          document.body.classList.add('fullscreen-mode');
+          if (fullscreenIcon) {
+            fullscreenIcon.textContent = '↙️';
+          }
+          
+          // Re-apply scaling
+          setTimeout(() => {
+            const slotMachine = document.querySelector('.slot-machine');
+            if (slotMachine) {
+              const viewportHeight = window.innerHeight;
+              const viewportWidth = window.innerWidth;
+              const machineHeight = slotMachine.offsetHeight / 1.4;
+              const machineWidth = slotMachine.offsetWidth / 1.4;
+              const heightScale = viewportHeight * 0.95 / machineHeight;
+              const widthScale = viewportWidth * 0.95 / machineWidth;
+              const optimalScale = Math.min(heightScale, widthScale);
+              const finalScale = Math.max(1.4, optimalScale);
+              slotMachine.style.transform = `scale(${finalScale})`;
+            }
+          }, 100);
+        }
+      }, 800);
+    }
+
+    // Event Listeners
+    elements.spinButton.addEventListener('click', function(e) {
+      // Only prevent default in fullscreen to maintain behavior
+      if (document.fullscreenElement) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      spinAllReels();
+    });
+    
+    elements.spinButton.addEventListener('touchstart', function(e) {
+      e.preventDefault(); // Prevent double-tap zoom
+      e.stopPropagation(); // Prevent event bubbling that might exit fullscreen
+      simulateHaptic(50);
+      elements.spinButton.classList.add('touch-active');
+      spinAllReels(); // Directly call spinAllReels on touchstart
+    });
+    
+    elements.spinButton.addEventListener('touchend', function(e) {
+      e.preventDefault(); // Prevent any browser behaviors
+      e.stopPropagation();
+      elements.spinButton.classList.remove('touch-active');
+    });
+    
+    elements.spinButton.addEventListener('touchcancel', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      elements.spinButton.classList.remove('touch-active');
+    });
+    
+    // Add paytable overlay to elements
+    elements.paytableOverlay = document.querySelector('.paytable-overlay');
+    
+    // Show and hide paytable with overlay
+    elements.paytableButton.addEventListener('click', () => {
+      elements.paytable.classList.toggle('visible');
+      elements.paytableOverlay.classList.toggle('visible');
+    });
+    
+    // Close paytable when clicking overlay
+    elements.paytableOverlay.addEventListener('click', () => {
+      elements.paytable.classList.remove('visible');
+      elements.paytableOverlay.classList.remove('visible');
+    });
+    
+    elements.themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      elements.themeIcon.textContent = document.body.classList.contains('light-mode') ? '🌞' : '🌙';
+    });
+
+    // Fullscreen toggle functionality
+    const fullscreenToggle = document.getElementById('fullscreen-toggle');
+    const fullscreenIcon = document.getElementById('fullscreen-icon');
+    
+    if (fullscreenToggle) {
+      fullscreenToggle.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          // Enter fullscreen
+          const container = document.querySelector('.slot-machine-container');
+          if (container && container.requestFullscreen) {
+            container.requestFullscreen().catch(err => {
+              console.log(`Error attempting to enable fullscreen mode: ${err.message}`);
+            });
+          } else if (container && container.webkitRequestFullscreen) { // Safari
+            container.webkitRequestFullscreen();
+          } else if (container && container.msRequestFullscreen) { // IE11
+            container.msRequestFullscreen();
+          } else if (document.documentElement.requestFullscreen) {
+            // Fallback to document element
+            document.documentElement.requestFullscreen();
+          }
+          
+          document.body.classList.add('fullscreen-mode');
+          fullscreenIcon.textContent = '↙️';
+          
+          // Ensure proper scaling to make the machine as large as possible
+          setTimeout(() => {
+            const slotMachine = document.querySelector('.slot-machine');
+            if (slotMachine) {
+              // Calculate optimal scale for both width and height
+              const viewportHeight = window.innerHeight;
+              const viewportWidth = window.innerWidth;
+              const machineHeight = slotMachine.offsetHeight / 1.4; // Compensate for initial scale
+              const machineWidth = slotMachine.offsetWidth / 1.4; // Compensate for initial scale
+              
+              // Calculate how much we can scale based on viewport
+              const heightScale = viewportHeight * 0.95 / machineHeight;
+              const widthScale = viewportWidth * 0.95 / machineWidth;
+              
+              // Use the smaller scale to ensure machine fits completely
+              const optimalScale = Math.min(heightScale, widthScale);
+              
+              // Apply a larger scale to fill the entire square monitor
+              // Minimum scale of 1.4 (from CSS), but can go larger if viewport allows
+              const finalScale = Math.max(1.4, optimalScale);
+              
+              console.log(`Applying scale: ${finalScale} (viewport: ${viewportWidth}x${viewportHeight}, machine: ${machineWidth}x${machineHeight})`);
+              slotMachine.style.transform = `scale(${finalScale})`;
+            }
+          }, 100);
+        } else {
+          // Exit fullscreen
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) { // Safari
+            document.webkitExitFullscreen();
+          } else if (document.msExitFullscreen) { // IE11
+            document.msExitFullscreen();
+          }
+          
+          document.body.classList.remove('fullscreen-mode');
+          fullscreenIcon.textContent = '↔️';
+          
+          // Reset transform
+          const slotMachine = document.querySelector('.slot-machine');
+          if (slotMachine) {
+            slotMachine.style.transform = '';
+          }
+        }
+      });
+      
+      // Listen for fullscreen change events
+      document.addEventListener('fullscreenchange', handleFullscreenChange);
+      document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+      document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+      
+      // iOS-specific optimizations
+      // Add orientation change handling for better iOS support
+      window.addEventListener('orientationchange', function() {
+        setTimeout(() => {
+          // Force a re-layout after orientation change
+          const slotMachine = document.querySelector('.slot-machine');
+          if (slotMachine && document.body.classList.contains('fullscreen-mode')) {
+            // Recalculate scaling for new orientation
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+            const machineHeight = slotMachine.offsetHeight / 1.4;
+            const machineWidth = slotMachine.offsetWidth / 1.4;
+            const heightScale = viewportHeight * 0.95 / machineHeight;
+            const widthScale = viewportWidth * 0.95 / machineWidth;
+            const optimalScale = Math.min(heightScale, widthScale);
+            const finalScale = Math.max(1.4, optimalScale);
+            slotMachine.style.transform = `scale(${finalScale})`;
+          }
+        }, 100);
+      }, { passive: true });
+      
+      // Add passive touch listeners for performance
+      document.addEventListener('touchstart', function() {
+        // This helps with iOS touch responsiveness
+      }, { passive: true });
+      
+      // Add viewport change handling for iOS Safari
+      window.addEventListener('resize', function() {
+        // Handle viewport changes (like iOS Safari hiding/showing UI)
+        setTimeout(() => {
+          const vh = window.innerHeight * 0.01;
+          document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }, 100);
+      }, { passive: true });
+      
+      function handleFullscreenChange() {
+        if (!document.fullscreenElement && 
+            !document.webkitFullscreenElement && 
+                       !document.mozFullScreenElement && 
+            !document.msFullscreenElement) {
+          document.body.classlist.remove('fullscreen-mode');
+          fullscreenIcon.textContent = '↔️';
+          
+          // Reset transform when exiting fullscreen
+          const slotMachine = document.querySelector('.slot-machine');
+          if (slotMachine) {
+            slotMachine.style.transform = '';
+            
+            // Make sure all content is visible after exiting fullscreen
+            setTimeout(() => {
+              window.scrollTo(0, 0);
+            }, 100);
+          }
+        } else if (document.fullscreenElement) {
+          // When entering fullscreen, make sure scaling is applied properly
+          setTimeout(() => {
+            const slotMachine = document.querySelector('.slot-machine');
+            if (slotMachine && document.body.classList.contains('fullscreen-mode')) {
+              // Apply the same scaling logic from the click handler
+              const viewportHeight = window.innerHeight;
+              const viewportWidth = window.innerWidth;
+              const machineHeight = slotMachine.offsetHeight / 1.4;
+              const machineWidth = slotMachine.offsetWidth / 1.4;
+              const heightScale = viewportHeight * 0.95 / machineHeight;
+              const widthScale = viewportWidth * 0.95 / machineWidth;
+              const optimalScale = Math.min(heightScale, widthScale);
+              const finalScale = Math.max(1.4, optimalScale);
+              slotMachine.style.transform = `scale(${finalScale})`;
+            }
+          }, 100);
+        }
+      }
+    }
+    
+    // Add event for new Paytable button
+    const paytableToggleBtn = document.querySelector('.paytable-toggle-btn');
+    if (paytableToggleBtn) {
+      paytableToggleBtn.addEventListener('click', () => {
+        elements.paytable.classList.add('visible');
+        elements.paytableOverlay.classList.add('visible');
+      });
+    }
+    
+    // Initialize
+    initializeSlots();
+    updateDisplay();
+  </script>
+</body>
+</html>
