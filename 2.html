@@ -3,12 +3,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>OctoSlots 4K Edition</title>
   <style>
+    :root {
+      --bg-color: #000;
+      --text-color: #fff;
+      --border-color: #FFD700;
+      --slot-bg: #111;
+      --button-bg: red;
+      --button-color: white;
+    }
+
+    body.light {
+      --bg-color: #fff;
+      --text-color: #000;
+      --border-color: #222;
+      --slot-bg: #eee;
+      --button-bg: #444;
+      --button-color: #fff;
+    }
+
     body {
       margin: 0;
-      background: black;
+      background: var(--bg-color);
       font-family: sans-serif;
       overflow: hidden;
-      color: #fff;
+      color: var(--text-color);
     }
     .container {
       display: flex;
@@ -22,8 +40,19 @@
       text-align: center;
       font-size: 2em;
       margin-bottom: 10px;
-      color: gold;
-      text-shadow: 0 0 10px gold;
+      color: var(--border-color);
+      text-shadow: 0 0 10px var(--border-color);
+    }
+    .toggle-mode {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--button-bg);
+      color: var(--button-color);
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
     }
     .reels {
       display: flex;
@@ -31,10 +60,10 @@
       height: 300px;
       width: 90%;
       max-width: 500px;
-      border: 5px solid #FFD700;
+      border: 5px solid var(--border-color);
       border-radius: 10px;
-      box-shadow: 0 0 20px gold;
-      background: #111;
+      box-shadow: 0 0 20px var(--border-color);
+      background: var(--slot-bg);
     }
     .reel {
       flex: 1;
@@ -60,20 +89,20 @@
     .controls {
       margin-top: 20px;
     }
-    button {
+    button.spin {
       font-size: 1.5em;
       padding: 10px 30px;
-      background: red;
-      color: white;
+      background: var(--button-bg);
+      color: var(--button-color);
       border: none;
       border-radius: 10px;
-      box-shadow: 0 0 10px red;
+      box-shadow: 0 0 10px var(--button-bg);
       cursor: pointer;
     }
     .jackpot {
       margin-top: 20px;
       font-size: 1.2em;
-      color: #FFD700;
+      color: var(--border-color);
     }
     .sparkle {
       position: absolute;
@@ -87,22 +116,51 @@
       0% { opacity: 1; transform: scale(1); }
       100% { opacity: 0; transform: scale(3) translateY(-50px); }
     }
-  </style>
+  
+    .win-line {
+      position: absolute;
+      top: 210px;
+      left: 5%;
+      width: 90%;
+      height: 5px;
+      background: gold;
+      box-shadow: 0 0 20px gold;
+      display: none;
+      z-index: 10;
+    }
+    .win-banner {
+      position: absolute;
+      top: 30%;
+      width: 100%;
+      text-align: center;
+      font-size: 2em;
+      color: gold;
+      text-shadow: 0 0 15px gold;
+      display: none;
+      z-index: 20;
+    }
+    </style>
 </head>
 <body>
   <audio id="spin-sound" src="sounds/spin.wav"></audio>
   <audio id="stop-sound" src="sounds/stop.wav"></audio>
   <audio id="win-sound" src="sounds/win.wav"></audio>
 
+  <button class="toggle-mode" onclick="toggleMode()">Toggle Mode</button>
+
   <div class="container">
+    
     <div class="header">🎰 OctoSlots 4K Edition</div>
+    <div class="win-line" id="win-line"></div>
+    <div class="win-banner" id="win-banner">🎉 WINNER! 🎉</div>
+    
     <div class="reels">
-      <div class="reel" id="reel1"><div class="reel-strip" style="transform: translateY(-100px);"><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/original.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/yogitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/original.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/original.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/yogitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/original.png"></div></div></div>
-      <div class="reel" id="reel2"><div class="reel-strip" style="transform: translateY(-800px);"><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/original.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/original.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/yogitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/original.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div></div></div>
-      <div class="reel" id="reel3"><div class="reel-strip" style="transform: translateY(0px);"><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/yogitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/original.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/yogitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/yogitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/original.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div></div></div>
+      <div class="reel" id="reel1"><div class="reel-strip" style="transform: translateY(-1300px);"><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/original.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/original.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/original.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/yogitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/yogitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/yogitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/yogitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/yogitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/original.png"></div></div></div>
+      <div class="reel" id="reel2"><div class="reel-strip" style="transform: translateY(-900px);"><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/original.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/original.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/yogitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div></div></div>
+      <div class="reel" id="reel3"><div class="reel-strip" style="transform: translateY(-800px);"><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/original.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/yogitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/dinotocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/surftocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/original.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/yogitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/yogitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/yogitocat.png"></div><div class="symbol"><img src="https://bensbar.github.io/OctoSlots/images/securitocat.png"></div></div></div>
     </div>
     <div class="controls">
-      <button onclick="spin()">SPIN</button>
+      <button class="spin" onclick="spin()">SPIN</button>
     </div>
     <div class="jackpot">Jackpot: 1,000,000</div>
   </div>
@@ -134,7 +192,6 @@
         strip.appendChild(sym);
       }
 
-      // If stopAt provided, scroll to that position
       if (stopAt !== null) {
         strip.style.transform = `translateY(${-stopAt * 100}px)`;
       }
@@ -180,26 +237,38 @@
 
       const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
       const stops = reels.map(() => Math.floor(Math.random() * 17) + 1);
+      reels.forEach((reel, index) => fillReel(reel)); // preload strips
 
-      reels.forEach((reel, index) => fillReel(reel)); // fill strips immediately
-
-      // spin all reels at once, then await their stops staggered
-      await Promise.all(reels.map((reel, i) =>
-        new Promise(res => setTimeout(() =>
-          animateReel(reel, 1500, stops[i]).then(res), i * 300)
-        )
-      ));
+      // Simultaneous start
+      const anims = reels.map((reel, i) => animateReel(reel, 1500 + i * 300, stops[i]));
+      for (const anim of anims) await anim;
 
       spinSound.pause();
       spinSound.currentTime = 0;
 
+      
       if (stops[0] === stops[1] && stops[1] === stops[2]) {
+        const winLine = document.getElementById('win-line');
+        const winBanner = document.getElementById('win-banner');
+        winLine.style.display = 'block';
+        winBanner.style.display = 'block';
+        winSound.play();
+        sparkleEffect();
+        setTimeout(() => {
+          winLine.style.display = 'none';
+          winBanner.style.display = 'none';
+        }, 2000);
+    
         winSound.play();
         sparkleEffect();
       }
     }
 
-    // Initial reel state on page load
+    function toggleMode() {
+      document.body.classList.toggle('light');
+    }
+
+    // Initial reel fill
     window.onload = () => {
       fillReel(document.getElementById('reel1'), Math.floor(Math.random() * 17));
       fillReel(document.getElementById('reel2'), Math.floor(Math.random() * 17));
