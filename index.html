@@ -771,6 +771,36 @@
       }
     }
     
+    /* iPhone 16 Pro Max portrait mode optimization (non-fullscreen) */
+    @media only screen and (-webkit-device-pixel-ratio: 3) and (max-width: 430px) and (orientation: portrait) {
+      .reels-container {
+        /* Reduce padding and gap for narrow viewport */
+        padding: 10px; /* Reduced from 20px */
+        gap: 8px; /* Reduced from 20px */
+        margin-bottom: 20px; /* Reduced from 30px */
+      }
+      
+      .reel {
+        /* Ensure proper scaling and minimum visibility */
+        min-width: 0; /* Allow flex shrinking */
+        height: 280px; /* Slightly reduced from 300px */
+        border-radius: 12px; /* Proportionally smaller */
+        border-width: 2px; /* Thinner borders */
+      }
+      
+      .slot-machine {
+        /* Adjust overall machine padding for narrow viewport */
+        padding: 15px; /* Reduced from default */
+        max-width: 100vw; /* Ensure it fits within viewport */
+      }
+      
+      .machine-top {
+        /* Reduce top section padding */
+        padding: 15px; /* Reduced from 20px */
+        margin-bottom: 20px; /* Reduced from 30px */
+      }
+    }
+    
     /* Square monitor optimizations */
     @media (min-aspect-ratio: 0.9/1) and (max-aspect-ratio: 1.1/1) {
       .fullscreen-mode .slot-machine {
