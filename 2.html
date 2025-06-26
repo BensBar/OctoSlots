@@ -1,0 +1,191 @@
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>OctoSlots 4K Edition</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      font-family: sans-serif;
+      overflow: hidden;
+      color: #fff;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      padding-top: 60px;
+    }
+    .header {
+      text-align: center;
+      font-size: 2em;
+      margin-bottom: 10px;
+      color: gold;
+      text-shadow: 0 0 10px gold;
+    }
+    .reels {
+      display: flex;
+      overflow: hidden;
+      height: 300px;
+      width: 90%;
+      max-width: 500px;
+      border: 5px solid #FFD700;
+      border-radius: 10px;
+      box-shadow: 0 0 20px gold;
+      background: #111;
+    }
+    .reel {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      border-left: 2px solid #444;
+      border-right: 2px solid #444;
+    }
+    .reel-strip {
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+    .symbol {
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .symbol img {
+      max-height: 80px;
+    }
+    .controls {
+      margin-top: 20px;
+    }
+    button {
+      font-size: 1.5em;
+      padding: 10px 30px;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 0 10px red;
+      cursor: pointer;
+    }
+    .jackpot {
+      margin-top: 20px;
+      font-size: 1.2em;
+      color: #FFD700;
+    }
+    .sparkle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: gold;
+      border-radius: 50%;
+      animation: sparkle 1s ease-out forwards;
+    }
+    @keyframes sparkle {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(3) translateY(-50px); }
+    }
+  </style>
+</head>
+<body>
+  <audio id="spin-sound" src="sounds/spin.wav"></audio>
+  <audio id="stop-sound" src="sounds/stop.wav"></audio>
+  <audio id="win-sound" src="sounds/win.wav"></audio>
+
+  <div class="container">
+    <div class="header">🎰 OctoSlots 4K Edition</div>
+    <div class="reels">
+      <div class="reel" id="reel1"><div class="reel-strip"></div></div>
+      <div class="reel" id="reel2"><div class="reel-strip"></div></div>
+      <div class="reel" id="reel3"><div class="reel-strip"></div></div>
+    </div>
+    <div class="controls">
+      <button onclick="spin()">SPIN</button>
+    </div>
+    <div class="jackpot">Jackpot: 1,000,000</div>
+  </div>
+
+  <script>
+    const symbols = [
+      'https://bensbar.github.io/OctoSlots/images/original.png',
+      'https://bensbar.github.io/OctoSlots/images/surftocat.png',
+      'https://bensbar.github.io/OctoSlots/images/boxertocat_octodex.png',
+      'https://bensbar.github.io/OctoSlots/images/dinotocat.png',
+      'https://bensbar.github.io/OctoSlots/images/securitocat.png',
+      'https://bensbar.github.io/OctoSlots/images/yogitocat.png'
+    ];
+
+    const spinSound = document.getElementById('spin-sound');
+    const stopSound = document.getElementById('stop-sound');
+    const winSound = document.getElementById('win-sound');
+
+    function fillReel(reel) {
+      const strip = reel.querySelector('.reel-strip');
+      strip.innerHTML = '';
+      for (let i = 0; i < 20; i++) {
+        const sym = document.createElement('div');
+        sym.className = 'symbol';
+        const img = document.createElement('img');
+        img.src = symbols[Math.floor(Math.random() * symbols.length)];
+        sym.appendChild(img);
+        strip.appendChild(sym);
+      }
+    }
+
+    function animateReel(reel, duration, stopAt) {
+      return new Promise(resolve => {
+        const strip = reel.querySelector('.reel-strip');
+        let start = null;
+        const targetY = -stopAt * 100;
+
+        function step(timestamp) {
+          if (!start) start = timestamp;
+          const elapsed = timestamp - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const ease = 1 - Math.pow(1 - progress, 3);
+          strip.style.transform = `translateY(${ease * targetY}px)`;
+          if (progress < 1) {
+            requestAnimationFrame(step);
+          } else {
+            stopSound.play();
+            resolve();
+          }
+        }
+
+        requestAnimationFrame(step);
+      });
+    }
+
+    function sparkleEffect() {
+      for (let i = 0; i < 15; i++) {
+        const s = document.createElement('div');
+        s.className = 'sparkle';
+        s.style.left = `${Math.random() * window.innerWidth}px`;
+        s.style.top = `${Math.random() * 400 + 100}px`;
+        document.body.appendChild(s);
+        setTimeout(() => s.remove(), 1000);
+      }
+    }
+
+    async function spin() {
+      spinSound.play();
+      const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
+      reels.forEach(fillReel);
+      const stops = reels.map(() => Math.floor(Math.random() * 17) + 1);
+      for (let i = 0; i < reels.length; i++) {
+        await animateReel(reels[i], 1500 + i * 300, stops[i]);
+      }
+      spinSound.pause();
+      spinSound.currentTime = 0;
+
+      if (stops[0] === stops[1] && stops[1] === stops[2]) {
+        winSound.play();
+        sparkleEffect();
+      }
+    }
+  </script>
+
+
+</body></html>
