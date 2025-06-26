@@ -119,8 +119,19 @@
       :root {
         /* Enhance variables for 4K Retina */
         --header-height: 64px; /* Slightly larger for better touch targets */
-        --machine-width: 380px; /* Optimized for 430px width */
+        --machine-width: 410px; /* Increased width to better utilize 430px viewport */
         --machine-height: 800px; /* Optimized for portrait orientation */
+      }
+      
+      /* Optimize reels container for narrow viewport */
+      .reels-container {
+        gap: 8px !important; /* Reduced gap between reels */
+        padding: 12px !important; /* Reduced padding */
+        border-width: 2px !important; /* Thinner border */
+      }
+      
+      .reel {
+        border-width: 2px !important; /* Thinner reel borders */
       }
       
       /* Optimize touch targets for high DPI */
