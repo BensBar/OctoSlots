@@ -983,7 +983,7 @@
       animation: spin-blur 0.1s infinite;
     }
     
-    /* Win line highlight */
+    /* Enhanced Win line highlight */
     .win-line {
       position: absolute;
       left: 0;
@@ -998,26 +998,203 @@
       border-radius: 4px;
       box-shadow: 0 0 20px var(--red-led);
       opacity: 0;
-      transition: opacity 0.3s;
+      transition: all 0.3s ease;
     }
     
     .win-line.highlight {
-      background: linear-gradient(90deg, transparent 0%, var(--green-led) 50%, transparent 100%);
+      background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--gold) 20%, 
+        var(--green-led) 50%, 
+        var(--gold) 80%, 
+        transparent 100%);
+      border: 3px solid rgba(255, 255, 255, 1);
       box-shadow: 
         0 0 30px var(--green-led),
-        0 0 60px var(--green-led);
+        0 0 60px var(--gold),
+        0 0 90px var(--green-led);
       opacity: 1;
-      animation: win-line-pulse 0.5s infinite alternate;
+      height: 12px;
+      animation: win-line-pulse 0.6s infinite alternate, win-line-shimmer 2s infinite;
     }
     
     @keyframes win-line-pulse {
       0% { 
         opacity: 0.8;
-        box-shadow: 0 0 30px var(--green-led), 0 0 60px var(--green-led);
+        box-shadow: 0 0 30px var(--green-led), 0 0 60px var(--gold);
+        transform: translateY(-50%) scaleY(1);
       }
       100% { 
         opacity: 1;
-        box-shadow: 0 0 50px var(--green-led), 0 0 100px var(--green-led);
+        box-shadow: 0 0 50px var(--green-led), 0 0 100px var(--gold), 0 0 150px var(--green-led);
+        transform: translateY(-50%) scaleY(1.2);
+      }
+    }
+    
+    @keyframes win-line-shimmer {
+      0% { 
+        background: linear-gradient(90deg, 
+          transparent 0%, 
+          var(--gold) 20%, 
+          var(--green-led) 50%, 
+          var(--gold) 80%, 
+          transparent 100%);
+      }
+      50% { 
+        background: linear-gradient(90deg, 
+          transparent 0%, 
+          var(--green-led) 20%, 
+          var(--gold) 50%, 
+          var(--green-led) 80%, 
+          transparent 100%);
+      }
+      100% { 
+        background: linear-gradient(90deg, 
+          transparent 0%, 
+          var(--gold) 20%, 
+          var(--green-led) 50%, 
+          var(--gold) 80%, 
+          transparent 100%);
+      }
+    }
+    
+    /* Winning Symbol Glow Effects */
+    .slot-item.winning {
+      animation: symbol-glow 1.2s infinite alternate, symbol-pulse 0.8s infinite;
+    }
+    
+    .slot-item.winning img {
+      filter: drop-shadow(0 0 15px var(--gold)) 
+              drop-shadow(0 0 30px var(--green-led)) 
+              drop-shadow(0 0 45px var(--gold));
+      transform: scale(1.1);
+      transition: all 0.3s ease;
+    }
+    
+    @keyframes symbol-glow {
+      0% { 
+        box-shadow: 
+          0 0 20px var(--gold),
+          0 0 40px var(--green-led),
+          0 0 60px var(--gold),
+          inset 0 0 20px rgba(255, 215, 0, 0.3);
+      }
+      100% { 
+        box-shadow: 
+          0 0 30px var(--green-led),
+          0 0 60px var(--gold),
+          0 0 90px var(--green-led),
+          inset 0 0 30px rgba(0, 255, 0, 0.3);
+      }
+    }
+    
+    @keyframes symbol-pulse {
+      0% { transform: scale(1.05); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1.05); }
+    }
+    
+    /* Particle Effects */
+    .particle {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      pointer-events: none;
+      z-index: 15;
+      border-radius: 50%;
+    }
+    
+    .particle.sparkle {
+      background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+      animation: sparkle-float 2s ease-out forwards;
+    }
+    
+    .particle.star {
+      background: radial-gradient(circle, var(--green-led) 0%, transparent 70%);
+      animation: star-float 2.5s ease-out forwards;
+    }
+    
+    .particle.glow {
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, var(--gold) 30%, transparent 70%);
+      animation: glow-float 1.8s ease-out forwards;
+    }
+    
+    @keyframes sparkle-float {
+      0% { 
+        opacity: 1; 
+        transform: scale(0) rotate(0deg) translateY(0px); 
+      }
+      20% { 
+        opacity: 1; 
+        transform: scale(1.2) rotate(90deg) translateY(-20px); 
+      }
+      100% { 
+        opacity: 0; 
+        transform: scale(0.5) rotate(360deg) translateY(-80px); 
+      }
+    }
+    
+    @keyframes star-float {
+      0% { 
+        opacity: 1; 
+        transform: scale(0) rotate(0deg) translateY(0px) translateX(0px); 
+      }
+      30% { 
+        opacity: 1; 
+        transform: scale(1.5) rotate(180deg) translateY(-30px) translateX(20px); 
+      }
+      100% { 
+        opacity: 0; 
+        transform: scale(0.3) rotate(540deg) translateY(-100px) translateX(-40px); 
+      }
+    }
+    
+    @keyframes glow-float {
+      0% { 
+        opacity: 1; 
+        transform: scale(0) translateY(0px); 
+      }
+      25% { 
+        opacity: 1; 
+        transform: scale(1.8) translateY(-15px); 
+      }
+      100% { 
+        opacity: 0; 
+        transform: scale(0.2) translateY(-60px); 
+      }
+    }
+    
+    /* Celebration Effects */
+    .celebration-burst {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 20;
+    }
+    
+    .burst-ray {
+      position: absolute;
+      width: 4px;
+      height: 60px;
+      background: linear-gradient(to top, transparent, var(--gold), transparent);
+      transform-origin: bottom center;
+      animation: ray-burst 1.5s ease-out forwards;
+    }
+    
+    @keyframes ray-burst {
+      0% { 
+        opacity: 1; 
+        transform: scale(0.1) rotate(var(--rotation)); 
+      }
+      50% { 
+        opacity: 1; 
+        transform: scale(1.5) rotate(var(--rotation)); 
+      }
+      100% { 
+        opacity: 0; 
+        transform: scale(2) rotate(var(--rotation)); 
       }
     }
     
@@ -1783,6 +1960,125 @@
       return { amount: 0, sound: 'lose' };
     }
     
+    // Enhanced Visual Effects for Wins
+    function createParticleEffect(symbolElements) {
+      const particleTypes = ['sparkle', 'star', 'glow'];
+      const particleCount = 25;
+      
+      symbolElements.forEach(element => {
+        const rect = element.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        for (let i = 0; i < particleCount; i++) {
+          setTimeout(() => {
+            const particle = document.createElement('div');
+            particle.className = `particle ${particleTypes[Math.floor(Math.random() * particleTypes.length)]}`;
+            
+            // Random position around the symbol
+            const offsetX = (Math.random() - 0.5) * rect.width;
+            const offsetY = (Math.random() - 0.5) * rect.height;
+            
+            particle.style.left = (centerX + offsetX) + 'px';
+            particle.style.top = (centerY + offsetY) + 'px';
+            
+            document.body.appendChild(particle);
+            
+            // Remove particle after animation
+            setTimeout(() => {
+              if (particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+              }
+            }, 2500);
+          }, i * 100); // Stagger particle creation
+        }
+      });
+    }
+    
+    function createCelebrationBurst() {
+      const burst = document.createElement('div');
+      burst.className = 'celebration-burst';
+      
+      // Create rays in different directions
+      for (let i = 0; i < 12; i++) {
+        const ray = document.createElement('div');
+        ray.className = 'burst-ray';
+        ray.style.setProperty('--rotation', `${i * 30}deg`);
+        burst.appendChild(ray);
+      }
+      
+      document.body.appendChild(burst);
+      
+      // Remove burst after animation
+      setTimeout(() => {
+        if (burst.parentNode) {
+          burst.parentNode.removeChild(burst);
+        }
+      }, 1500);
+    }
+    
+    function highlightWinningSymbols(symbols) {
+      // Clear previous winning highlights
+      document.querySelectorAll('.slot-item.winning').forEach(item => {
+        item.classList.remove('winning');
+      });
+      
+      // Determine which symbols are winning
+      const winningPositions = [];
+      
+      if (symbols[0] === symbols[1] && symbols[1] === symbols[2]) {
+        // All three match
+        winningPositions.push(0, 1, 2);
+      } else if (symbols[0] === symbols[1]) {
+        // First two match
+        winningPositions.push(0, 1);
+      } else if (symbols[1] === symbols[2]) {
+        // Last two match
+        winningPositions.push(1, 2);
+      } else if (symbols[0] === symbols[2]) {
+        // First and last match
+        winningPositions.push(0, 2);
+      }
+      
+      // Apply winning glow to matching symbols
+      const winningElements = [];
+      winningPositions.forEach(pos => {
+        const symbolElement = elements.slotItems.middle[pos];
+        if (symbolElement) {
+          symbolElement.classList.add('winning');
+          winningElements.push(symbolElement);
+        }
+      });
+      
+      return winningElements;
+    }
+    
+    function clearWinEffects() {
+      // Remove win line highlight
+      if (elements.winLine) {
+        elements.winLine.classList.remove('highlight');
+      }
+      
+      // Remove symbol glow effects
+      document.querySelectorAll('.slot-item.winning').forEach(item => {
+        item.classList.remove('winning');
+      });
+      
+      // Remove any remaining particles
+      document.querySelectorAll('.particle').forEach(particle => {
+        if (particle.parentNode) {
+          particle.parentNode.removeChild(particle);
+        }
+      });
+      
+      // Remove any celebration bursts
+      document.querySelectorAll('.celebration-burst').forEach(burst => {
+        if (burst.parentNode) {
+          burst.parentNode.removeChild(burst);
+        }
+      });
+    }
+    
     // Flashing lights animation
     let lightInterval = null;
     function startLights(winning = false) {
@@ -1833,6 +2129,9 @@
         // Add class to prevent transform changes during spin
         document.body.classList.add('spinning-in-fullscreen');
       }
+      // Clear any previous win effects
+      clearWinEffects();
+      
       // Deduct bet and update display
       state.credits -= state.bet;
       state.win = 0;
@@ -1926,9 +2225,28 @@
           playSound(win.sound);
           startLights(true);
           
+          // Enhanced visual effects for wins
+          const winningElements = highlightWinningSymbols(state.currentSymbols);
+          
           // Highlight the win line
           if (elements.winLine) {
             elements.winLine.classList.add('highlight');
+          }
+          
+          // Create particle effects around winning symbols
+          if (winningElements.length > 0) {
+            createParticleEffect(winningElements);
+          }
+          
+          // Create celebration burst for big wins
+          if (win.amount >= 100) {
+            setTimeout(() => createCelebrationBurst(), 300);
+          }
+          
+          // Extra celebration for jackpot wins
+          if (win.amount >= 1000) {
+            setTimeout(() => createCelebrationBurst(), 600);
+            setTimeout(() => createCelebrationBurst(), 900);
           }
           
           // Big win haptic feedback
@@ -1938,9 +2256,7 @@
         } else {
           playSound('lose');
           stopLights();
-          if (elements.winLine) {
-            elements.winLine.classList.remove('highlight');
-          }
+          clearWinEffects();
         }
         
         updateDisplay();
