@@ -856,9 +856,11 @@
         strip.appendChild(sym);
       }
 
-      // If a stop position is given, set the strip position so the chosen symbol is visible
+      // If a stop position is given, set the strip position so the chosen symbol is centered
       if (stopAt !== null) {
-        strip.style.transform = `translateY(${-stopAt * 100}px)`;
+        // Center the symbol in the viewing window (same logic as animateToStop)
+        const centeredPosition = stopAt * 100 - 94;
+        strip.style.transform = `translateY(${-centeredPosition}px)`;
       }
     }
 
@@ -891,7 +893,10 @@
         }
         // Animate from current position to stopAt (always forward)
         function animateToStop(currentModY, stopAt) {
-          const targetY = stopAt * symbolHeight;
+          // Center the symbol in the viewing window
+          // Viewing window height ≈ 288px, symbol height = 100px
+          // To center: symbol top should be at (288/2 - 100/2) = 94px from viewing window top
+          const targetY = stopAt * symbolHeight - 94;
           // Always move forward to the next occurrence of stopAt
           let forwardDistance = (targetY - currentModY + totalSymbols * symbolHeight) % (totalSymbols * symbolHeight);
           const duration = 600;
@@ -963,8 +968,8 @@
 
       // Get all three reels
       const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
-      // Pick a random stop position for each reel
-      const stops = reels.map(() => Math.floor(Math.random() * 17) + 1);
+      // Pick a random stop position for each reel (symbol indices 0-19)
+      const stops = reels.map(() => Math.floor(Math.random() * 20));
       // Fill each reel with random symbols
       reels.forEach((reel, index) => fillReel(reel)); // preload strips
 
@@ -1099,9 +1104,9 @@
 
     // When the page loads, fill each reel with random symbols and update display
     window.onload = () => {
-      fillReel(document.getElementById('reel1'), Math.floor(Math.random() * 17));
-      fillReel(document.getElementById('reel2'), Math.floor(Math.random() * 17));
-      fillReel(document.getElementById('reel3'), Math.floor(Math.random() * 17));
+      fillReel(document.getElementById('reel1'), Math.floor(Math.random() * 20));
+      fillReel(document.getElementById('reel2'), Math.floor(Math.random() * 20));
+      fillReel(document.getElementById('reel3'), Math.floor(Math.random() * 20));
       updateDisplay();
       // Add slot machine handle
       const handle = document.createElement('div');
