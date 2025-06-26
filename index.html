@@ -387,6 +387,20 @@
       100% { opacity: 0; transform: scale(3) translateY(-50px); }
     }
   
+    /* Subtle center line indicator for win evaluation */
+    .center-line {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 20%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0.3) 80%, transparent 100%);
+      z-index: 5;
+      pointer-events: none;
+      transform: translateY(-50%);
+      opacity: 0.7;
+    }
+    
     /* Gold line that appears on win */
     /* Win line: perfectly centered, with animated glowing effect */
     .win-line {
@@ -779,6 +793,7 @@
       <!-- Win line and banner, shown when you win -->
       <div class="reels" style="position: relative;">
         <div class="win-line" id="win-line"></div>
+        <div class="center-line"></div>
         <div class="reel" id="reel1"><div class="reel-strip"></div></div>
         <div class="reel" id="reel2"><div class="reel-strip"></div></div>
         <div class="reel" id="reel3"><div class="reel-strip"></div></div>
@@ -856,9 +871,12 @@
         strip.appendChild(sym);
       }
 
-      // If a stop position is given, set the strip position so the chosen symbol is visible
+      // If a stop position is given, set the strip position so the chosen symbol is centered
       if (stopAt !== null) {
-        strip.style.transform = `translateY(${-stopAt * 100}px)`;
+        const reelCenterY = 144; // 18rem / 2 = 9rem = 144px
+        const symbolCenterOffset = 112 / 2; // symbolHeight / 2 = 56px
+        const centeredY = stopAt * 112 + symbolCenterOffset - reelCenterY;
+        strip.style.transform = `translateY(${-centeredY}px)`;
       }
     }
 
@@ -872,7 +890,7 @@
         let lastY = 0;
         let frame;
         const totalSymbols = 20;
-        const symbolHeight = 100;
+        const symbolHeight = 112; // Match CSS --symbol-size: 7rem (7 * 16 = 112px)
         // Looping spin
         function spinLoop(ts) {
           if (!startTime) startTime = ts;
@@ -891,7 +909,12 @@
         }
         // Animate from current position to stopAt (always forward)
         function animateToStop(currentModY, stopAt) {
-          const targetY = stopAt * symbolHeight;
+          // Calculate target position to center the symbol in the viewing window
+          // Reel height is 18rem (288px), so center is at 144px
+          // Symbol center should align with reel center for perfect alignment
+          const reelCenterY = 144; // 18rem / 2 = 9rem = 144px
+          const symbolCenterOffset = symbolHeight / 2; // 56px
+          const targetY = stopAt * symbolHeight + symbolCenterOffset - reelCenterY;
           // Always move forward to the next occurrence of stopAt
           let forwardDistance = (targetY - currentModY + totalSymbols * symbolHeight) % (totalSymbols * symbolHeight);
           const duration = 600;
@@ -987,7 +1010,7 @@
       // Get the center index for each reel
       const reelsArr = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
       const totalSymbols = 20;
-      const symbolHeight = 100;
+      const symbolHeight = 112; // Match CSS --symbol-size: 7rem (7 * 16 = 112px)
       function getCenterSymbolSrc(reel) {
         const reelRect = reel.getBoundingClientRect();
         const centerY = reelRect.top + reelRect.height / 2;
