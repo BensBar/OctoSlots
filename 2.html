@@ -240,7 +240,7 @@
       reels.forEach((reel, index) => fillReel(reel)); // preload strips
 
       // Simultaneous start
-      const anims = reels.map((reel, i) => animateReel(reel, 1500 + i * 300, stops[i]));
+      const anims = reels.map((reel, i) => animateReel(reel, 1500, stops[i]));
       for (const anim of anims) await anim;
 
       spinSound.pause();
