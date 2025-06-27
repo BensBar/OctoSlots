@@ -851,9 +851,12 @@
 
   <!-- Button to toggle between light and dark mode (now always visible and sticky on mobile) -->
   <div class="toggle-mode-bar">
-    <button class="toggle-mode" onclick="toggleMode()">Toggle Mode</button>
   </div>
   <div class="slot-arch-frame">
+    <!-- Toggle button is now inside the slot machine arch for mobile visibility -->
+    <div class="toggle-mode-arch">
+      <button class="toggle-mode" onclick="toggleMode()">Toggle Mode</button>
+    </div>
     <div class="slot-arch-lights"></div>
     <div class="slot-arch-top">
       <div class="slot-arch-title-arc">
@@ -871,6 +874,34 @@
     <div class="container">
 </style>
 <style>
+    /* Toggle button inside slot arch for mobile */
+    .toggle-mode-arch {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: max(env(safe-area-inset-top), 0.5rem);
+      padding-bottom: 0.2rem;
+      background: transparent;
+      z-index: 100;
+    }
+    .toggle-mode-arch .toggle-mode {
+      font-size: 1.1rem;
+      padding: 0.6rem 2rem;
+      border-radius: 1.2rem;
+      margin: 0.1rem 0 0.2rem 0;
+      width: 90vw;
+      max-width: 400px;
+      box-shadow: 0 2px 8px #0002;
+    }
+    @media (max-width: 450px) and (min-height: 800px) {
+      .toggle-mode-bar { display: none !important; }
+      .toggle-mode-arch { display: flex !important; }
+    }
+    @media (min-width: 451px) {
+      .toggle-mode-bar { display: flex !important; }
+      .toggle-mode-arch { display: none !important; }
+    }
     /* Always show toggle bar at top, safe for iPhone notch */
     .toggle-mode-bar {
       width: 100vw;
