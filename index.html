@@ -859,8 +859,12 @@
       // If a stop position is given, set the strip position so the chosen symbol is centered
       if (stopAt !== null) {
         // Center the symbol in the viewing window (same logic as animateToStop)  
-        const centeredPosition = stopAt * 112 - 88;
-        strip.style.transform = `translateY(${-centeredPosition}px)`;
+        const totalSymbols = 20;
+        const symbolHeight = 112;
+        const centeredPosition = stopAt * symbolHeight - 88;
+        // Apply modulo to keep position in valid range
+        const finalPosition = ((centeredPosition % (totalSymbols * symbolHeight)) + (totalSymbols * symbolHeight)) % (totalSymbols * symbolHeight);
+        strip.style.transform = `translateY(${-finalPosition}px)`;
       }
     }
 
@@ -911,7 +915,9 @@
             if (progress < 1) {
               requestAnimationFrame(animStep);
             } else {
-              strip.style.transform = `translateY(${-targetY}px)`;
+              // Ensure final position uses modulo to stay in valid range
+              const finalY = ((targetY % (totalSymbols * symbolHeight)) + (totalSymbols * symbolHeight)) % (totalSymbols * symbolHeight);
+              strip.style.transform = `translateY(${-finalY}px)`;
               stopSound.play();
               resolve();
             }
@@ -1148,6 +1154,7 @@
         addArchLights('.slot-arch-lights', 22);
         addArchLights('.slot-arch-lights-bottom', 18);
       });
+
     };
   </script>
 
