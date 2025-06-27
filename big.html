@@ -1544,11 +1544,11 @@
 </head>
 <body>
   <!-- Audio elements - simple approach for iPhone -->
-  <audio id="spin-sound" src="sounds/spin.wav"></audio>
-  <audio id="stop-sound" src="sounds/stop.wav"></audio>
-  <audio id="win-sound" src="sounds/win.wav"></audio>
-  <audio id="win3-sound" src="sounds/win3.wav"></audio>
-  <audio id="lose-sound" src="sounds/lose.wav"></audio>
+  <audio id="spin-sound" src="sounds/spin.wav" preload="auto"></audio>
+  <audio id="stop-sound" src="sounds/stop.wav" preload="auto"></audio>
+  <audio id="win-sound" src="sounds/win.wav" preload="auto"></audio>
+  <audio id="win3-sound" src="sounds/win3.wav" preload="auto"></audio>
+  <audio id="lose-sound" src="sounds/lose.wav" preload="auto"></audio>
   
   <!-- Paytable overlay for better UX -->
   <div class="paytable-overlay"></div>
@@ -1686,6 +1686,7 @@
       { name: 'Security', image: 'images/securitocat.png', value: 8 },
       { name: 'Inspectocat', image: 'images/inspectocat.png', value: 5 },
       { name: 'Daftpunktocat', image: 'images/daftpunktocat-guy.gif', value: 5 },
+      { name: 'Hula', image: 'images/hula_loop_octodx03.gif', value: 7 },
       { name: 'Minion', image: 'images/minion.png', value: 5 },
       { name: 'Droidtocat', image: 'images/droidtocat.png', value: 5 },
       { name: 'Ironcat', image: 'images/ironcat.png', value: 5 },
@@ -1840,18 +1841,46 @@
     
     // Function to set a random symbol on a slot item
     function setRandomSymbol(slotItem) {
+      if (!slotItem) return null;
+      
       const randomOctocat = octocats[Math.floor(Math.random() * octocats.length)];
+      if (!randomOctocat || !randomOctocat.image) {
+        // Fallback to first octocat if somehow we get invalid data
+        const fallbackOctocat = octocats[0];
+        if (fallbackOctocat) {
+          const imagePath = fallbackOctocat.image;
+          slotItem.innerHTML = `<img src="${imagePath}" alt="${fallbackOctocat.name}" onerror="this.onerror=null; this.src='images/original.png';">`;
+          slotItem.dataset.name = fallbackOctocat.name;
+          return fallbackOctocat;
+        }
+        return null;
+      }
+      
       const imagePath = randomOctocat.fallbackImage || randomOctocat.image;
       
-      // Create the image with error handling
-      slotItem.innerHTML = `<img src="${imagePath}" alt="${randomOctocat.name}" onerror="this.onerror=null; this.src='images/original.png';">`;
+      // Create the image with error handling and ensure content is never empty
+      slotItem.innerHTML = `<img src="${imagePath}" alt="${randomOctocat.name}" onerror="this.onerror=null; this.src='images/original.png';" onload="this.style.opacity=1;" style="opacity:0; transition: opacity 0.1s;">`;
       slotItem.dataset.name = randomOctocat.name;
       return randomOctocat;
     }
     
     // Function to set a specific symbol on a slot item
     function setSymbol(slotItem, symbolName) {
+      if (!slotItem) return null;
+      
       const octocat = octocats.find(o => o.name === symbolName) || octocats[0];
+      if (!octocat || !octocat.image) {
+        // Additional safety - fallback to first octocat
+        const fallbackOctocat = octocats[0];
+        if (fallbackOctocat) {
+          const imagePath = fallbackOctocat.image;
+          slotItem.innerHTML = `<img src="${imagePath}" alt="${fallbackOctocat.name}" onerror="this.onerror=null; this.src='images/original.png';">`;
+          slotItem.dataset.name = fallbackOctocat.name;
+          return fallbackOctocat;
+        }
+        return null;
+      }
+      
       const imagePath = octocat.fallbackImage || octocat.image;
       
       // Create the image with error handling
