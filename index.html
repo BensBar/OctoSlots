@@ -849,10 +849,6 @@
   <audio id="win-sound" src="sounds/win.wav"></audio>
   <audio id="lose-sound" src="sounds/lose.wav"></audio>
 
-  <!-- Button to toggle between light and dark mode -->
-  <button class="toggle-mode" onclick="toggleMode()">Toggle Mode</button>
-
-  <!-- Slot machine arch and frame -->
   <div class="slot-arch-frame">
     <div class="slot-arch-lights"></div>
     <div class="slot-arch-top">
@@ -869,6 +865,29 @@
       </div>
     </div>
     <div class="container">
+      <!-- Button to toggle between light and dark mode (moved inside container for mobile visibility) -->
+      <button class="toggle-mode" onclick="toggleMode()">Toggle Mode</button>
+</style>
+<style>
+  /* iPhone 16 Pro Max and modern iPhones: safe area and bottom fix */
+  @media (max-width: 450px) and (min-height: 800px) {
+    html, body {
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      background: var(--bg-gradient);
+    }
+    .slot-arch-frame {
+      padding-bottom: 2.5rem !important;
+    }
+    .controls {
+      margin-bottom: 0.5rem !important;
+      margin-top: 0.7rem !important;
+    }
+    .pay-table {
+      margin-bottom: 0.2rem !important;
+    }
+  }
+</style>
       <!-- Win line and banner, shown when you win -->
       <div class="reels" style="position: relative;">
         <div class="win-line" id="win-line"></div>
