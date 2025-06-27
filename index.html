@@ -7,6 +7,91 @@
   <title>OctoSlots 4K Edition</title>
   <!-- CSS styles for the slot machine game -->
   <style>
+    /* iPhone 16 Pro Max (and similar large phones) optimization */
+    @media (max-width: 450px) and (min-height: 800px) {
+      html, body {
+        width: 100vw;
+        min-height: 100vh;
+        max-width: 100vw;
+        overflow-x: hidden;
+        font-size: 18px;
+      }
+      .container {
+        padding-top: 1.2rem;
+        gap: 0.5rem;
+      }
+      .slot-arch-frame {
+        width: 100vw;
+        min-width: 0;
+        padding: 0 0.2rem 7rem 0.2rem;
+        box-sizing: border-box;
+      }
+      .slot-arch-top {
+        width: 100vw;
+        min-width: 0;
+        box-sizing: border-box;
+      }
+      .slot-base {
+        width: 100vw;
+        min-width: 0;
+        gap: 0.3rem;
+        padding: 0 0.1rem;
+        box-sizing: border-box;
+      }
+      .reels {
+        width: 100vw;
+        min-width: 0;
+        gap: 0.1rem;
+        padding: 0 0.1rem;
+        box-sizing: border-box;
+      }
+      .reel {
+        min-width: 0;
+        margin: 0 0.05rem;
+      }
+      .reel-strip {
+        min-width: 0;
+      }
+      .symbol {
+        height: 5.2rem;
+        min-width: 0;
+      }
+      .symbol img {
+        max-height: 4.2rem;
+        max-width: 90vw;
+      }
+      .pay-table {
+        font-size: 1.05rem;
+        padding: 0.2rem 0.1rem;
+        width: 98vw;
+        max-width: 98vw;
+      }
+      .pay-symbol {
+        width: 1.2rem;
+        height: 1.2rem;
+      }
+      .spin-btn, #spin-btn {
+        font-size: 1.3rem;
+        padding: 0.7rem 2.2rem;
+        border-radius: 1.5rem;
+        margin: 0.7rem 0 0.2rem 0;
+        width: 90vw;
+        max-width: 90vw;
+      }
+      .toggle-mode {
+        font-size: 1.1rem;
+        padding: 0.5rem 1.2rem;
+        border-radius: 1.2rem;
+        margin: 0.5rem 0 0.2rem 0;
+      }
+      .slot-arch-lights, .slot-arch-lights-bottom {
+        width: 95vw;
+        gap: 0.3rem;
+      }
+      .slot-arch-title-arc svg {
+        height: 48px;
+      }
+    }
     /* Default color variables for dark mode */
     :root {
       --bg-color: #fff;
@@ -835,19 +920,26 @@
   <script>
     // List of symbol image URLs for the reels
     const symbols = [
-      'https://bensbar.github.io/OctoSlots/images/original.png',
-      'https://bensbar.github.io/OctoSlots/images/surftocat.png',
-      'https://bensbar.github.io/OctoSlots/images/daftpunktocat-guy.gif',
-      'https://bensbar.github.io/OctoSlots/images/dinotocat.png',
-      'https://bensbar.github.io/OctoSlots/images/securitocat.png',
-      'https://bensbar.github.io/OctoSlots/images/yogitocat.png',
-      'https://bensbar.github.io/OctoSlots/images/ironcat.png',
-      'https://bensbar.github.io/OctoSlots/images/spidertocat.png',
-      'https://bensbar.github.io/OctoSlots/images/repo.png',
-      'https://bensbar.github.io/OctoSlots/images/minion.png',
-      'https://bensbar.github.io/OctoSlots/images/plumber.png',
-      'https://bensbar.github.io/OctoSlots/images/megacat.',
-      'https://bensbar.github.io/OctoSlots/images/vinyltocat.png'
+      'images/original.png',
+      'images/surftocat.png',
+      'images/yogitocat.png',
+      'images/boxertocat_octodex.png',
+      'images/dinotocat.png',
+      'images/plumber.png',
+      'images/securitocat.png',
+      'images/inspectocat.png',
+      'images/daftpunktocat-guy.gif',
+      'images/hula_loop_octodex03.gif',
+      'images/minion.png',
+      'images/droidtocat.png',
+      'images/ironcat.png',
+      'images/topguntocat.png',
+      'images/megacat.png',
+      'images/repo.png',
+      'images/spidertocat.png',
+      'images/vinyltocat.png',
+      'images/yogitocat.png',
+      'images/octobiwan.png'
     ];
 
     // Get audio elements for sound effects
@@ -890,6 +982,8 @@
         let frame;
         const totalSymbols = 20;
         const symbolHeight = 112; // Match CSS --symbol-size: 7rem (7 * 16px = 112px)
+        // Add blur effect while spinning
+        strip.style.filter = 'blur(2.5px)';
         // Looping spin
         function spinLoop(ts) {
           if (!startTime) startTime = ts;
@@ -927,6 +1021,8 @@
               requestAnimationFrame(animStep);
             } else {
               strip.style.transform = `translateY(${-targetY}px)`;
+              // Remove blur effect when stopped
+              strip.style.filter = 'none';
               stopSound.play();
               resolve();
             }
