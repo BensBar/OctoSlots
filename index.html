@@ -536,6 +536,14 @@
       0%, 100% { opacity: 0.7; filter: brightness(1); }
       50% { opacity: 1; filter: brightness(1.7); }
     }
+    
+    /* Enhanced lights for dynamic control */
+    .slot-arch-light.on {
+      opacity: 1 !important;
+      filter: brightness(2) !important;
+      animation: none !important;
+      box-shadow: 0 0 24px 8px currentColor, 0 2px 8px #0006;
+    }
     /* Enhance reel window for glassy look */
     .reels {
       background: var(--slot-bg);
@@ -942,6 +950,35 @@
     let lastWin = 0;
     const betAmount = 100;
 
+    // Flashing lights animation
+    let lightInterval = null;
+    function startLights(winning = false) {
+      if (lightInterval) clearInterval(lightInterval);
+      
+      const lights = document.querySelectorAll('.slot-arch-light');
+      lights.forEach(light => light.classList.remove('on'));
+      
+      let idx = 0;
+      lightInterval = setInterval(() => {
+        lights.forEach((light, i) => {
+          if (winning) {
+            // Random flashing for winning
+            light.classList.toggle('on', Math.random() > 0.5);
+          } else {
+            // Sequential flashing for spinning
+            light.classList.toggle('on', i === idx % lights.length);
+          }
+        });
+        idx++;
+      }, 100);
+    }
+    
+    function stopLights() {
+      if (lightInterval) clearInterval(lightInterval);
+      const lights = document.querySelectorAll('.slot-arch-light');
+      lights.forEach(light => light.classList.remove('on'));
+    }
+
     function updateDisplay() {
       document.getElementById('credits').textContent = credits;
       document.getElementById('last-win').textContent = lastWin;
@@ -950,6 +987,9 @@
     async function spin() {
       // Hide win popup if visible
       document.getElementById('win-banner').style.display = 'none';
+      
+      // Stop any previous light effects
+      stopLights();
 
       // Prevent spinning if not enough credits
       if (credits < betAmount) {
@@ -958,6 +998,9 @@
       }
       // Disable spin button during spin
       document.getElementById('spin-btn').disabled = true;
+
+      // Start flashing lights to indicate spinning
+      startLights();
 
       // Deduct bet
       credits -= betAmount;
@@ -984,6 +1027,9 @@
       // Stop the spin sound
       spinSound.pause();
       spinSound.currentTime = 0;
+
+      // Re-enable spin button immediately after reels stop - allows immediate next spin
+      document.getElementById('spin-btn').disabled = false;
 
       // Win logic: all three reels stop at the same position
       let win = false;
@@ -1068,6 +1114,8 @@
         winBanner.style.display = 'block';
         winSound.play();
         sparkleEffect();
+        // Start winning lights animation
+        startLights(true);
         setTimeout(() => {
           winBanner.style.display = 'none';
         }, 2000);
@@ -1081,9 +1129,9 @@
           loseSound.currentTime = 0;
           loseSound.play();
         }
+        // Stop lights on lose
+        stopLights();
       }
-      // Re-enable spin button
-      document.getElementById('spin-btn').disabled = false;
     }
 
     // Toggle between light and dark mode
