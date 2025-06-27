@@ -858,8 +858,8 @@
 
       // If a stop position is given, set the strip position so the chosen symbol is centered
       if (stopAt !== null) {
-        // Center the symbol in the viewing window (same logic as animateToStop)
-        const centeredPosition = stopAt * 100 - 94;
+        // Center the symbol in the viewing window (same logic as animateToStop)  
+        const centeredPosition = stopAt * 112 - 88;
         strip.style.transform = `translateY(${-centeredPosition}px)`;
       }
     }
@@ -874,7 +874,7 @@
         let lastY = 0;
         let frame;
         const totalSymbols = 20;
-        const symbolHeight = 100;
+        const symbolHeight = 112; // Match CSS --symbol-size: 7rem (7 * 16px = 112px)
         // Looping spin
         function spinLoop(ts) {
           if (!startTime) startTime = ts;
@@ -894,9 +894,9 @@
         // Animate from current position to stopAt (always forward)
         function animateToStop(currentModY, stopAt) {
           // Center the symbol in the viewing window
-          // Viewing window height ≈ 288px, symbol height = 100px
-          // To center: symbol top should be at (288/2 - 100/2) = 94px from viewing window top
-          const targetY = stopAt * symbolHeight - 94;
+          // Viewing window height ≈ 288px, symbol height = 112px
+          // To center: symbol top should be at (288/2 - 112/2) = 88px from viewing window top
+          const targetY = stopAt * symbolHeight - 88;
           // Always move forward to the next occurrence of stopAt
           let forwardDistance = (targetY - currentModY + totalSymbols * symbolHeight) % (totalSymbols * symbolHeight);
           const duration = 600;
@@ -992,7 +992,7 @@
       // Get the center index for each reel
       const reelsArr = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
       const totalSymbols = 20;
-      const symbolHeight = 100;
+      const symbolHeight = 112; // Match CSS --symbol-size: 7rem (7 * 16px = 112px)
       function getCenterSymbolSrc(reel) {
         const reelRect = reel.getBoundingClientRect();
         const centerY = reelRect.top + reelRect.height / 2;
