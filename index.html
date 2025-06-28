@@ -397,6 +397,8 @@
       margin: var(--symbol-gap) 0;
       filter: drop-shadow(0 2px 8px #0008);
       background: none;
+      border: none;
+      background: var(--slot-bg, #f7ecd2);
       border-radius: 0;
     }
     /* Symbol image styles */
@@ -1027,6 +1029,10 @@
 
   <!-- Main game logic -->
   <script>
+    // Fill all reels on page load to prevent blanks
+    window.addEventListener('DOMContentLoaded', () => {
+      [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')].forEach(reel => fillReel(reel));
+    });
     // List of symbol image URLs for the reels
     const symbols = [
       'images/original.png',
@@ -1060,8 +1066,9 @@
     function fillReel(reel, stopAt = null) {
       const strip = reel.querySelector('.reel-strip');
       strip.innerHTML = '';
-      // Add 20 random symbols to the reel
-      for (let i = 0; i < 20; i++) {
+      // Add 40 random symbols to the reel (prevents animation blanks)
+      const reelSymbols = [];
+      for (let i = 0; i < 40; i++) {
         const sym = document.createElement('div');
         sym.className = 'symbol';
         const img = document.createElement('img');
@@ -1069,9 +1076,19 @@
         const symbol = symbols[Math.floor(Math.random() * symbols.length)];
         img.src = symbol;
         // Fallback to original Octocat if image fails to load
-        img.onerror = function() { this.onerror = null; this.src = 'images/original.png'; };
+        img.onerror = function() {
+          console.log('Image failed to load:', this.src, 'Replacing with SVG placeholder.');
+          this.onerror = null;
+          // Use a visible SVG placeholder if image fails
+          this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="100%25" height="100%25" fill="%23FFD700"/><text x="50%25" y="55%25" font-size="32" text-anchor="middle" fill="black" dy=".3em">❓</text></svg>';
+        };
         sym.appendChild(img);
         strip.appendChild(sym);
+        reelSymbols.push(sym.cloneNode(true));
+      }
+      // Duplicate the first 3 symbols at the end for seamless looping
+      for (let i = 0; i < 3; i++) {
+        strip.appendChild(reelSymbols[i].cloneNode(true));
       }
 
       // If a stop position is given, set the strip position so the chosen symbol is centered
@@ -1091,7 +1108,7 @@
         let startTime = null;
         let lastY = 0;
         let frame;
-        const totalSymbols = 20;
+        const totalSymbols = 43; // 40 + 3 duplicates for seamless loop
         const symbolHeight = 112; // Match CSS --symbol-size: 7rem (7 * 16px = 112px)
         // Add blur effect while spinning
         strip.style.filter = 'blur(2.5px)';
