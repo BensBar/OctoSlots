@@ -387,6 +387,8 @@
       left: 0;
       will-change: transform;
       transition: filter 0.2s;
+      /* Subtle background color to reduce visual impact of loading delays */
+      background-color: var(--slot-bg);
     }
     /* Each symbol in the reel */
     .symbol {
@@ -1077,10 +1079,10 @@
         img.src = symbol;
         // Fallback to original Octocat if image fails to load
         img.onerror = function() {
-          console.log('Image failed to load:', this.src, 'Replacing with SVG placeholder.');
+          console.log('Image failed to load:', this.src, 'Replacing with original Octocat.');
           this.onerror = null;
-          // Use a visible SVG placeholder if image fails
-          this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="100%25" height="100%25" fill="%23FFD700"/><text x="50%25" y="55%25" font-size="32" text-anchor="middle" fill="black" dy=".3em">❓</text></svg>';
+          // Use original Octocat as fallback
+          this.src = 'images/original.png';
         };
         sym.appendChild(img);
         strip.appendChild(sym);
@@ -1333,6 +1335,12 @@
           if (symbolsLanded[i] === winSymbol) {
             const img = document.createElement('img');
             img.src = winSymbol;
+            // Add fallback for win symbol images
+            img.onerror = function() {
+              console.log('Win symbol image failed to load:', this.src, 'Replacing with original Octocat.');
+              this.onerror = null;
+              this.src = 'images/original.png';
+            };
             img.style.width = '32px';
             img.style.height = '32px';
             img.style.margin = '0 2px';
