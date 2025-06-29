@@ -1006,6 +1006,7 @@
     // Global variables for additional functionality
     let soundEnabled = true;
     let isFullscreen = false;
+    let currentSpinSound = null;
 
     // Sound toggle function
     function toggleSound() {
@@ -1021,6 +1022,153 @@
             sound.volume = soundEnabled ? 0.7 : 0;
           }
         });
+      }
+    }
+
+    // Enhanced audio management for proper spin/stop synchronization
+    function enhanceAudioSystem() {
+      if (!window.nflSlots || !window.nflSlots.sounds) return;
+
+      // Store original playSound function
+      const originalPlaySound = window.nflSlots.playSound.bind(window.nflSlots);
+      
+      // Override playSound to handle spin looping
+      window.nflSlots.playSound = function(soundName) {
+        if (!soundEnabled) return;
+        
+        try {
+          const sound = this.sounds[soundName];
+          if (!sound) return;
+
+          // Special handling for spin sound
+          if (soundName === 'spin') {
+            // Stop any existing spin sound first
+            stopSpinSound();
+            currentSpinSound = sound;
+            sound.loop = true; // Enable looping
+            sound.currentTime = 0;
+            sound.volume = soundEnabled ? 0.7 : 0;
+            
+            const playPromise = sound.play();
+            if (playPromise !== undefined) {
+              playPromise.catch(e => {
+                console.warn(`Failed to play spin sound:`, e);
+              });
+            }
+          } else {
+            // For other sounds, use original behavior but allow overlapping
+            sound.currentTime = 0;
+            sound.volume = soundEnabled ? 0.7 : 0;
+            
+            const playPromise = sound.play();
+            if (playPromise !== undefined) {
+              playPromise.catch(e => {
+                console.warn(`Failed to play sound '${soundName}':`, e);
+              });
+            }
+          }
+        } catch (e) {
+          console.warn('Error playing sound:', e);
+        }
+      };
+
+      // Store original spin function
+      const originalSpin = window.nflSlots.spin.bind(window.nflSlots);
+      
+      // Override spin function to properly manage audio timing
+      window.nflSlots.spin = async function(isAutoplay = false) {
+        if (this.isSpinning) return;
+        if (this.credits < this.bet) {
+          this.showMessage('Not enough credits!');
+          this.autoplay = false;
+          return;
+        }
+
+        // Deduct bet
+        this.credits -= this.bet;
+        if (this.autoplay) {
+          this.autoplaySpins--;
+          this.elements.autoplayButton && (this.elements.autoplayButton.textContent = `Auto (${this.autoplaySpins})`);
+        }
+
+        this.isSpinning = true;
+        this.elements.spinButton && (this.elements.spinButton.disabled = true);
+        this.updateDisplays();
+
+        // Clear previous win state
+        this.hideWinOverlay();
+        this.clearSymbolHighlights();
+        this.hidePaylines();
+
+        // Start spinning effects
+        this.startSpinEffects();
+        this.playSound('spin'); // This will now loop properly
+
+        // Generate final result
+        const finalGrid = [
+          this.getRandomReelSymbols(),
+          this.getRandomReelSymbols(), 
+          this.getRandomReelSymbols()
+        ];
+
+        // Spin each reel with staggered stops
+        const spinPromises = this.elements.reels.map(async (reel, index) => {
+          const track = reel.querySelector('.symbol-track');
+          if (!track) return;
+
+          track.classList.add('spinning');
+
+          // Wait for reel-specific delay
+          await this.delay(this.spinDuration + (index * this.reelStopDelay));
+
+          // Stop spinning and set final symbols
+          track.classList.remove('spinning');
+          track.classList.add('decelerating');
+
+          // Set final symbols
+          this.setReelSymbols(index, finalGrid[index]);
+          
+          // Play stop sound for each reel
+          this.playSound('stop');
+          
+          // If this is the last reel (index 2), stop the spin sound immediately
+          if (index === 2) {
+            stopSpinSound();
+          }
+
+          // Remove deceleration class after animation
+          setTimeout(() => {
+            track.classList.remove('decelerating');
+          }, 1500);
+        });
+
+        // Wait for all reels to stop
+        await Promise.all(spinPromises);
+
+        // Stop spinning effects
+        this.stopSpinEffects();
+
+        // Calculate and handle win
+        const result = this.calculateWin(finalGrid);
+        await this.handleWinResult(result, finalGrid);
+
+        // Re-enable controls
+        this.isSpinning = false;
+        this.elements.spinButton && (this.elements.spinButton.disabled = false);
+      };
+    }
+
+    // Function to stop spin sound immediately
+    function stopSpinSound() {
+      if (currentSpinSound) {
+        try {
+          currentSpinSound.pause();
+          currentSpinSound.currentTime = 0;
+          currentSpinSound.loop = false;
+          currentSpinSound = null;
+        } catch (e) {
+          console.warn('Error stopping spin sound:', e);
+        }
       }
     }
 
@@ -1085,6 +1233,11 @@
       paytable?.addEventListener('click', function(e) {
         e.stopPropagation();
       });
+
+      // Enhance audio system after game loads
+      setTimeout(() => {
+        enhanceAudioSystem();
+      }, 100);
     });
 
     // Initialize confetti effect for big wins
