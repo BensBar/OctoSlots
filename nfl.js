@@ -37,18 +37,18 @@ class NFLSlots {
 
     // NFL Teams data
     this.teams = [
-      { name: 'NFL Shield', image: './logos/nfl.png', value: 15, isWild: true, isPremium: true },
-      { name: 'Trophy', image: './logos/trophy.png', value: 2000, isJackpot: true },
-      { name: 'AFC', image: './logos/afc.png', value: 1000, isPremium: true },
-      { name: 'NFC', image: './logos/nfc.png', value: 1000, isPremium: true },
-      { name: 'Falcons', image: './logos/falcons.png', value: 100 },
-      { name: 'Patriots', image: './logos/patriots.png', value: 150 },
-      { name: 'Packers', image: './logos/packers.png', value: 125 },
-      { name: 'Cowboys', image: './logos/cowboys.png', value: 125 },
-      { name: 'Steelers', image: './logos/steelers.png', value: 125 },
-      { name: '49ers', image: './logos/49ers.png', value: 110 },
-      { name: 'Chiefs', image: './logos/chiefs.png', value: 140 },
-      { name: 'Eagles', image: './logos/eagles.png', value: 130 }
+      { name: 'NFL Shield', image: '/images/nfl.png', value: 15, isWild: true, isPremium: true },
+      { name: 'Trophy', image: '/images/trophy.png', value: 2000, isJackpot: true },
+      { name: 'AFC', image: '/images/afc.png', value: 1000, isPremium: true },
+      { name: 'NFC', image: '/images/nfc.png', value: 1000, isPremium: true },
+      { name: 'Falcons', image: '/images/falcons.png', value: 100 },
+      { name: 'Patriots', image: '/images/patriots.png', value: 150 },
+      { name: 'Packers', image: '/images/packers.png', value: 125 },
+      { name: 'Cowboys', image: '/images/cowboys.png', value: 125 },
+      { name: 'Steelers', image: '/images/steelers.png', value: 125 },
+      { name: '49ers', image: '/images/49ers.png', value: 110 },
+      { name: 'Chiefs', image: '/images/chiefs.png', value: 140 },
+      { name: 'Eagles', image: '/images/eagles.png', value: 130 }
     ];
 
     // Sound system
@@ -215,7 +215,7 @@ class NFLSlots {
 
     track.innerHTML = symbols.map(symbol => 
       `<img src="${symbol.image}" alt="${symbol.name}" data-symbol="${symbol.name}" 
-            onerror="this.src='./logos/nfl.png'" loading="lazy">`
+            onerror="this.src='/images/nfl.png'" loading="lazy">`
     ).join('');
   }
 
