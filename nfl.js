@@ -48,7 +48,31 @@ class NFLSlots {
       { name: 'Steelers', image: './logos/steelers.png', value: 125 },
       { name: '49ers', image: './logos/49ers.png', value: 110 },
       { name: 'Chiefs', image: './logos/chiefs.png', value: 140 },
-      { name: 'Eagles', image: './logos/eagles.png', value: 130 }
+      { name: 'Eagles', image: './logos/eagles.png', value: 130 },
+      { name: 'Bears', image: './logos/bears.png', value: 120 },
+      { name: 'Bengals', image: './logos/bengals.png', value: 115 },
+      { name: 'Bills', image: './logos/bills.png', value: 120 },
+      { name: 'Broncos', image: './logos/broncos.png', value: 120 },
+      { name: 'Browns', image: './logos/browns.png', value: 105 },
+      { name: 'Buccaneers', image: './logos/buccaneers.png', value: 115 },
+      { name: 'Cardinals', image: './logos/cardinals.png', value: 105 },
+      { name: 'Chargers', image: './logos/chargers.png', value: 115 },
+      { name: 'Colts', image: './logos/colts.png', value: 115 },
+      { name: 'Commanders', image: './logos/commanders.png', value: 105 },
+      { name: 'Dolphins', image: './logos/dolphins.png', value: 110 },
+      { name: 'Giants', image: './logos/giants.png', value: 110 },
+      { name: 'Jaguars', image: './logos/jaguars.png', value: 105 },
+      { name: 'Jets', image: './logos/jets.png', value: 105 },
+      { name: 'Lions', image: './logos/lions.png', value: 115 },
+      { name: 'Panthers', image: './logos/panthers.png', value: 105 },
+      { name: 'Raiders', image: './logos/raiders.png', value: 110 },
+      { name: 'Rams', image: './logos/rams.png', value: 115 },
+      { name: 'Ravens', image: './logos/ravens.png', value: 125 },
+      { name: 'Saints', image: './logos/saints.png', value: 110 },
+      { name: 'Seahawks', image: './logos/seahawks.png', value: 115 },
+      { name: 'Texans', image: './logos/texans.png', value: 105 },
+      { name: 'Titans', image: './logos/titans.png', value: 105 },
+      { name: 'Vikings', image: './logos/vikings.png', value: 110 }
     ];
 
     // Sound system
@@ -199,7 +223,22 @@ class NFLSlots {
   }
 
   getRandomSymbol() {
-    return this.teams[Math.floor(Math.random() * this.teams.length)];
+    // Ensure teams array is not empty and return a valid symbol
+    if (!this.teams || this.teams.length === 0) {
+      console.warn('Teams array is empty, returning NFL Shield as fallback');
+      return { name: 'NFL Shield', image: './logos/nfl.png', value: 15, isWild: true, isPremium: true };
+    }
+    
+    const randomIndex = Math.floor(Math.random() * this.teams.length);
+    const symbol = this.teams[randomIndex];
+    
+    // Additional validation to ensure symbol is valid
+    if (!symbol || !symbol.image || !symbol.name) {
+      console.warn('Invalid symbol found, returning NFL Shield as fallback');
+      return { name: 'NFL Shield', image: './logos/nfl.png', value: 15, isWild: true, isPremium: true };
+    }
+    
+    return symbol;
   }
 
   getRandomReelSymbols() {
@@ -213,7 +252,28 @@ class NFLSlots {
     const track = reel.querySelector('.symbol-track');
     if (!track) return;
 
-    track.innerHTML = symbols.map(symbol => 
+    // Validate symbols array and filter out any invalid entries
+    const validSymbols = symbols.filter(symbol => 
+      symbol && 
+      symbol.image && 
+      symbol.name && 
+      typeof symbol.image === 'string' && 
+      symbol.image.trim() !== ''
+    );
+
+    // If no valid symbols, fill with fallback symbols
+    if (validSymbols.length === 0) {
+      console.warn(`No valid symbols for reel ${reelIndex}, using fallback symbols`);
+      const fallbackSymbol = { name: 'NFL Shield', image: './logos/nfl.png', value: 15, isWild: true, isPremium: true };
+      validSymbols.push(fallbackSymbol, fallbackSymbol, fallbackSymbol);
+    }
+
+    // Ensure we have exactly 3 symbols for each reel
+    while (validSymbols.length < 3) {
+      validSymbols.push(this.getRandomSymbol());
+    }
+
+    track.innerHTML = validSymbols.map(symbol => 
       `<img src="${symbol.image}" alt="${symbol.name}" data-symbol="${symbol.name}" 
             onerror="this.src='./logos/nfl.png'" loading="lazy">`
     ).join('');
