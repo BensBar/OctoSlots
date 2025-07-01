@@ -92,40 +92,48 @@
         height: 48px;
       }
     }
-    /* Default color variables for dark mode */
+    /* Default color variables for enhanced 4K experience */
     :root {
       --bg-color: #fff;
       --text-color: #222;
-      --border-color: #bfa100;
-      --slot-bg: #f7ecd2;
-      --button-bg: #bfa100;
+      --border-color: #FFD700;
+      --slot-bg: linear-gradient(145deg, #f8f4e6 0%, #ede4d3 50%, #e8dcc6 100%);
+      --button-bg: linear-gradient(145deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
       --button-color: #fff;
-      --reel-glow: 0 0 32px 8px #bfa10099;
-      --reel-radius: 2.5rem;
-      --symbol-size: 7rem;
-      --symbol-gap: 0;
-      --reel-drum: linear-gradient(180deg, #fff8 0%, #fff 50%, #fff8 100%), radial-gradient(ellipse at 50% 40%, #fff6 0%, #fff0 80%), #f7ecd2;
-      --reel-shadow: 0 0 32px 8px #FFD70044, 0 0 0 8px #fff1 inset;
-      --bg-gradient: linear-gradient(135deg, #fffbe9 0%, #f7ecd2 100%);
-      --machine-bg: linear-gradient(180deg, #e0e0e0 0%, #b0b0b0 100%);
-      --arch-bg: #fff;
-      --paytable-bg: #fff;
-      --paytable-color: #222;
+      --reel-glow: 0 0 40px 12px #FFD70066, 0 0 80px 20px #FF850033;
+      --reel-radius: 3rem;
+      --symbol-size: 8rem;
+      --symbol-gap: 0.2rem;
+      --reel-drum: linear-gradient(180deg, #fff9 0%, #fff 30%, #fffb 70%, #fff9 100%), 
+                   radial-gradient(ellipse at 50% 30%, #FFD70033 0%, transparent 70%), 
+                   linear-gradient(145deg, #f8f4e6 0%, #ede4d3 50%, #e8dcc6 100%);
+      --reel-shadow: 0 0 40px 12px #FFD70044, 0 0 0 12px #fff4 inset, 0 0 60px 8px #FF850022;
+      --bg-gradient: linear-gradient(135deg, #fffef7 0%, #fdf8e7 25%, #f8f4e6 50%, #f0e6d2 75%, #e8dcc6 100%);
+      --machine-bg: linear-gradient(180deg, #f5f5f5 0%, #e8e8e8 50%, #d5d5d5 100%);
+      --arch-bg: linear-gradient(145deg, #ffffff 0%, #f8f8f8 50%, #f0f0f0 100%);
+      --paytable-bg: linear-gradient(145deg, #ffffff 0%, #fafafa 100%);
+      --paytable-color: #333;
+      --sparkle-color: #FFD700;
+      --win-glow: 0 0 60px #FFD700, 0 0 120px #FFA500;
     }
     body:not(.light) {
       --bg-color: #000;
       --text-color: #fff;
       --border-color: #FFD700;
-      --slot-bg: #181818;
-      --button-bg: #e53935;
+      --slot-bg: linear-gradient(145deg, #2a2a2a 0%, #1f1f1f 50%, #1a1a1a 100%);
+      --button-bg: linear-gradient(145deg, #e53935 0%, #d32f2f 50%, #b71c1c 100%);
       --button-color: #fff;
-      --reel-glow: 0 0 32px 8px #FFD70099;
-      --reel-drum: linear-gradient(180deg, #222 0%, #111 50%, #222 100%), radial-gradient(ellipse at 50% 40%, #fff1 0%, #fff0 80%), #181818;
-      --bg-gradient: linear-gradient(135deg, #000 0%, #222 100%);
-      --machine-bg: #000;
-      --arch-bg: #000;
-      --paytable-bg: #111;
+      --reel-glow: 0 0 50px 15px #FFD70088, 0 0 100px 25px #FF850044;
+      --reel-drum: linear-gradient(180deg, #333a 0%, #222 30%, #111b 70%, #333a 100%), 
+                   radial-gradient(ellipse at 50% 30%, #FFD70044 0%, transparent 70%), 
+                   linear-gradient(145deg, #2a2a2a 0%, #1f1f1f 50%, #1a1a1a 100%);
+      --bg-gradient: linear-gradient(135deg, #000000 0%, #1a1a1a 25%, #2a2a2a 50%, #1f1f1f 75%, #000000 100%);
+      --machine-bg: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 50%, #000000 100%);
+      --arch-bg: linear-gradient(145deg, #2a2a2a 0%, #1f1f1f 50%, #1a1a1a 100%);
+      --paytable-bg: linear-gradient(145deg, #1a1a1a 0%, #222222 100%);
       --paytable-color: #fff;
+      --sparkle-color: #FFD700;
+      --win-glow: 0 0 80px #FFD700, 0 0 160px #FFA500;
     }
     .slot-arch-frame {
       background: var(--machine-bg) !important;
@@ -233,10 +241,70 @@
       animation: bgmove 18s ease-in-out infinite;
     }
 
-    @keyframes bgmove {
-      0% { background-position: 0% 0%; }
-      50% { background-position: 100% 100%; }
-      100% { background-position: 0% 0%; }
+    /* Enhanced 4K particle effects and animations */
+    @keyframes sparkle {
+      0% { 
+        opacity: 0; 
+        transform: scale(0) rotate(0deg); 
+      }
+      50% { 
+        opacity: 1; 
+        transform: scale(1.2) rotate(180deg); 
+      }
+      100% { 
+        opacity: 0; 
+        transform: scale(0) rotate(360deg); 
+      }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { 
+        transform: scale(1); 
+        opacity: 1; 
+      }
+      50% { 
+        transform: scale(1.1); 
+        opacity: 0.8; 
+      }
+    }
+    
+    @keyframes winGlow {
+      0%, 100% { 
+        box-shadow: var(--win-glow); 
+      }
+      50% { 
+        box-shadow: var(--win-glow), 0 0 200px #FFD700; 
+      }
+    }
+    
+    .sparkle {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle, var(--sparkle-color) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: sparkle 1.5s ease-out forwards;
+      z-index: 1000;
+    }
+    
+    .sparkle::before {
+      content: '✨';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 16px;
+      animation: pulse 0.5s ease-in-out infinite alternate;
+    }
+    
+    .win-effect {
+      animation: winGlow 2s ease-in-out infinite;
+    }
+    
+    .reel.winning {
+      animation: pulse 1s ease-in-out infinite;
+      box-shadow: var(--win-glow), var(--reel-shadow);
     }
     /* Container for all game content */
     .container {
@@ -361,23 +429,41 @@
     .slot-handle-knob:active {
       box-shadow: 0 0 32px 8px #e53935cc, 0 2px 8px #0006;
     }
-    /* Individual reel styles */
+    /* Individual reel styles - Enhanced 4K */
     .reel {
       flex: 1;
       overflow: hidden;
       position: relative;
-      border-left: 2px solid #444a;
-      border-right: 2px solid #444a;
+      border: 3px solid transparent;
+      border-image: linear-gradient(145deg, #FFD700, #FFA500, #FF8C00) 1;
       border-radius: var(--reel-radius);
-      margin: 0 0.2rem;
-      /* Only apply glow to the first and second reels, not the third */
+      margin: 0 0.3rem;
       background: var(--reel-drum);
-      transition: box-shadow 0.3s, background 0.3s;
-      /* Subtle highlight for drum effect */
-      box-shadow: var(--reel-glow), 0 0 0 2px #fff4 inset;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      box-shadow: var(--reel-shadow);
+      position: relative;
     }
+    
+    .reel::before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      background: linear-gradient(145deg, #FFD700, #FFA500, #FF8C00);
+      border-radius: var(--reel-radius);
+      z-index: -1;
+      opacity: 0.8;
+    }
+    
+    .reel.spinning {
+      box-shadow: var(--reel-glow), var(--reel-shadow);
+      transform: scale(1.02);
+    }
+    
     .reel:last-child {
-      box-shadow: none;
+      box-shadow: var(--reel-shadow);
     }
     /* The strip of symbols inside each reel */
     .reel-strip {
@@ -388,32 +474,58 @@
       will-change: transform;
       transition: filter 0.2s;
     }
-    /* Each symbol in the reel */
+    /* Enhanced symbol styles for 4K */
     .symbol {
       height: var(--symbol-size);
       display: flex;
       align-items: center;
       justify-content: center;
       margin: var(--symbol-gap) 0;
-      filter: drop-shadow(0 2px 8px #0008);
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
       background: none;
       border: none;
-      background: var(--slot-bg, #f7ecd2);
-      border-radius: 0;
+      border-radius: 1rem;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
     }
-    /* Symbol image styles */
+    
+    .symbol::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(145deg, rgba(255,215,0,0.1), rgba(255,165,0,0.05));
+      border-radius: 1rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .symbol:hover::before {
+      opacity: 1;
+    }
+    
+    /* Enhanced symbol image styles */
     .symbol img {
-      max-height: calc(var(--symbol-size) - 1.2rem);
-      max-width: 90%;
+      max-height: calc(var(--symbol-size) - 1.5rem);
+      max-width: 85%;
       image-rendering: -webkit-optimize-contrast;
       image-rendering: crisp-edges;
-      border-radius: 0 !important;
+      border-radius: 0.8rem !important;
       background: none !important;
-      box-shadow: none !important;
-      border: none !important;
-      transition: transform 0.2s;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2) !important;
+      border: 2px solid rgba(255,215,0,0.3) !important;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       display: block;
     }
+    
+    .symbol img:hover {
+      transform: scale(1.05) rotate(2deg);
+      box-shadow: 0 12px 36px rgba(255,215,0,0.4) !important;
+      border-color: rgba(255,215,0,0.6) !important;
+    }
+    
     .symbol img:active {
       transform: scale(0.95);
     }
@@ -422,23 +534,63 @@
       margin-top: 1.5rem;
       margin-bottom: 1.5rem;
     }
-    /* Spin button styles */
+    /* Enhanced 4K Spin button styles */
     button.spin {
-      font-size: 2rem;
-      padding: 0.7em 2.5em;
-      background: linear-gradient(90deg, #e53935 0%, #ffd700 100%);
+      font-size: 2.5rem;
+      padding: 0.8em 3em;
+      background: linear-gradient(145deg, #FFD700 0%, #FFA500 25%, #FF8C00 50%, #FFA500 75%, #FFD700 100%);
+      background-size: 200% 200%;
       color: #fff;
       border: none;
-      border-radius: 1.5rem;
-      box-shadow: 0 4px 24px #ffd70055, 0 2px 8px #0008;
+      border-radius: 2rem;
+      box-shadow: 0 8px 32px rgba(255,215,0,0.4), 
+                  0 4px 16px rgba(255,140,0,0.3),
+                  0 0 0 3px rgba(255,255,255,0.2) inset;
       cursor: pointer;
-      font-weight: bold;
-      letter-spacing: 0.1em;
-      transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+      overflow: hidden;
+      text-transform: uppercase;
     }
+    
+    button.spin::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.6s ease;
+    }
+    
+    button.spin:hover {
+      background-position: 100% 100%;
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 12px 48px rgba(255,215,0,0.6), 
+                  0 6px 24px rgba(255,140,0,0.4),
+                  0 0 0 4px rgba(255,255,255,0.3) inset;
+    }
+    
+    button.spin:hover::before {
+      left: 100%;
+    }
+    
     button.spin:active {
-      background: linear-gradient(90deg, #ffd700 0%, #e53935 100%);
-      transform: scale(0.97);
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 4px 16px rgba(255,215,0,0.4), 
+                  0 2px 8px rgba(255,140,0,0.3),
+                  0 0 0 2px rgba(255,255,255,0.2) inset;
+    }
+    
+    button.spin:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      background: linear-gradient(145deg, #999 0%, #666 50%, #444 100%);
     }
     /* Jackpot display styles */
     .jackpot {
@@ -1099,64 +1251,80 @@
       }
     }
 
-    // Animate a reel spinning and stopping at a specific symbol
-    function animateReel(reel, spinTime, stopAt) {
-      // This function spins the reel for spinTime ms, then animates to stopAt (always forward)
-      return new Promise(resolve => {
+    // Enhanced 4K reel animation with improved physics
+function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
+  return new Promise(resolve => {
         const strip = reel.querySelector('.reel-strip');
+        reel.classList.add('spinning');
+        
         let spinning = true;
         let startTime = null;
         let lastY = 0;
         let frame;
         const totalSymbols = 43; // 40 + 3 duplicates for seamless loop
-        const symbolHeight = 112; // Match CSS --symbol-size: 7rem (7 * 16px = 112px)
-        // Add blur effect while spinning
-        strip.style.filter = 'blur(2.5px)';
-        // Looping spin
-        function spinLoop(ts) {
-          if (!startTime) startTime = ts;
-          const elapsed = ts - startTime;
-          if (elapsed < spinTime) {
-            lastY = (elapsed * 2) % (totalSymbols * symbolHeight); // 2px/ms speed, 20 symbols
-            strip.style.transform = `translateY(${-lastY}px)`;
-            frame = requestAnimationFrame(spinLoop);
-          } else {
-            spinning = false;
-            // Use the current modulo position as the start for the stop animation
-            let modY = ((lastY % (totalSymbols * symbolHeight)) + (totalSymbols * symbolHeight)) % (totalSymbols * symbolHeight);
-            // Animate to stopAt (always forward)
-            animateToStop(modY, stopAt);
-          }
-        }
-        // Animate from current position to stopAt (always forward)
-        function animateToStop(currentModY, stopAt) {
-          // Center the symbol in the viewing window
-          // Viewing window height ≈ 288px, symbol height = 112px
-          // To center: symbol top should be at (288/2 - 112/2) = 88px from viewing window top
-          const targetY = stopAt * symbolHeight - 88;
-          // Always move forward to the next occurrence of stopAt
+        const symbolHeight = 128; // Enhanced for 4K: 8rem = 128px
+        
+        // Enhanced spinning with acceleration and blur
+        strip.style.filter = 'blur(3px)';
+        strip.style.transition = 'filter 0.3s ease-out';
+        
+    function spinLoop(ts) {
+      if (!startTime) startTime = ts;
+      const elapsed = ts - startTime;
+      
+      if (elapsed < spinTime) {
+        // Improved animation with easing
+        const progress = elapsed / spinTime;
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const speed = 3 + (2 * (1 - easeOut)); // Start fast, slow down
+        
+        lastY = (elapsed * speed) % (totalSymbols * symbolHeight);
+        strip.style.transform = `translateY(${-lastY}px)`;
+        frame = requestAnimationFrame(spinLoop);
+      } else {
+        spinning = false;
+        reel.classList.remove('spinning');
+        // Calculate stopping position
+        let modY = ((lastY % (totalSymbols * symbolHeight)) + (totalSymbols * symbolHeight)) % (totalSymbols * symbolHeight);
+        animateToStop(modY, stopAt, onStopPhaseStart);
+      }
+    }
+        
+        function animateToStop(currentModY, stopAt, onStopPhaseStart) {
+          const targetY = stopAt * symbolHeight - 96; // Center better for 8rem symbols
           let forwardDistance = (targetY - currentModY + totalSymbols * symbolHeight) % (totalSymbols * symbolHeight);
-          const duration = 600;
+          // Call the callback at the exact moment the stop phase starts
+          if (typeof onStopPhaseStart === 'function') {
+            onStopPhaseStart();
+          }
+          const duration = 800; // Slightly longer for smoother stop
           let animStart = null;
           function animStep(ts) {
             if (!animStart) animStart = ts;
             const progress = Math.min((ts - animStart) / duration, 1);
-            const y = currentModY + progress * forwardDistance;
-            // Always keep the strip in visible range
+            // Smooth easing for stopping
+            const easeOut = 1 - Math.pow(1 - progress, 4);
+            const y = currentModY + easeOut * forwardDistance;
             const modY = ((y % (totalSymbols * symbolHeight)) + (totalSymbols * symbolHeight)) % (totalSymbols * symbolHeight);
             strip.style.transform = `translateY(${-modY}px)`;
+            // Gradually remove blur as it slows down
+            const blurAmount = 3 * (1 - progress);
+            strip.style.filter = `blur(${blurAmount}px)`;
             if (progress < 1) {
               requestAnimationFrame(animStep);
             } else {
               strip.style.transform = `translateY(${-targetY}px)`;
-              // Remove blur effect when stopped
               strip.style.filter = 'none';
-              stopSound.play();
+              // Add winning effect if this reel has winning symbols
+              setTimeout(() => {
+                reel.classList.add('win-effect');
+              }, 100);
               resolve();
             }
           }
           requestAnimationFrame(animStep);
         }
+        
         requestAnimationFrame(spinLoop);
       });
     }
@@ -1248,22 +1416,34 @@
       reels.forEach((reel, index) => fillReel(reel)); // preload strips
 
       // Start all reels spinning at the same time, but stop them individually
+
       const spinTimes = [1800, 2300, 2800];
+
+
+      // REVERT: Use original logic (no onStopPhaseStart, no setTimeout for spinSound)
       const reelPromises = reels.map((reel, i) => animateReel(reel, spinTimes[i], stops[i]));
-      // Wait for each reel to finish in order (but all started together)
       for (let i = 0; i < reelPromises.length; i++) {
         await reelPromises[i];
+        // Play stop sound for first 2 reels (overlaps with spin sound)
+        if (i < 2) {
+          const stopClone = stopSound.cloneNode();
+          stopClone.currentTime = 0;
+          stopClone.play();
+        }
+        // On the 3rd (final) reel, stop spin sound and play final stop sound
+        if (i === 2) {
+          spinSound.pause();
+          spinSound.currentTime = 0;
+          stopSound.currentTime = 0;
+          stopSound.play();
+        }
       }
+      // Wait for stop.wav to start before win/lose logic
+      await new Promise(resolve => setTimeout(resolve, 350));
 
-      // Stop the spin sound
-      spinSound.pause();
-      spinSound.currentTime = 0;
-
-      // Re-enable spin button immediately after reels stop - allows immediate next spin
+      // Re-enable spin button after sounds finish
       document.getElementById('spin-btn').disabled = false;
 
-      // Win logic: all three reels stop at the same position
-      let win = false;
       // --- WIN LOGIC ---
       // Only consider the center row (middle symbol) of each reel
       // Get the center index for each reel
@@ -1343,7 +1523,11 @@
         const winBanner = document.getElementById('win-banner');
         winBanner.textContent = winType === 'jackpot' ? '🎉 JACKPOT! 🎉' : (winType === 'three' ? '🎉 BIG WIN! 🎉' : 'WIN!');
         winBanner.style.display = 'block';
+        
+        // Play win sound after stop sound
+        winSound.currentTime = 0;
         winSound.play();
+        
         sparkleEffect();
         // Start winning lights animation
         startLights(true);
@@ -1354,12 +1538,14 @@
         lastWin = 0;
         updateDisplay();
         lastWinSymbols.innerHTML = '';
-        // Play lose sound
+        
+        // Play lose sound after stop sound
         const loseSound = document.getElementById('lose-sound');
         if (loseSound) {
           loseSound.currentTime = 0;
           loseSound.play();
         }
+        
         // Stop lights on lose
         stopLights();
       }
