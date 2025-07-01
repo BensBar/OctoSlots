@@ -239,21 +239,19 @@
 
     .symbol-track.spinning {
       animation: reelSpinSmooth 0.15s linear infinite;
+      filter: blur(3px);
+      transition: filter 0.3s;
     }
 
     .symbol-track.decelerating {
-      animation: reelDecelerate 1.5s cubic-bezier(0.23, 1, 0.320, 1) forwards;
+      filter: blur(0px);
+      transition: filter 0.3s;
     }
 
     /* FIXED: Smooth continuous spinning animation */
     @keyframes reelSpinSmooth {
       0% { transform: translateY(0); }
       100% { transform: translateY(-80px); }
-    }
-
-    @keyframes reelDecelerate {
-      0% { transform: translateY(-80px); }
-      100% { transform: translateY(0); }
     }
 
     /* FIXED: Enhanced symbol styling */
@@ -458,17 +456,19 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%) scale(0);
-      background: linear-gradient(145deg, rgba(0, 0, 0, 0.95), rgba(30, 30, 60, 0.95));
-      border: 6px solid var(--nfl-gold);
+      background: rgba(30, 30, 60, 0.55); /* More see-through */
+      border: 3px solid var(--nfl-gold);
       border-radius: 20px;
-      padding: 40px;
+      padding: 18px 32px;
       text-align: center;
       z-index: 1000;
-      backdrop-filter: blur(20px);
-      box-shadow: 
-        0 0 50px rgba(255, 182, 18, 0.8),
-        inset 0 0 30px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 0 30px rgba(255, 182, 18, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.3);
       transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      color: var(--nfl-gold);
+      font-size: 1.7rem;
+      font-weight: 900;
+      pointer-events: none;
     }
 
     .win-overlay.visible {
@@ -674,6 +674,18 @@
         gap: 10px;
       }
     }
+
+    .symbol-track.spinning {
+      animation: reelSpinSmooth 0.15s linear infinite;
+      filter: blur(3px);
+      transition: filter 0.3s;
+    }
+
+    .symbol-track.decelerating {
+      animation: reelDecelerate 1.5s cubic-bezier(0.23, 1, 0.320, 1) forwards;
+      filter: blur(0px);
+      transition: filter 0.3s;
+    }
   </style>
 </head>
 <body>
@@ -818,22 +830,6 @@
         <div class="payout-symbols">
           <img src="./logos/nfc.png" alt="NFC" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIGZpbGw9IiMwMDAwRkYiLz48dGV4dCB4PSIxNiIgeT0iMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMCIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNGRkYiPk5GQzwvdGV4dD48L3N2Zz4='">
           <img src="./logos/nfc.png" alt="NFC" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIGZpbGw9IiMwMDAwRkYiLz48dGV4dCB4PSIxNiIgeT0iMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMCIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNGRkYiPk5GQzwvdGV4dD48L3N2Zz4='">
-          <img src="./logos/nfc.png" alt="NFC" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIGZpbGw9IiMwMDAwRkYiLz48dGV4dCB4PSIxNiIgeT0iMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMCIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNGRkYiPk5GQzwvdGV4dD48L3N2Zz4='">
-          <span>NFC CHAMPIONSHIP</span>
-        </div>
-        <div class="payout-value">1000x</div>
-      </div>
-      <div class="payout-item">
-        <div class="payout-symbols">
-          <img src="./logos/nfl.png" alt="NFL" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIGZpbGw9IiNGRkI2MTIiLz48dGV4dCB4PSIxNiIgeT0iMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMCIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMwMDAiPk5GTDwvdGV4dD48L3N2Zz4='">
-          <img src="./logos/nfl.png" alt="NFL" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIGZpbGw9IiNGRkI2MTIiLz48dGV4dCB4PSIxNiIgeT0iMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMCIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMwMDAiPk5GTDwvdGV4dD48L3N2Zz4='">
-          <img src="./logos/nfl.png" alt="NFL" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIGZpbGw9IiNGRkI2MTIiLz48dGV4dCB4PSIxNiIgeT0iMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMCIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMwMDAiPk5GTDwvdGV4dD48L3N2Zz4='">
-          <span>NFL SHIELD (WILD)</span>
-        </div>
-        <div class="payout-value">500x</div>
-      </div>
-    </div>
-
     <div class="paytable-section">
       <h3>🏟️ TEAM SYMBOLS</h3>
       <div class="payout-item">
@@ -873,7 +869,7 @@
       </div>
       <div class="payout-item">
         <div class="payout-symbols">
-          <img src="./logos/falcons.png" alt="Falcons" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIGZpbGw9IiNBNzE5MzAiLz48dGV4dCB4PSIxNiIgeT0iMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMCIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNGRkYiPkFUTDwvdGV4dD48L3N2Zz4='">
+          <img src="./logos/falcons.png" alt="Falcons" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIGZpbGw9IiNBNzE5MzAiLz48dGV4dCB4PSI0MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNiIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNGRkYiPkFUTDwvdGV4dD48L3N2Zz4='">
           <span>FALCONS & OTHER TEAMS</span>
         </div>
         <div class="payout-value">100x</div>
@@ -928,6 +924,8 @@
           paytableOverlay: document.querySelector('.paytable-overlay')
         };
 
+        console.log('Elements initialized:', this.elements);
+
         // NFL Teams data with logo paths
         this.teams = [
           { name: 'NFL Shield', image: './logos/nfl.png', value: 15, isWild: true, isPremium: true },
@@ -952,12 +950,17 @@
           bigWin: null,
           jackpot: null,
           coin: null,
-          lever: null
+          lever: null,
+          lose: null
         };
 
         this.spinDuration = 2000;
         this.reelStopDelay = 300;
         this.jackpot = 50000;
+
+        // --- DEMO MODE ---
+        this.demoMode = false;
+        this.demoInterval = null;
 
         this.init();
       }
@@ -979,7 +982,8 @@
           bigWin: 'sounds/win3.wav',
           jackpot: 'sounds/Ben.wav',
           coin: 'sounds/win.wav',
-          lever: 'sounds/stop.wav'
+          lever: 'sounds/stop.wav',
+          lose: 'sounds/lose.wav'
         };
 
         Object.entries(soundFiles).forEach(([key, file]) => {
@@ -1007,8 +1011,14 @@
       }
 
       initEventListeners() {
+        console.log('Initializing event listeners...');
+        console.log('Spin button element:', this.elements.spinButton);
+        
         // Spin button
-        this.elements.spinButton?.addEventListener('click', () => this.spin());
+        this.elements.spinButton?.addEventListener('click', () => {
+          console.log('Spin button clicked!');
+          this.spin();
+        });
 
         // Betting controls
         this.elements.betUpButton?.addEventListener('click', () => this.adjustBet(5));
@@ -1064,7 +1074,11 @@
             const track = reel.querySelector('.symbol-track');
             if (track) {
               this.setReelSymbols(index, this.getRandomReelSymbols());
+            } else {
+              console.warn(`No .symbol-track found in reel #${index+1}`);
             }
+          } else {
+            console.warn(`No reel found at index ${index}`);
           }
         });
       }
@@ -1225,7 +1239,7 @@
         let winningLines = [];
         let winType = 'no-win';
 
-        for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+        for (let lineIndex =   0; lineIndex < lines.length; lineIndex++) {
           const line = lines[lineIndex];
           const symbols = line.map(([c,r]) => grid[c][r]);
 
@@ -1272,6 +1286,7 @@
 
       // Enhanced spin method with better animation handling
       async spin(isAutoplay = false) {
+        console.log('Spin method called, isSpinning:', this.isSpinning);
         if (this.isSpinning) return;
         if (this.credits < this.bet) {
           this.showMessage('Not enough credits!');
@@ -1279,6 +1294,8 @@
           return;
         }
 
+        console.log('Starting spin animation...');
+        
         // Deduct bet
         this.credits -= this.bet;
         if (this.autoplay) {
@@ -1306,62 +1323,144 @@
           this.getRandomReelSymbols()
         ];
 
+        console.log('Final grid generated:', finalGrid);
+
         // Enhanced reel spinning with seamless animation
+
+
+        // --- Parallel reel spin logic with correct sound sequence ---
+        const stopSound = (soundName) => {
+          if (this.sounds[soundName]) {
+            this.sounds[soundName].pause();
+            this.sounds[soundName].currentTime = 0;
+          }
+        };
+
+        // Start all reels spinning at the same time
         const spinPromises = this.elements.reels.map(async (reel, index) => {
           const track = reel.querySelector('.symbol-track');
-          if (!track) return;
+          if (!track) {
+            console.log(`No track found for reel ${index}`);
+            return;
+          }
 
-          // Add spinning class for continuous animation
+          // All reels: start spinning immediately
           track.classList.add('spinning');
-
-          // Create multiple symbol sets for seamless spinning effect
           this.createSpinningSymbols(track, index);
 
-          // Wait for reel-specific delay
+          // Only the stopping is staggered
           await this.delay(this.spinDuration + (index * this.reelStopDelay));
 
           // Stop spinning and set final symbols
           track.classList.remove('spinning');
           track.classList.add('decelerating');
+          this.setReelSymbols(index, finalGrid[index]);
+          // Play stop.wav as a new instance for each reel
+          if (this.sounds['stop']) {
+            const stopClone = this.sounds['stop'].cloneNode();
+            stopClone.currentTime = 0;
+            stopClone.play();
+          }
+          // After the 3rd reel, stop spin.wav and immediately play win/lose sound
+          if (index === 2) {
+            stopSound('spin');
+            // Calculate and handle win right away
+            const result = this.calculateWin(finalGrid);
+            await this.handleWinResult(result, finalGrid);
+          }
+          // Wait for a natural deceleration (matches previous animation: 1.5s)
+          await this.delay(1500);
+          track.classList.remove('decelerating');
 
-          // Set final symbols with proper spacing
-          setTimeout(() => {
-            this.setReelSymbols(index, finalGrid[index]);
-            this.playSound('stop');
-          }, 100);
-
-          // Remove deceleration class after animation
-          setTimeout(() => {
-            track.classList.remove('decelerating');
-          }, 1500);
         });
 
-        // Wait for all reels to stop
+        // Wait for all reels to finish
         await Promise.all(spinPromises);
 
         // Stop spinning effects
         this.stopSpinEffects();
 
-        // Calculate and handle win
-        const result = this.calculateWin(finalGrid);
-        await this.handleWinResult(result, finalGrid);
+        // (No longer need to call handleWinResult here)
 
         // Re-enable controls
         this.isSpinning = false;
         this.elements.spinButton && (this.elements.spinButton.disabled = false);
       }
 
+      async handleWinResult(result, grid) {
+        // Play win or lose sound, and re-enable spin immediately after
+        let soundPlayed = false;
+        if (result.win > 0) {
+        // Add winnings to credits
+        this.credits += result.win;
+
+        // Show win popup and effects immediately
+        this.showWinEffects(result, grid);
+        this.elements.winDisplay && (this.elements.winDisplay.textContent = result.win.toLocaleString());
+
+        // Play sound and effects as soon as popup appears
+        let winSoundName = null;
+        if (result.type === 'jackpot') {
+          winSoundName = 'jackpot';
+          this.createJackpotCelebration();
+        } else if (result.win > this.bet * 10) {
+          winSoundName = 'bigWin';
+        } else {
+          winSoundName = 'win';
+        }
+        if (winSoundName && this.sounds[winSoundName]) {
+          this.sounds[winSoundName].currentTime = 0;
+          this.sounds[winSoundName].play();
+          soundPlayed = true;
+        }
+        this.animateCoins(result.win);
+
+        // Wait for effect duration, then hide popup and re-enable spin
+        await this.delay(2000);
+        this.hideWinOverlay();
+        this.clearSymbolHighlights();
+        this.hidePaylines();
+        this.stopWinLights();
+        if (winSoundName && this.sounds[winSoundName]) {
+          this.sounds[winSoundName].pause();
+          this.sounds[winSoundName].currentTime = 0;
+        }
+        this.isSpinning = false;
+        this.elements.spinButton && (this.elements.spinButton.disabled = false);
+        } else {
+          // Play lose sound and re-enable spin immediately after
+          if (this.sounds['lose']) {
+            this.sounds['lose'].currentTime = 0;
+            this.sounds['lose'].play();
+            soundPlayed = true;
+            setTimeout(() => {
+              this.sounds['lose'].pause();
+              this.sounds['lose'].currentTime = 0;
+              this.isSpinning = false;
+              this.elements.spinButton && (this.elements.spinButton.disabled = false);
+            }, 1100);
+          } else {
+            // If no lose sound, re-enable spin immediately
+            this.isSpinning = false;
+            this.elements.spinButton && (this.elements.spinButton.disabled = false);
+          }
+        }
+        if (!soundPlayed) {
+          // Fallback: re-enable spin if no sound was played
+          this.isSpinning = false;
+          this.elements.spinButton && (this.elements.spinButton.disabled = false);
+        }
+        this.updateDisplays();
+      }
+
       // Create seamless spinning symbols
       createSpinningSymbols(track, reelIndex) {
-        // Create a longer list of symbols for smooth spinning
-        const spinSymbols = [];
-        for (let i = 0; i < 12; i++) { // Create 12 symbols for smooth animation
-          spinSymbols.push(this.getRandomSymbol());
-        }
+        // Fill the spinning track with 100 random picks from teams for true variety
+        const symbolsToShow = Array.from({length: 100}, () => this.teams[Math.floor(Math.random() * this.teams.length)]);
 
         // Clear track and add spinning symbols
         track.innerHTML = '';
-        spinSymbols.forEach(symbol => {
+        symbolsToShow.forEach(symbol => {
           const img = document.createElement('img');
           img.src = symbol.image;
           img.alt = symbol.name;
@@ -1374,171 +1473,158 @@
           img.style.margin = '0';
           img.style.padding = '0';
           img.style.flexShrink = '0';
-          
           // Add fallback for missing logos
           img.onerror = () => {
             img.src = this.createFallbackSVG(symbol);
           };
-          
           track.appendChild(img);
         });
       }
 
-      async handleWinResult(result, grid) {
-        if (result.win > 0) {
-          // Add winnings to credits
-          this.credits += result.win;
-
-          // Show win animations
-          await this.showWinEffects(result, grid);
-
-          // Update win display
-          this.elements.winDisplay && (this.elements.winDisplay.textContent = result.win.toLocaleString());
-
-          // Play appropriate win sound
-          if (result.type === 'jackpot') {
-            this.playSound('jackpot');
-            this.createJackpotCelebration();
-          } else if (result.win > this.bet * 10) {
-            this.playSound('bigWin');
-          } else {
-            this.playSound('win');
-          }
-
-          // Show coin animation
-          this.animateCoins(result.win);
+      hideWinOverlay() {
+        if (this.elements.winOverlay) {
+          this.elements.winOverlay.classList.remove('visible');
         }
+      }
 
-        this.updateDisplays();
+      clearSymbolHighlights() {
+        // Remove win class from all symbols
+        this.elements.reels.forEach(reel => {
+          const symbols = reel.querySelectorAll('img');
+          symbols.forEach(symbol => {
+            symbol.classList.remove('win');
+          });
+        });
+      }
+
+      hidePaylines() {
+        if (this.elements.paylines) {
+          this.elements.paylines.forEach(payline => {
+            payline.classList.remove('active');
+          });
+        }
       }
 
       async showWinEffects(result, grid) {
-        // Highlight winning paylines
-        result.lines.forEach(winLine => {
-          if (winLine.line < this.elements.paylines.length) {
-            this.elements.paylines[winLine.line].classList.add('active');
-          }
-        });
-
-        // Highlight winning symbols
-        result.lines.forEach(winLine => {
-          const linePositions = [
-            [[0,0],[1,0],[2,0]], // Top row
-            [[0,1],[1,1],[2,1]], // Middle row  
-            [[0,2],[1,2],[2,2]], // Bottom row
-          ];
-
-          if (winLine.line < linePositions.length) {
-            linePositions[winLine.line].forEach(([reelIndex, symbolIndex]) => {
-              const reel = this.elements.reels[reelIndex];
-              if (reel) {
-                const symbols = reel.querySelectorAll('.symbol-track img');
-                if (symbols[symbolIndex]) {
-                  symbols[symbolIndex].classList.add('win');
-                }
+        // Show winning symbols
+        (result.lines || []).forEach(line => {
+          // For compatibility, support both {symbols, win, line} and {positions, ...}
+          const positions = line.positions || [];
+          positions.forEach(pos => {
+            const reel = this.elements.reels[pos[0]];
+            if (reel) {
+              const symbols = reel.querySelectorAll('img');
+              if (symbols[pos[1]]) {
+                symbols[pos[1]].classList.add('win');
               }
-            });
+            }
+          });
+          // Show winning payline
+          if (this.elements.paylines && this.elements.paylines[line.lineIndex || line.line]) {
+            this.elements.paylines[line.lineIndex || line.line].classList.add('active');
           }
         });
 
         // Show win overlay
-        this.showWinOverlay(result);
+        if (this.elements.winOverlay) {
+          const winText = this.elements.winOverlay.querySelector('div:last-child');
+          if (winText) {
+            winText.textContent = `${result.win.toLocaleString()} CREDITS!`;
+          }
+          this.elements.winOverlay.classList.add('visible');
+        }
 
-        // Flash LED lights
+        // Start win lights
         this.startWinLights();
 
-        // Auto-hide after delay
-        setTimeout(() => {
-          this.hideWinOverlay();
-          this.hidePaylines();
-          this.clearSymbolHighlights();
-          this.stopWinLights();
-        }, 3000);
-      }
+        // Wait for effect duration
+        await this.delay(2000);
 
-      showWinOverlay(result) {
-        if (!this.elements.winOverlay) return;
-
-        let message = '';
-        switch(result.type) {
-          case 'jackpot':
-            message = `<div style="font-size: 36px; font-weight: 900; color: var(--nfl-gold); margin-bottom: 20px;">🏆 JACKPOT! 🏆</div><div style="font-size: 28px; font-weight: bold; color: var(--win-color);">${result.win.toLocaleString()} CREDITS!</div>`;
-            break;
-          case 'premium':
-            message = `<div style="font-size: 36px; font-weight: 900; color: var(--nfl-gold); margin-bottom: 20px;">💎 BIG WIN! 💎</div><div style="font-size: 28px; font-weight: bold; color: var(--win-color);">${result.win.toLocaleString()} CREDITS!</div>`;
-            break;
-          case 'three-match':
-            message = `<div style="font-size: 36px; font-weight: 900; color: var(--nfl-gold); margin-bottom: 20px;">🎉 THREE OF A KIND! 🎉</div><div style="font-size: 28px; font-weight: bold; color: var(--win-color);">${result.win.toLocaleString()} CREDITS!</div>`;
-            break;
-          default:
-            message = `<div style="font-size: 36px; font-weight: 900; color: var(--nfl-gold); margin-bottom: 20px;">WIN!</div><div style="font-size: 28px; font-weight: bold; color: var(--win-color);">${result.win.toLocaleString()} CREDITS!</div>`;
-        }
-
-        this.elements.winOverlay.innerHTML = message;
-        this.elements.winOverlay.classList.add('visible');
-      }
-
-      hideWinOverlay() {
-        this.elements.winOverlay?.classList.remove('visible');
-      }
-
-      hidePaylines() {
-        this.elements.paylines.forEach(payline => {
-          payline.classList.remove('active');
-        });
-      }
-
-      clearSymbolHighlights() {
-        this.elements.reels.forEach(reel => {
-          const symbols = reel.querySelectorAll('.symbol-track img');
-          symbols.forEach(symbol => symbol.classList.remove('win'));
-        });
-      }
-
-      animateCoins(amount) {
-        const coinCount = Math.min(Math.floor(amount / 100), 20); // Max 20 coins
-        const container = document.querySelector('.slot-machine');
-
-        if (!container) return;
-
-        for (let i = 0; i < coinCount; i++) {
-          setTimeout(() => {
-            const coin = document.createElement('div');
-            coin.className = 'coin-animation';
-            coin.style.left = `${Math.random() * 80 + 10}%`;
-            coin.style.top = `70%`;
-            container.appendChild(coin);
-
-            setTimeout(() => {
-              coin.remove();
-            }, 1000);
-          }, i * 100);
-        }
+        // Hide effects
+        this.hideWinOverlay();
+        this.clearSymbolHighlights();
+        this.hidePaylines();
+        this.stopWinLights();
       }
 
       createJackpotCelebration() {
-        // Create confetti effect
-        const colors = ['#FFB612', '#013369', '#D50A0A', '#A5ACAF'];
-        const confettiCount = 50;
-        
-        for (let i = 0; i < confettiCount; i++) {
-          const confetti = document.createElement('div');
-          confetti.style.position = 'fixed';
-          confetti.style.width = '10px';
-          confetti.style.height = '10px';
-          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-          confetti.style.left = Math.random() * 100 + 'vw';
-          confetti.style.top = '-10px';
-          confetti.style.zIndex = '1001';
-          confetti.style.borderRadius = '50%';
-          confetti.style.animation = `confettiDrop ${Math.random() * 3 + 2}s linear forwards`;
-          confetti.style.animationDelay = Math.random() * 3 + 's';
-          document.body.appendChild(confetti);
-          
+      }
+
+      animateCoins(amount) {
+        // Simple coin animation: animate gold circles from reels to credits display
+        const creditsElem = this.elements.creditsDisplay;
+        if (!creditsElem) return;
+        const rect = creditsElem.getBoundingClientRect();
+        for (let i = 0; i < Math.min(20, Math.max(5, Math.floor(amount / 100))); i++) {
           setTimeout(() => {
-            confetti.remove();
-          }, 5000);
+            const coin = document.createElement('div');
+            coin.style.position = 'fixed';
+            coin.style.left = (window.innerWidth / 2 + (Math.random() - 0.5) * 200) + 'px';
+            coin.style.top = (window.innerHeight / 2 + (Math.random() - 0.5) * 100) + 'px';
+            coin.style.width = '18px';
+            coin.style.height = '18px';
+            coin.style.borderRadius = '50%';
+            coin.style.background = 'radial-gradient(circle at 30% 30%, #FFD700 80%, #B8860B 100%)';
+            coin.style.zIndex = '9999';
+            coin.style.boxShadow = '0 0 8px #FFD700, 0 0 2px #B8860B';
+            coin.style.pointerEvents = 'none';
+            coin.style.transition = 'all 1s cubic-bezier(0.4,1.4,0.4,1)';
+            document.body.appendChild(coin);
+            setTimeout(() => {
+              coin.style.left = (rect.left + rect.width / 2) + 'px';
+              coin.style.top = (rect.top + rect.height / 2) + 'px';
+              coin.style.opacity = '0';
+              coin.style.transform = 'scale(0.5)';
+            }, 10);
+            setTimeout(() => {
+              if (coin.parentNode) coin.parentNode.removeChild(coin);
+            }, 1100);
+          }, i * 60);
         }
+        // Create confetti effect for jackpot wins
+        for (let i = 0; i < 50; i++) {
+          setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.style.position = 'fixed';
+            confetti.style.left = Math.random() * window.innerWidth + 'px';
+            confetti.style.top = '-10px';
+            confetti.style.width = '10px';
+            confetti.style.height = '10px';
+            confetti.style.backgroundColor = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'][Math.floor(Math.random() * 5)];
+            confetti.style.zIndex = '9999';
+            confetti.style.animation = 'confettiDrop 3s linear forwards';
+            confetti.style.pointerEvents = 'none';
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => {
+              if (confetti.parentNode) {
+                confetti.parentNode.removeChild(confetti);
+              }
+            }, 3000);
+          }, i * 50);
+        }
+      }
+
+      // --- DEMO MODE ---
+      toggleDemoMode() {
+        this.demoMode = !this.demoMode;
+        if (this.demoMode) {
+          this.startDemo();
+        } else {
+          this.stopDemo();
+        }
+      }
+      startDemo() {
+        if (this.demoInterval) clearInterval(this.demoInterval);
+        this.demoInterval = setInterval(() => {
+          if (!this.isSpinning) {
+            this.spin();
+          }
+        }, 3500);
+      }
+      stopDemo() {
+        if (this.demoInterval) clearInterval(this.demoInterval);
+        this.demoInterval = null;
       }
 
       startSpinEffects() {
@@ -1695,17 +1781,27 @@
       }
     }
 
-    // Initialize the game when DOM is loaded
+    // Initialize the game and demo button when DOM is loaded
     document.addEventListener('DOMContentLoaded', () => {
       if (document.querySelector('.slot-machine')) {
         window.nflSlots = new NFLSlots();
-        
-        // Demo spin after 2 seconds
-        setTimeout(() => {
-          if (window.nflSlots && !window.nflSlots.isSpinning) {
-            window.nflSlots.spin();
-          }
-        }, 2000);
+        // Add a demo mode toggle button to the UI (if not present)
+        const demoBtn = document.createElement('button');
+        demoBtn.textContent = 'Demo Mode';
+        demoBtn.style.position = 'fixed';
+        demoBtn.style.bottom = '24px';
+        demoBtn.style.right = '24px';
+        demoBtn.style.zIndex = 2000;
+        demoBtn.style.padding = '1rem 2rem';
+        demoBtn.style.background = 'linear-gradient(145deg, #FFD700 0%, #FFA500 100%)';
+        demoBtn.style.color = '#222';
+        demoBtn.style.fontWeight = 'bold';
+        demoBtn.style.border = 'none';
+        demoBtn.style.borderRadius = '1.2rem';
+        demoBtn.style.boxShadow = '0 2px 12px #0004';
+        demoBtn.style.cursor = 'pointer';
+        demoBtn.onclick = () => window.nflSlots && window.nflSlots.toggleDemoMode();
+        document.body.appendChild(demoBtn);
       }
     });
 
@@ -1739,6 +1835,8 @@
 
     // Touch handling for better mobile experience
     document.addEventListener('touchstart', function() {}, { passive: true });
+
+    // (Demo button creation now handled above)
   </script>
 </body>
 </html>
