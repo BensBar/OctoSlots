@@ -1190,7 +1190,7 @@
       [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')].forEach(reel => fillReel(reel));
     });
     // List of symbol image URLs for the reels
-    const symbols = [
+    const rawSymbols = [
       'images/original.png',
       'images/surftocat.png',
       'images/yogitocat.png',
@@ -1213,6 +1213,22 @@
       'images/megacat.png'
     ];
 
+    // Filter out any empty, null, or undefined symbols to prevent blank spaces
+    const symbols = rawSymbols.filter(symbol => 
+      symbol && 
+      typeof symbol === 'string' && 
+      symbol.trim().length > 0
+    );
+
+    // Function to get a valid random symbol (never returns empty)
+    function getValidRandomSymbol() {
+      if (symbols.length === 0) {
+        // Fallback to original if no valid symbols (should never happen)
+        return 'images/original.png';
+      }
+      return symbols[Math.floor(Math.random() * symbols.length)];
+    }
+
     // Get audio elements for sound effects
     const spinSound = document.getElementById('spin-sound');
     const stopSound = document.getElementById('stop-sound');
@@ -1228,22 +1244,57 @@
         const sym = document.createElement('div');
         sym.className = 'symbol';
         const img = document.createElement('img');
-        // Pick a random symbol from the list
-        const symbol = symbols[Math.floor(Math.random() * symbols.length)];
-        img.src = symbol;
-        // Fallback to original Octocat if image fails to load
-        img.onerror = function() {
-          console.log('Image failed to load:', this.src, 'Replacing with SVG placeholder.');
-          this.onerror = null;
-          // Use a visible SVG placeholder if image fails
-          this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="100%25" height="100%25" fill="%23FFD700"/><text x="50%25" y="55%25" font-size="32" text-anchor="middle" fill="black" dy=".3em">❓</text></svg>';
-        };
-        sym.appendChild(img);
-        strip.appendChild(sym);
-        reelSymbols.push(sym.cloneNode(true));
+        
+        // Pick a valid random symbol from the filtered list
+        const symbol = getValidRandomSymbol();
+        
+        // Only proceed if we have a valid symbol
+        if (symbol && symbol.trim().length > 0) {
+          img.src = symbol;
+          img.alt = 'Octocat Symbol';
+          
+          // Enhanced fallback handling with multiple levels of error recovery
+          img.onerror = function() {
+            console.log('Image failed to load:', this.src, 'Applying fallback strategy.');
+            this.onerror = null; // Prevent infinite loops
+            
+            // Try fallback to original image first
+            if (this.src !== 'images/original.png') {
+              this.src = 'images/original.png';
+              // Set up secondary fallback
+              this.onerror = function() {
+                console.log('Original fallback also failed, using SVG placeholder.');
+                this.onerror = null;
+                // Final fallback: use a styled SVG placeholder that matches game aesthetic
+                this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23FFD700;stop-opacity:1" /><stop offset="100%" style="stop-color:%23FFA500;stop-opacity:1" /></linearGradient></defs><rect width="100%" height="100%" fill="url(%23grad)" rx="8"/><circle cx="40" cy="30" r="8" fill="white"/><path d="M 25 45 Q 40 60 55 45" stroke="white" stroke-width="3" fill="none"/><text x="50%" y="75%" font-size="8" text-anchor="middle" fill="white" font-family="Arial">OCTO</text></svg>';
+              };
+            } else {
+              // Already tried original, go straight to SVG
+              this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23FFD700;stop-opacity:1" /><stop offset="100%" style="stop-color:%23FFA500;stop-opacity:1" /></linearGradient></defs><rect width="100%" height="100%" fill="url(%23grad)" rx="8"/><circle cx="40" cy="30" r="8" fill="white"/><path d="M 25 45 Q 40 60 55 45" stroke="white" stroke-width="3" fill="none"/><text x="50%" y="75%" font-size="8" text-anchor="middle" fill="white" font-family="Arial">OCTO</text></svg>';
+            }
+          };
+          
+          sym.appendChild(img);
+          strip.appendChild(sym);
+          reelSymbols.push(sym.cloneNode(true));
+        }
       }
+      
+      // Ensure we have symbols (safety check)
+      if (reelSymbols.length === 0) {
+        console.warn('No valid symbols could be created, adding fallback symbol');
+        const fallbackSym = document.createElement('div');
+        fallbackSym.className = 'symbol';
+        const fallbackImg = document.createElement('img');
+        fallbackImg.src = 'images/original.png';
+        fallbackImg.alt = 'Fallback Octocat';
+        fallbackSym.appendChild(fallbackImg);
+        strip.appendChild(fallbackSym);
+        reelSymbols.push(fallbackSym.cloneNode(true));
+      }
+      
       // Duplicate the first 3 symbols at the end for seamless looping
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < Math.min(3, reelSymbols.length); i++) {
         strip.appendChild(reelSymbols[i].cloneNode(true));
       }
 
@@ -1462,16 +1513,23 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
           const rect = symbolDiv.getBoundingClientRect();
           if (rect.top <= centerY && rect.bottom >= centerY) {
             const img = symbolDiv.querySelector('img');
-            return img ? img.src : '';
+            // Return empty string only if img is missing or src is invalid
+            const src = img ? img.src : '';
+            // Filter out data URIs (SVG fallbacks) and empty sources for win calculation
+            if (src && !src.startsWith('data:')) {
+              return src;
+            }
           }
         }
         return '';
       }
       // Get the three center symbols by DOM position
       const symbolsLanded = reelsArr.map(reel => getCenterSymbolSrc(reel));
-      // Count occurrences of each symbol in the center row
+      // Filter out empty or invalid symbols before counting
+      const validSymbolsLanded = symbolsLanded.filter(src => src && src.trim().length > 0);
+      // Count occurrences of each valid symbol in the center row
       const counts = {};
-      symbolsLanded.forEach(src => { counts[src] = (counts[src] || 0) + 1; });
+      validSymbolsLanded.forEach(src => { counts[src] = (counts[src] || 0) + 1; });
       let winType = null;
       let winSymbol = null;
       let payout = 0;
@@ -1512,15 +1570,21 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
         lastWin = payout;
         credits += lastWin;
         updateDisplay();
-        // Show small octocats for the win
+        // Show small octocats for the win - only show valid symbols
         for (let i = 0; i < 3; i++) {
-          if (symbolsLanded[i] === winSymbol) {
+          if (symbolsLanded[i] === winSymbol && symbolsLanded[i] && symbolsLanded[i].trim().length > 0) {
             const img = document.createElement('img');
             img.src = winSymbol;
+            img.alt = 'Winning Symbol';
             img.style.width = '32px';
             img.style.height = '32px';
             img.style.margin = '0 2px';
             img.style.verticalAlign = 'middle';
+            // Add error handling for win display images too
+            img.onerror = function() {
+              this.onerror = null;
+              this.src = 'images/original.png';
+            };
             lastWinSymbols.appendChild(img);
           }
         }

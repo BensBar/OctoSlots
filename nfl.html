@@ -926,8 +926,8 @@
 
         console.log('Elements initialized:', this.elements);
 
-        // NFL Teams data with logo paths
-        this.teams = [
+        // NFL Teams raw data with logo paths
+        this.rawTeams = [
           { name: 'NFL Shield', image: './logos/nfl.png', value: 15, isWild: true, isPremium: true },
           { name: 'Trophy', image: './logos/trophy.png', value: 2000, isJackpot: true },
           { name: 'AFC', image: './logos/afc.png', value: 1000, isPremium: true },
@@ -941,6 +941,17 @@
           { name: 'Chiefs', image: './logos/chiefs.png', value: 140 },
           { name: 'Eagles', image: './logos/eagles.png', value: 130 }
         ];
+
+        // Filter out any invalid teams to prevent blank spaces
+        this.teams = this.rawTeams.filter(team => 
+          team && 
+          team.name && 
+          team.image && 
+          typeof team.name === 'string' && 
+          typeof team.image === 'string' &&
+          team.name.trim().length > 0 && 
+          team.image.trim().length > 0
+        );
 
         // Sound system
         this.sounds = {
@@ -1084,6 +1095,10 @@
       }
 
       getRandomSymbol() {
+        if (this.teams.length === 0) {
+          // Fallback to a basic team if no valid teams (should never happen)
+          return { name: 'NFL Shield', image: './logos/nfl.png', value: 15 };
+        }
         return this.teams[Math.floor(Math.random() * this.teams.length)];
       }
 
@@ -1099,8 +1114,24 @@
         const track = reel.querySelector('.symbol-track');
         if (!track) return;
 
+        // Filter out any invalid symbols before rendering
+        const validSymbols = symbols.filter(symbol => 
+          symbol && 
+          symbol.name && 
+          symbol.image && 
+          typeof symbol.name === 'string' && 
+          typeof symbol.image === 'string' &&
+          symbol.name.trim().length > 0 && 
+          symbol.image.trim().length > 0
+        );
+
+        // If no valid symbols, use fallback
+        if (validSymbols.length === 0) {
+          validSymbols.push({ name: 'NFL Shield', image: './logos/nfl.png', value: 15 });
+        }
+
         // Create symbols with proper spacing and no gaps
-        const symbolElements = symbols.map(symbol => {
+        const symbolElements = validSymbols.map(symbol => {
           const img = document.createElement('img');
           img.src = symbol.image;
           img.alt = symbol.name;

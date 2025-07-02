@@ -1675,8 +1675,8 @@
       lights: document.querySelectorAll('.light')
     };
     
-    // Define the Octocats array
-    const octocats = [
+    // Define the raw Octocats array
+    const rawOctocats = [
       { name: 'Original', image: 'images/original.png', value: 10 },
       { name: 'Surftocat', image: 'images/surftocat.png', value: 5 },
       { name: 'Yogitocat', image: 'images/yogitocat.png', value: 5 },
@@ -1686,7 +1686,7 @@
       { name: 'Security', image: 'images/securitocat.png', value: 8 },
       { name: 'Inspectocat', image: 'images/inspectocat.png', value: 5 },
       { name: 'Daftpunktocat', image: 'images/daftpunktocat-guy.gif', value: 5 },
-      { name: 'Hula', image: 'images/hula_loop_octodx03.gif', value: 7 },
+      { name: 'Hula', image: 'images/hula_loop_octodex03.gif', value: 7 },
       { name: 'Minion', image: 'images/minion.png', value: 5 },
       { name: 'Droidtocat', image: 'images/droidtocat.png', value: 5 },
       { name: 'Ironcat', image: 'images/ironcat.png', value: 5 },
@@ -1694,6 +1694,26 @@
       { name: 'Megacat', image: 'images/megacat.png', value: 5 },
       { name: 'Repo', image: 'images/repo.png', value: 5 }
     ];
+    
+    // Filter out any invalid octocats to prevent blank spaces
+    const octocats = rawOctocats.filter(octocat => 
+      octocat && 
+      octocat.name && 
+      octocat.image && 
+      typeof octocat.name === 'string' && 
+      typeof octocat.image === 'string' &&
+      octocat.name.trim().length > 0 && 
+      octocat.image.trim().length > 0
+    );
+    
+    // Function to get a valid random octocat (never returns invalid)
+    function getValidRandomOctocat() {
+      if (octocats.length === 0) {
+        // Fallback to a basic octocat if no valid octocats (should never happen)
+        return { name: 'Original', image: 'images/original.png', value: 10 };
+      }
+      return octocats[Math.floor(Math.random() * octocats.length)];
+    }
     
     const config = {
       spinCost: 10,
@@ -1843,8 +1863,8 @@
     function setRandomSymbol(slotItem) {
       if (!slotItem) return null;
       
-      const randomOctocat = octocats[Math.floor(Math.random() * octocats.length)];
-      if (!randomOctocat || !randomOctocat.image) {
+      const randomOctocat = getValidRandomOctocat();
+      if (!randomOctocat || !randomOctocat.image || !randomOctocat.name) {
         // Fallback to first octocat if somehow we get invalid data
         const fallbackOctocat = octocats[0];
         if (fallbackOctocat) {
@@ -1948,14 +1968,17 @@
       
       if (randomValue < 0.1) {
         // 10% chance of all 3 matching
-        const symbolName = octocats[Math.floor(Math.random() * octocats.length)].name;
+        const validOctocat = getValidRandomOctocat();
+        const symbolName = validOctocat.name;
         symbols = [symbolName, symbolName, symbolName];
       } else if (randomValue < 0.3) {
         // 20% chance of 2 matching
-        const symbolName1 = octocats[Math.floor(Math.random() * octocats.length)].name;
+        const validOctocat1 = getValidRandomOctocat();
+        const symbolName1 = validOctocat1.name;
         let symbolName2;
         do {
-          symbolName2 = octocats[Math.floor(Math.random() * octocats.length)].name;
+          const validOctocat2 = getValidRandomOctocat();
+          symbolName2 = validOctocat2.name;
         } while (symbolName2 === symbolName1);
         
         symbols = [symbolName1, symbolName1, symbolName2];
@@ -1966,10 +1989,8 @@
           symbols = [symbolName2, symbolName1, symbolName1];
         }
       } else {
-        // 70% chance of all different
-        symbols = Array(3).fill().map(() => 
-          octocats[Math.floor(Math.random() * octocats.length)].name
-        );
+        // 70% chance of all different - use valid octocats only
+        symbols = Array(3).fill().map(() => getValidRandomOctocat().name);
       }
       
       return symbols;
