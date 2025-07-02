@@ -676,7 +676,7 @@
     /* Slot machine arch and frame styles */
     .slot-arch-frame {
       position: relative;
-      margin: 2rem auto 0 auto;
+      margin: 5rem auto 0 auto;
       width: 44rem;
       max-width: 98vw;
       min-height: 44rem;
@@ -1003,11 +1003,12 @@
 
   <!-- Button to toggle between light and dark mode (now always visible and sticky on mobile) -->
   <div class="toggle-mode-bar">
+    <button class="toggle-mode" onclick="toggleMode()">🌙</button>
   </div>
   <div class="slot-arch-frame">
     <!-- Toggle button is now inside the slot machine arch for mobile visibility -->
     <div class="toggle-mode-arch">
-      <button class="toggle-mode" onclick="toggleMode()">Toggle Mode</button>
+      <button class="toggle-mode" onclick="toggleMode()">🌙</button>
     </div>
     <div class="slot-arch-lights"></div>
     <div class="slot-arch-top">
@@ -1177,9 +1178,6 @@
           <span class="pay-mult">x5</span>
         </div>
       </div>
-    </div>
-    <div class="slot-base">
-      <!-- Only payout stickers, no extra Octocat heads -->
     </div>
   </div>
 
@@ -1622,6 +1620,12 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
     // Toggle between light and dark mode
     function toggleMode() {
       document.body.classList.toggle('light');
+      const toggleButton = document.querySelector('.toggle-mode');
+      if (document.body.classList.contains('light')) {
+        toggleButton.textContent = '🌞';
+      } else {
+        toggleButton.textContent = '🌙';
+      }
     }
 
     // Hide win popup when clicking spin or the popup itself
