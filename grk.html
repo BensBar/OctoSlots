@@ -88,17 +88,43 @@
         </ul>
     </div>
     <script>
-        const symbols = {
+        const rawSymbols = {
             'Original': 'https://octodx.github.io/images/original.png',
             'Octobiwan': 'https://octodx.github.io/images/octobiwan.jpg',
             'Surftocat': 'https://octodx.github.io/images/surftocat.png'
         };
 
-        const reelStops = [
+        // Filter out any invalid symbols to prevent blank spaces
+        const symbols = {};
+        Object.keys(rawSymbols).forEach(key => {
+            if (key && rawSymbols[key] && 
+                typeof key === 'string' && typeof rawSymbols[key] === 'string' &&
+                key.trim().length > 0 && rawSymbols[key].trim().length > 0) {
+                symbols[key] = rawSymbols[key];
+            }
+        });
+
+        const rawReelStops = [
             'Original', 'Original',
             'Octobiwan', 'Octobiwan',
             'Surftocat', 'Surftocat'
         ];
+
+        // Filter out any invalid reel stops
+        const reelStops = rawReelStops.filter(stop => 
+            stop && 
+            typeof stop === 'string' && 
+            stop.trim().length > 0 &&
+            symbols[stop] // Ensure the symbol exists in our symbols object
+        );
+
+        // Function to get a valid random reel stop
+        function getValidRandomReelStop() {
+            if (reelStops.length === 0) {
+                return 'Original'; // Fallback
+            }
+            return reelStops[Math.floor(Math.random() * reelStops.length)];
+        }
 
         const fallbackImage = 'https://octodx.github.io/images/original.png';
 
@@ -114,7 +140,20 @@
         }
 
         function getSymbolImage(symbol) {
+            // Validate symbol input to prevent blank spaces
+            if (!symbol || typeof symbol !== 'string' || symbol.trim().length === 0) {
+                console.warn(`Invalid symbol provided: ${symbol}, using fallback`);
+                return fallbackImage;
+            }
+            
             const image = symbols[symbol] || fallbackImage;
+            
+            // Validate image URL to prevent blank spaces
+            if (!image || typeof image !== 'string' || image.trim().length === 0) {
+                console.warn(`Invalid image URL for symbol ${symbol}, using fallback`);
+                return fallbackImage;
+            }
+            
             console.log(`Getting image for ${symbol}: ${image}`);
             return image;
         }
@@ -165,12 +204,10 @@
             credits -= bet;
             win = 0;
 
-            const index1 = Math.floor(Math.random() * reelStops.length);
-            const index2 = Math.floor(Math.random() * reelStops.length);
-            const index3 = Math.floor(Math.random() * reelStops.length);
-            const s1 = reelStops[index1];
-            const s2 = reelStops[index2];
-            const s3 = reelStops[index3];
+            // Use validated random selection to prevent blank symbols
+            const s1 = getValidRandomReelStop();
+            const s2 = getValidRandomReelStop();
+            const s3 = getValidRandomReelStop();
 
             console.log(`Selected symbols: ${s1}, ${s2}, ${s3}`);
             setSymbols(s1, s2, s3);
