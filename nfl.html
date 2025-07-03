@@ -924,6 +924,22 @@
           paytableOverlay: document.querySelector('.paytable-overlay')
         };
 
+        // FIXED: Validate that all three reel elements are found
+        console.log('Reel element validation:');
+        this.elements.reels.forEach((reel, index) => {
+          if (!reel) {
+            console.error(`CRITICAL ERROR: Reel element ${index + 1} (reel${index + 1}) not found in DOM!`);
+          } else {
+            console.log(`✓ Reel ${index + 1} (${reel.id}) found successfully`);
+            const track = reel.querySelector('.symbol-track');
+            if (!track) {
+              console.error(`CRITICAL ERROR: .symbol-track not found in ${reel.id}!`);
+            } else {
+              console.log(`✓ Symbol track found in ${reel.id}`);
+            }
+          }
+        });
+
         console.log('Elements initialized:', this.elements);
 
         // NFL Teams raw data with logo paths
@@ -1080,18 +1096,33 @@
       }
 
       initReels() {
+        console.log('Initializing reels...');
+        console.log('Available reel elements:', this.elements.reels.map((reel, i) => ({ 
+          index: i, 
+          element: reel ? 'found' : 'missing',
+          id: reel ? reel.id : 'N/A'
+        })));
+
         this.elements.reels.forEach((reel, index) => {
-          if (reel) {
-            const track = reel.querySelector('.symbol-track');
-            if (track) {
-              this.setReelSymbols(index, this.getRandomReelSymbols());
-            } else {
-              console.warn(`No .symbol-track found in reel #${index+1}`);
-            }
-          } else {
-            console.warn(`No reel found at index ${index}`);
+          if (!reel) {
+            console.error(`ERROR: Reel element ${index} is null/undefined!`);
+            return;
           }
+          
+          console.log(`Initializing reel ${index} (${reel.id})`);
+          
+          const track = reel.querySelector('.symbol-track');
+          if (!track) {
+            console.error(`ERROR: No .symbol-track found in reel ${index} (${reel.id})`);
+            return;
+          }
+          
+          console.log(`Found symbol track for reel ${index}, setting initial symbols`);
+          this.setReelSymbols(index, this.getRandomReelSymbols());
+          console.log(`Reel ${index} initialization completed`);
         });
+        
+        console.log('All reels initialized');
       }
 
       getRandomSymbol() {
@@ -1106,16 +1137,24 @@
         return [this.getRandomSymbol(), this.getRandomSymbol(), this.getRandomSymbol()];
       }
 
-      // Enhanced reel symbol setting with proper spacing and logo support
+      // Enhanced reel symbol setting with guaranteed 3 symbols per reel
       setReelSymbols(reelIndex, symbols) {
+        console.log(`Setting symbols for reel ${reelIndex}:`, symbols);
+        
         const reel = this.elements.reels[reelIndex];
-        if (!reel) return;
+        if (!reel) {
+          console.error(`ERROR: Reel ${reelIndex} element not found!`);
+          return;
+        }
 
         const track = reel.querySelector('.symbol-track');
-        if (!track) return;
+        if (!track) {
+          console.error(`ERROR: Symbol track not found for reel ${reelIndex}!`);
+          return;
+        }
 
         // Filter out any invalid symbols before rendering
-        const validSymbols = symbols.filter(symbol => 
+        let validSymbols = symbols.filter(symbol => 
           symbol && 
           symbol.name && 
           symbol.image && 
@@ -1125,13 +1164,25 @@
           symbol.image.trim().length > 0
         );
 
-        // If no valid symbols, use fallback
-        if (validSymbols.length === 0) {
-          validSymbols.push({ name: 'NFL Shield', image: './logos/nfl.png', value: 15 });
+        console.log(`Reel ${reelIndex}: ${validSymbols.length} valid symbols out of ${symbols.length} total`);
+
+        // FIXED: Ensure we always have exactly 3 symbols
+        const fallbackSymbol = { name: 'NFL Shield', image: './logos/nfl.png', value: 15 };
+        
+        // If we have fewer than 3 valid symbols, add fallback symbols
+        while (validSymbols.length < 3) {
+          validSymbols.push(fallbackSymbol);
+          console.log(`Added fallback symbol to reel ${reelIndex}, now have ${validSymbols.length} symbols`);
+        }
+        
+        // If we have more than 3 symbols, trim to exactly 3
+        if (validSymbols.length > 3) {
+          validSymbols = validSymbols.slice(0, 3);
+          console.log(`Trimmed reel ${reelIndex} to exactly 3 symbols`);
         }
 
         // Create symbols with proper spacing and no gaps
-        const symbolElements = validSymbols.map(symbol => {
+        const symbolElements = validSymbols.map((symbol, symbolIndex) => {
           const img = document.createElement('img');
           img.src = symbol.image;
           img.alt = symbol.name;
@@ -1147,15 +1198,27 @@
           
           // Add fallback SVG for missing logos
           img.onerror = () => {
+            console.log(`Image failed to load for ${symbol.name}, using fallback SVG`);
             img.src = this.createFallbackSVG(symbol);
           };
           
+          console.log(`Created symbol element ${symbolIndex} for reel ${reelIndex}: ${symbol.name}`);
           return img;
         });
 
         // Clear existing content and add new symbols
         track.innerHTML = '';
         symbolElements.forEach(element => track.appendChild(element));
+        
+        console.log(`Reel ${reelIndex} now has ${symbolElements.length} symbol elements in DOM`);
+        
+        // Validate the final result
+        const finalSymbolCount = track.children.length;
+        if (finalSymbolCount !== 3) {
+          console.error(`ERROR: Reel ${reelIndex} has ${finalSymbolCount} symbols instead of 3!`);
+        } else {
+          console.log(`SUCCESS: Reel ${reelIndex} correctly has 3 symbols`);
+        }
       }
 
       // Create fallback SVG for missing logos
@@ -1367,42 +1430,68 @@
           }
         };
 
+        // Enhanced validation: Ensure all three reels are available
+        console.log('Validating reel elements:', this.elements.reels.map((reel, i) => ({ 
+          index: i, 
+          element: reel ? 'found' : 'missing',
+          id: reel ? reel.id : 'N/A',
+          track: reel ? (reel.querySelector('.symbol-track') ? 'found' : 'missing') : 'N/A'
+        })));
+
         // Start all reels spinning at the same time
         const spinPromises = this.elements.reels.map(async (reel, index) => {
-          const track = reel.querySelector('.symbol-track');
-          if (!track) {
-            console.log(`No track found for reel ${index}`);
+          console.log(`Processing reel ${index} (${reel ? reel.id : 'null'})`);
+          
+          if (!reel) {
+            console.error(`ERROR: Reel ${index} element is null/undefined!`);
             return;
           }
+
+          const track = reel.querySelector('.symbol-track');
+          if (!track) {
+            console.error(`ERROR: No .symbol-track found for reel ${index} (${reel.id})`);
+            return;
+          }
+
+          console.log(`Starting spin animation for reel ${index} (${reel.id})`);
 
           // All reels: start spinning immediately
           track.classList.add('spinning');
           this.createSpinningSymbols(track, index);
 
           // Only the stopping is staggered
-          await this.delay(this.spinDuration + (index * this.reelStopDelay));
+          const stopDelay = this.spinDuration + (index * this.reelStopDelay);
+          console.log(`Reel ${index} will stop after ${stopDelay}ms`);
+          await this.delay(stopDelay);
+
+          console.log(`Stopping reel ${index} and setting final symbols`);
 
           // Stop spinning and set final symbols
           track.classList.remove('spinning');
           track.classList.add('decelerating');
           this.setReelSymbols(index, finalGrid[index]);
+          
           // Play stop.wav as a new instance for each reel
           if (this.sounds['stop']) {
             const stopClone = this.sounds['stop'].cloneNode();
             stopClone.currentTime = 0;
             stopClone.play();
           }
-          // After the 3rd reel, stop spin.wav and immediately play win/lose sound
+          
+          // After the 3rd reel (index 2), stop spin.wav and immediately play win/lose sound
           if (index === 2) {
+            console.log('Final reel stopped, calculating win...');
             stopSound('spin');
             // Calculate and handle win right away
             const result = this.calculateWin(finalGrid);
             await this.handleWinResult(result, finalGrid);
           }
+          
           // Wait for a natural deceleration (matches previous animation: 1.5s)
           await this.delay(1500);
           track.classList.remove('decelerating');
-
+          
+          console.log(`Reel ${index} animation completed`);
         });
 
         // Wait for all reels to finish
