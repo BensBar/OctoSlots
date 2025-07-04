@@ -2,583 +2,2146 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>OctoSlots - GitHub Octocat Slot Machine</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NFL Slots 4K">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#013369">
+  <title>Ultimate NFL Championship Slots 4K</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
     :root {
-      --primary-bg: #0d1117;
-      --secondary-bg: #161b22;
-      --border-color: #30363d;
-      --text-color: #c9d1d9;
-      --highlight-color: #58a6ff;
-      --gold-color: #f1e05a;
-      --win-color: #3fb950;
-      --header-height: 60px;
+      /* Enhanced NFL Theme Colors */
+      --nfl-blue: #013369;
+      --nfl-red: #D50A0A;
+      --nfl-silver: #C0C0C0;
+      --nfl-gold: #FFB612;
+      --nfl-platinum: #E5E4E2;
+      
+      /* Premium 4K Gradients */
+      --primary-bg: radial-gradient(ellipse at center, #0a0a23 0%, #000000 50%, #1a1a2e 100%);
+      --machine-body: linear-gradient(145deg, #2a2a40 0%, #1a1a2e 30%, #0f0f1a 100%);
+      --chrome-gradient: linear-gradient(145deg, #f0f0f0 0%, #c0c0c0 50%, #a0a0a0 100%);
+      --gold-gradient: radial-gradient(ellipse at top, #FFD700 0%, #FFB612 50%, #FFA500 100%);
+      --reel-bg: linear-gradient(180deg, #1a1a2e 0%, #000000 30%, #0a0a0a 70%, #1a1a2e 100%);
+      
+      /* Enhanced Colors */
+      --red-led: #FF0040;
+      --green-led: #00FF80;
+      --blue-led: #0080FF;
+      --purple-led: #8040FF;
+      --text-color: #FFFFFF;
+      --win-glow: #FFD700;
+      --jackpot-glow: #FF6B6B;
+      
+      /* 4K Responsive Sizing */
+      --machine-width: min(95vw, 1200px);
+      --machine-height: min(95vh, 900px);
+      --symbol-size: min(6vw, 100px);
+      --reel-height: calc(var(--symbol-size) * 3.5);
     }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      user-select: none;
     }
+
     body {
-      background-color: var(--primary-bg);
+      font-family: 'Orbitron', 'Arial Black', Arial, sans-serif;
+      background: var(--primary-bg);
+      background-attachment: fixed;
       color: var(--text-color);
       overflow: hidden;
-      height: 100vh;
-      width: 100vw;
+      min-height: 100vh;
       display: flex;
-      flex-direction: column;
-    }
-    .app-header {
-      display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      padding: 0 15px;
-      height: var(--header-height);
-      background-color: var(--secondary-bg);
-      border-bottom: 1px solid var(--border-color);
+      position: relative;
+    }
+
+    /* Animated Background Particles */
+    body::before {
+      content: '';
       position: fixed;
       top: 0;
       left: 0;
-      right: 0;
-      z-index: 10;
-    }
-    .user-info, .date-info {
-      font-size: 14px;
-      color: #8b949e;
-    }
-    .game-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: var(--highlight-color);
-    }
-    .slot-machine-container {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: calc(100vh - var(--header-height));
-      width: 100vw;
-      padding: 20px;
-      margin-top: var(--header-height);
-    }
-    .slot-machine {
-      position: relative;
       width: 100%;
-      max-width: 800px;
-      background-color: var(--secondary-bg);
-      border-radius: 20px;
-      border: 3px solid var(--border-color);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
-                  inset 0 0 10px rgba(255, 255, 255, 0.1);
-      padding: 20px;
-      overflow: hidden;
-    }
-    .machine-top {
-      text-align: center;
-      margin-bottom: 20px;
-      padding: 10px;
-      border-bottom: 2px solid var(--border-color);
-      position: relative;
-    }
-    .jackpot-display {
-      font-size: clamp(1.5rem, 5vw, 2.5rem);
-      font-weight: bold;
-      color: var(--gold-color);
-      text-shadow: 0 0 10px rgba(241, 224, 90, 0.5);
-    }
-    .flashing-lights {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 10px;
-      display: flex;
-      justify-content: space-around;
-    }
-    .light {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background-color: #444;
-    }
-    .light.on {
-      background-color: var(--highlight-color);
-      box-shadow: 0 0 10px var(--highlight-color);
-    }
-    .reels-container {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 20px;
-      position: relative;
-    }
-    .reel {
-      position: relative;
-      flex: 1;
-      height: clamp(150px, 30vh, 300px);
-      background-color: var(--primary-bg);
-      border-radius: 10px;
-      border: 2px solid var(--border-color);
-      overflow: hidden;
-      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
-    }
-    .slot-item {
-      position: absolute;
-      width: 100%;
-      height: 33.33%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: top 0.5s ease-out;
-    }
-    .slot-item.top { top: 0; }
-    .slot-item.middle { top: 33.33%; }
-    .slot-item.bottom { top: 66.66%; }
-    .slot-item img {
-      max-width: 70%;
-      max-height: 70%;
-      object-fit: contain;
-    }
-    .spinning .slot-item {
-      animation: spin-blur 0.1s infinite linear;
-    }
-    @keyframes spin-blur {
-      0%, 100% { filter: blur(1px); }
-      50% { filter: blur(2px); }
-    }
-    .win-line {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 50%;
-      height: 6px;
-      background-color: red;
-      transform: translateY(-50%);
-      z-index: 5;
+      height: 100%;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="1" fill="%23FFB612" opacity="0.3"><animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite"/></circle><circle cx="80" cy="40" r="1" fill="%23013369" opacity="0.4"><animate attributeName="opacity" values="0.4;0.9;0.4" dur="4s" repeatCount="indefinite"/></circle><circle cx="60" cy="80" r="1" fill="%23D50A0A" opacity="0.3"><animate attributeName="opacity" values="0.3;0.7;0.3" dur="5s" repeatCount="indefinite"/></circle></svg>') repeat;
+      animation: particleFloat 20s linear infinite;
       pointer-events: none;
-      border: 1px solid white;
-      box-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
-      opacity: 0.6;
+      z-index: -1;
     }
-    .win-line.highlight {
-      background-color: lime;
-      box-shadow: 0 0 10px lime;
-      opacity: 0.8;
-      animation: pulse 1s infinite;
+
+    @keyframes particleFloat {
+      0% { transform: translateY(0px) rotate(0deg); }
+      100% { transform: translateY(-100px) rotate(360deg); }
     }
-    @keyframes pulse {
-      0% { opacity: 0.5; }
-      50% { opacity: 0.8; }
-      100% { opacity: 0.5; }
-    }
-    .controls {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 10px;
-      border-top: 2px solid var(--border-color);
-    }
-    .score-display {
-      display: flex;
-      justify-content: space-between;
+
+    .game-container {
       width: 100%;
-      margin-bottom: 20px;
-    }
-    .score-card {
-      background-color: var(--primary-bg);
-      padding: 10px 15px;
-      border-radius: 10px;
-      border: 2px solid var(--border-color);
-      text-align: center;
-      min-width: 120px;
-    }
-    .score-card h3 {
-      font-size: 14px;
-      margin-bottom: 5px;
-      color: #8b949e;
-    }
-    .score-value {
-      font-size: 22px;
-      font-weight: bold;
-      color: var(--highlight-color);
-    }
-    .spin-button {
-      background: linear-gradient(to bottom, #1f6feb, #1158c7);
-      color: white;
-      border: none;
-      border-radius: 50px;
-      padding: 15px 40px;
-      font-size: 24px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-      transition: all 0.2s ease;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       position: relative;
-      overflow: hidden;
+      perspective: 1000px;
     }
-    .spin-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+
+    .slot-machine {
+      width: var(--machine-width);
+      max-height: var(--machine-height);
+      background: var(--machine-body);
+      border: 8px solid var(--nfl-silver);
+      border-radius: 25px;
+      padding: clamp(15px, 3vw, 40px);
+      box-shadow: 
+        0 0 80px rgba(255, 182, 18, 0.4),
+        inset 0 0 40px rgba(0, 0, 0, 0.6),
+        0 30px 60px rgba(0, 0, 0, 0.8),
+        0 0 120px rgba(1, 51, 105, 0.3);
+      position: relative;
+      backdrop-filter: blur(15px);
+      animation: machineGlow 4s ease-in-out infinite alternate;
+      transform-style: preserve-3d;
+      overflow: visible;
     }
-    .spin-button:active {
-      transform: translateY(1px);
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+
+    @keyframes machineGlow {
+      0% { 
+        box-shadow: 
+          0 0 80px rgba(255, 182, 18, 0.4),
+          inset 0 0 40px rgba(0, 0, 0, 0.6),
+          0 30px 60px rgba(0, 0, 0, 0.8),
+          0 0 120px rgba(1, 51, 105, 0.3);
+      }
+      100% { 
+        box-shadow: 
+          0 0 120px rgba(255, 182, 18, 0.6),
+          inset 0 0 40px rgba(0, 0, 0, 0.6),
+          0 30px 60px rgba(0, 0, 0, 0.8),
+          0 0 160px rgba(1, 51, 105, 0.5);
+      }
     }
-    .spin-button:disabled {
-      background: linear-gradient(to bottom, #2b3442, #1d2430);
-      color: #4d5566;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-    .spin-button::after {
+
+    /* Premium Chrome Frame */
+    .slot-machine::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0));
-      pointer-events: none;
+      top: -12px;
+      left: -12px;
+      right: -12px;
+      bottom: -12px;
+      background: var(--chrome-gradient);
+      border-radius: 30px;
+      z-index: -1;
+      box-shadow: 
+        inset 0 0 20px rgba(255, 255, 255, 0.3),
+        inset 0 0 40px rgba(0, 0, 0, 0.2);
     }
-    .win-message {
+
+    .machine-header {
+      text-align: center;
+      margin-bottom: clamp(15px, 3vw, 30px);
+      position: relative;
+      z-index: 10;
+    }
+
+    .nfl-logo {
+      width: clamp(80px, 12vw, 140px);
+      height: auto;
+      margin-bottom: clamp(10px, 2vw, 20px);
+      filter: 
+        drop-shadow(0 0 25px rgba(255, 182, 18, 0.9))
+        drop-shadow(0 0 50px rgba(1, 51, 105, 0.6));
+      animation: logoFloat 3s ease-in-out infinite alternate;
+      position: relative;
+    }
+
+    @keyframes logoFloat {
+      0% { transform: translateY(0px) scale(1); }
+      100% { transform: translateY(-8px) scale(1.02); }
+    }
+
+    .machine-title {
+      font-size: clamp(24px, 5vw, 48px);
+      font-weight: 900;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 
+        0 0 30px rgba(255, 182, 18, 0.8),
+        2px 2px 6px rgba(0, 0, 0, 0.9);
+      margin-bottom: clamp(8px, 2vw, 15px);
+      letter-spacing: 3px;
+      animation: titleShine 3s ease-in-out infinite;
+    }
+
+    @keyframes titleShine {
+      0%, 100% { filter: brightness(1) saturate(1); }
+      50% { filter: brightness(1.2) saturate(1.3); }
+    }
+
+    .jackpot-display {
+      font-size: clamp(16px, 3vw, 32px);
+      font-weight: 900;
+      color: var(--jackpot-glow);
+      text-shadow: 
+        0 0 20px rgba(255, 107, 107, 0.8),
+        0 0 40px rgba(255, 215, 0, 0.6);
+      background: linear-gradient(45deg, 
+        rgba(0, 0, 0, 0.9), 
+        rgba(30, 30, 60, 0.9),
+        rgba(0, 0, 0, 0.9));
+      padding: clamp(8px, 2vw, 15px) clamp(15px, 4vw, 30px);
+      border-radius: 20px;
+      border: 4px solid var(--nfl-gold);
+      animation: jackpotPulse 2.5s ease-in-out infinite;
+      backdrop-filter: blur(10px);
+    }
+
+    @keyframes jackpotPulse {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.03); filter: brightness(1.2); }
+    }
+
+    /* Enhanced LED Light Strip */
+    .led-lights {
       position: absolute;
+      top: -20px;
+      left: 5%;
+      right: 5%;
+      height: 40px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 20;
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(192, 192, 192, 0.1) 20%, 
+        rgba(192, 192, 192, 0.1) 80%, 
+        transparent);
+      border-radius: 20px;
+    }
+
+    .led-light {
+      width: clamp(16px, 2.5vw, 28px);
+      height: clamp(16px, 2.5vw, 28px);
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #444, #222);
+      border: 3px solid var(--nfl-silver);
+      box-shadow: 
+        inset 0 0 10px rgba(0, 0, 0, 0.8),
+        0 0 5px rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .led-light::after {
+      content: '';
+      position: absolute;
+      top: 20%;
+      left: 25%;
+      width: 30%;
+      height: 30%;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .led-light.on {
+      background: radial-gradient(circle at 30% 30%, var(--red-led), #aa0020);
+      box-shadow: 
+        0 0 25px var(--red-led),
+        0 0 50px var(--red-led),
+        inset 0 0 10px rgba(255, 255, 255, 0.4);
+    }
+
+    .led-light:nth-child(2n).on {
+      background: radial-gradient(circle at 30% 30%, var(--blue-led), #0040aa);
+      box-shadow: 
+        0 0 25px var(--blue-led),
+        0 0 50px var(--blue-led),
+        inset 0 0 10px rgba(255, 255, 255, 0.4);
+    }
+
+    .led-light:nth-child(3n).on {
+      background: radial-gradient(circle at 30% 30%, var(--green-led), #00aa40);
+      box-shadow: 
+        0 0 25px var(--green-led),
+        0 0 50px var(--green-led),
+        inset 0 0 10px rgba(255, 255, 255, 0.4);
+    }
+
+    .led-light:nth-child(4n).on {
+      background: radial-gradient(circle at 30% 30%, var(--purple-led), #4020aa);
+      box-shadow: 
+        0 0 25px var(--purple-led),
+        0 0 50px var(--purple-led),
+        inset 0 0 10px rgba(255, 255, 255, 0.4);
+    }
+
+    .led-light.win {
+      background: radial-gradient(circle at 30% 30%, var(--nfl-gold), #cc9000);
+      box-shadow: 
+        0 0 30px var(--nfl-gold),
+        0 0 60px var(--nfl-gold),
+        inset 0 0 15px rgba(255, 255, 255, 0.5);
+      animation: winLightPulse 0.12s ease-in-out infinite alternate;
+    }
+
+    @keyframes winLightPulse {
+      0% { opacity: 0.7; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Premium Reels Container */
+    .reels-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(15px, 3vw, 25px);
+      margin: clamp(20px, 4vw, 40px) 0;
+      padding: clamp(20px, 4vw, 35px);
+      background: var(--reel-bg);
+      border: 6px solid var(--nfl-silver);
+      border-radius: 25px;
+      box-shadow: 
+        inset 0 0 40px rgba(0, 0, 0, 0.9),
+        0 0 30px rgba(255, 182, 18, 0.3),
+        inset 0 0 80px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: visible;
+    }
+
+    /* Enhanced Reels with Perfect 3-Row Visibility */
+    .reel {
+      height: var(--reel-height);
+      background: linear-gradient(180deg, 
+        rgba(26, 26, 46, 0.9) 0%, 
+        rgba(0, 0, 0, 0.95) 20%, 
+        rgba(0, 0, 0, 1) 50%,
+        rgba(0, 0, 0, 0.95) 80%, 
+        rgba(26, 26, 46, 0.9) 100%);
+      border: 5px solid var(--chrome-gradient);
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 
+        inset 0 0 25px rgba(0, 0, 0, 0.9),
+        0 0 20px rgba(255, 182, 18, 0.2),
+        inset 0 0 50px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+    }
+
+    /* Perfect Symbol Track for 3 Visible Rows */
+    .symbol-track {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: space-evenly;
+      align-items: center;
+      padding: clamp(8px, 2vw, 15px) 0;
+      transition: transform 0.1s ease;
+      position: relative;
+    }
+
+    .symbol-track.spinning {
+      animation: reelSpinSmooth 0.08s linear infinite;
+      filter: blur(4px) brightness(0.8);
+      transition: filter 0.4s ease;
+    }
+
+    .symbol-track.decelerating {
+      animation: reelDecelerate 2s cubic-bezier(0.23, 1, 0.320, 1) forwards;
+      filter: blur(0px) brightness(1);
+      transition: filter 0.6s ease;
+    }
+
+    @keyframes reelSpinSmooth {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(calc(-1 * var(--symbol-size))); }
+    }
+
+    @keyframes reelDecelerate {
+      0% { transform: translateY(calc(-1 * var(--symbol-size))); }
+      100% { transform: translateY(0); }
+    }
+
+    /* Ultra High-Quality Symbols */
+    .symbol-track img {
+      width: var(--symbol-size);
+      height: var(--symbol-size);
+      object-fit: contain;
+      border-radius: 15px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      filter: 
+        drop-shadow(0 0 8px rgba(0, 0, 0, 0.8))
+        contrast(1.1)
+        saturate(1.1);
+      flex-shrink: 0;
+      margin: 0;
+      display: block;
+      background: radial-gradient(ellipse at center, 
+        rgba(255, 255, 255, 0.05) 0%, 
+        rgba(0, 0, 0, 0.1) 100%);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(2px);
+    }
+
+    .symbol-track img:hover {
+      transform: scale(1.05);
+      filter: 
+        drop-shadow(0 0 15px rgba(255, 182, 18, 0.6))
+        contrast(1.2)
+        saturate(1.3);
+    }
+
+    .symbol-track img.win {
+      transform: scale(1.15);
+      filter: 
+        drop-shadow(0 0 25px rgba(255, 215, 0, 1))
+        drop-shadow(0 0 40px rgba(255, 182, 18, 0.8))
+        drop-shadow(0 0 60px rgba(255, 107, 107, 0.6))
+        contrast(1.3)
+        saturate(1.4)
+        brightness(1.2);
+      animation: winGlow 0.8s ease-in-out infinite alternate;
+      border: 3px solid var(--win-glow);
+      z-index: 10;
+      position: relative;
+    }
+
+    @keyframes winGlow {
+      0% { 
+        filter: 
+          drop-shadow(0 0 25px rgba(255, 215, 0, 1))
+          drop-shadow(0 0 40px rgba(255, 182, 18, 0.8))
+          contrast(1.3)
+          saturate(1.4)
+          brightness(1.2);
+      }
+      100% { 
+        filter: 
+          drop-shadow(0 0 35px rgba(255, 215, 0, 1))
+          drop-shadow(0 0 60px rgba(255, 182, 18, 1))
+          drop-shadow(0 0 80px rgba(255, 107, 107, 0.8))
+          contrast(1.4)
+          saturate(1.6)
+          brightness(1.3);
+      }
+    }
+
+    /* Enhanced Paylines */
+    .payline {
+      position: absolute;
+      width: 100%;
+      height: 6px;
+      background: transparent;
+      z-index: 15;
+      transition: all 0.4s ease;
+      border-radius: 3px;
+    }
+
+    .payline.active {
+      background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 215, 0, 0.3) 10%,
+        rgba(255, 215, 0, 0.9) 30%, 
+        rgba(255, 215, 0, 1) 50%,
+        rgba(255, 215, 0, 0.9) 70%,
+        rgba(255, 215, 0, 0.3) 90%,
+        transparent 100%);
+      box-shadow: 
+        0 0 20px var(--nfl-gold),
+        0 0 40px rgba(255, 215, 0, 0.6),
+        inset 0 0 10px rgba(255, 255, 255, 0.3);
+      animation: paylineGlow 1.2s ease-in-out infinite alternate;
+    }
+
+    @keyframes paylineGlow {
+      0% { opacity: 0.8; transform: scaleY(1); }
+      100% { opacity: 1; transform: scaleY(1.2); }
+    }
+
+    .payline.line-1 { top: 16.67%; }
+    .payline.line-2 { top: 50%; }
+    .payline.line-3 { top: 83.33%; }
+
+    /* Premium Controls Section */
+    .controls-section {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: clamp(15px, 3vw, 25px);
+      align-items: center;
+      margin-top: clamp(20px, 4vw, 35px);
+    }
+
+    .info-displays {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(10px, 2vw, 18px);
+    }
+
+    .info-card {
+      background: linear-gradient(145deg, 
+        rgba(31, 41, 55, 0.9), 
+        rgba(17, 24, 39, 0.9));
+      border: 4px solid var(--nfl-silver);
+      border-radius: 18px;
+      padding: clamp(10px, 2.5vw, 20px);
+      text-align: center;
+      box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.6),
+        0 0 15px rgba(255, 182, 18, 0.3),
+        0 5px 15px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .info-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        inset 0 0 25px rgba(0, 0, 0, 0.6),
+        0 0 25px rgba(255, 182, 18, 0.5),
+        0 8px 25px rgba(0, 0, 0, 0.6);
+    }
+
+    .info-label {
+      font-size: clamp(10px, 2vw, 16px);
+      font-weight: 700;
+      color: var(--nfl-silver);
+      margin-bottom: clamp(4px, 1vw, 8px);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .info-value {
+      font-size: clamp(16px, 3.5vw, 32px);
+      font-weight: 900;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 15px rgba(255, 182, 18, 0.8);
+    }
+
+    /* Legendary Spin Button */
+    .spin-button {
+      width: clamp(100px, 15vw, 140px);
+      height: clamp(100px, 15vw, 140px);
+      border-radius: 50%;
+      background: linear-gradient(145deg, 
+        var(--nfl-red) 0%, 
+        #dc2626 30%, 
+        #991b1b  100%);
+      border: 6px solid var(--nfl-gold);
+      color: white;
+      font-size: clamp(16px, 2.5vw, 24px);
+      font-weight: 900;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 
+        0 0 40px rgba(213, 10, 10, 0.6),
+        inset 0 0 25px rgba(255, 255, 255, 0.15),
+        0 10px 20px rgba(0, 0, 0, 0.5),
+        0 0 80px rgba(255, 182, 18, 0.3);
+      position: relative;
+      overflow: hidden;
+      text-transform: uppercase;
+    }
+
+    .spin-button::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, 
+        transparent 30%, 
+        rgba(255, 255, 255, 0.2) 50%, 
+        transparent 70%);
+      transform: rotate(-45deg);
+      transition: all 0.6s ease;
+      opacity: 0;
+    }
+
+    .spin-button:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 
+        0 0 60px rgba(213, 10, 10, 0.8),
+        inset 0 0 30px rgba(255, 255, 255, 0.25),
+        0 15px 35px rgba(0, 0, 0, 0.7),
+        0 0 120px rgba(255, 182, 18, 0.5);
+    }
+
+    .spin-button:hover::before {
+      opacity: 1;
+      transform: rotate(-45deg) translate(100%, 100%);
+    }
+
+    .spin-button:active {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 
+        0 0 30px rgba(213, 10, 10, 0.6),
+        inset 0 0 30px rgba(0, 0, 0, 0.4),
+        0 8px 15px rgba(0, 0, 0, 0.7);
+    }
+
+    .spin-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      filter: grayscale(0.5);
+    }
+
+    /* Enhanced Betting Controls */
+    .betting-controls {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: clamp(8px, 2vw, 15px);
+      justify-self: end;
+    }
+
+    .bet-button {
+      padding: clamp(8px, 2vw, 16px) clamp(12px, 3vw, 24px);
+      background: linear-gradient(145deg, 
+        var(--nfl-blue) 0%, 
+        #1e40af 50%, 
+        #1e3a8a 100%);
+      border: 3px solid var(--nfl-silver);
+      border-radius: 12px;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: clamp(10px, 2vw, 16px);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.3),
+        inset 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+
+    .bet-button:hover {
+      background: linear-gradient(145deg, 
+        #1e40af 0%, 
+        var(--nfl-blue) 50%, 
+        #1e3a8a 100%);
+      transform: translateY(-3px);
+      box-shadow: 
+        0 8px 16px rgba(0, 0, 0, 0.4),
+        inset 0 0 15px rgba(255, 255, 255, 0.2);
+    }
+
+    .bet-button.active {
+      background: linear-gradient(145deg, 
+        var(--nfl-gold) 0%, 
+        #f59e0b 50%, 
+        #d97706 100%);
+      color: #000;
+      box-shadow: 
+        0 0 20px rgba(255, 182, 18, 0.6),
+        inset 0 0 15px rgba(255, 255, 255, 0.3);
+    }
+
+    /* Game Controls */
+    .game-controls {
+      display: flex;
+      justify-content: center;
+      gap: clamp(10px, 2.5vw, 20px);
+      margin-top: clamp(15px, 3vw, 30px);
+      flex-wrap: wrap;
+    }
+
+    .control-button {
+      padding: clamp(8px, 2vw, 16px) clamp(16px, 4vw, 32px);
+      background: linear-gradient(145deg, 
+        rgba(55, 65, 81, 0.9) 0%, 
+        rgba(31, 41, 55, 0.9) 100%);
+      border: 3px solid var(--nfl-silver);
+      border-radius: 12px;
+      color: var(--nfl-gold);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: clamp(10px, 2vw, 16px);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      backdrop-filter: blur(10px);
+      box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.3),
+        inset 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+
+    .control-button:hover {
+      background: linear-gradient(145deg, 
+        var(--nfl-gold) 0%, 
+        #f59e0b 100%);
+      color: #000;
+      transform: translateY(-3px);
+      box-shadow: 
+        0 8px 16px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(255, 182, 18, 0.6);
+    }
+
+    /* Ultra Premium Win Overlay */
+    .win-overlay {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: linear-gradient(145deg, 
+        rgba(0, 0, 0, 0.95) 0%,
+        rgba(30, 30, 60, 0.95) 50%,
+        rgba(0, 0, 0, 0.95) 100%);
+      border: 6px solid var(--nfl-gold);
+      border-radius: 25px;
+      padding: clamp(20px, 5vw, 50px);
+      text-align: center;
+      z-index: 2000;
+      backdrop-filter: blur(20px);
+      box-shadow: 
+        0 0 80px rgba(255, 182, 18, 0.8),
+        0 0 120px rgba(255, 107, 107, 0.6),
+        inset 0 0 40px rgba(0, 0, 0, 0.6);
+      transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      color: var(--nfl-gold);
+      font-size: clamp(18px, 4vw, 36px);
+      font-weight: 900;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .win-overlay::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, 
+        transparent 0%, 
+        rgba(255, 215, 0, 0.1) 25%,
+        rgba(255, 182, 18, 0.2) 50%,
+        rgba(255, 215, 0, 0.1) 75%,
+        transparent 100%);
+      animation: overlayShine 2s linear infinite;
+    }
+
+    @keyframes overlayShine {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .win-overlay.visible {
+      transform: translate(-50%, -50%) scale(1);
+      animation: winPopup 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    @keyframes winPopup {
+      0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); }
+      50% { transform: translate(-50%, -50%) scale(1.1) rotate(-90deg); }
+      100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+    }
+
+    /* Enhanced Paytable */
+    .paytable {
+      position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background-color: rgba(22, 27, 34, 0.9);
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-      z-index: 20;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-    }
-    .win-message.show {
-      opacity: 1;
-      visibility: visible;
-    }
-    .win-message h2 {
-      color: var(--gold-color);
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-    .win-message p {
-      color: var(--text-color);
-      font-size: 18px;
-      margin-bottom: 15px;
-    }
-    .win-message button {
-      background-color: var(--highlight-color);
+      width: min(90vw, 600px);
+      max-height: 85vh;
+      background: linear-gradient(145deg, 
+        rgba(31, 41, 55, 0.95) 0%, 
+        rgba(17, 24, 39, 0.95) 100%);
+      border: 6px solid var(--nfl-gold);
+      border-radius: 25px;
+      padding: clamp(20px, 4vw, 40px);
       color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    .paytable {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background-color: var(--secondary-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 5px;
-      padding: 10px;
-      font-size: 12px;
-      z-index: 30;
-      transform: scale(0);
-      transform-origin: top right;
-      transition: transform 0.3s ease;
-    }
-    .paytable-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: var(--secondary-bg);
-      color: var(--highlight-color);
-      border: 1px solid var(--border-color);
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 16px;
-      cursor: pointer;
-      z-index: 31;
-    }
-    .paytable.show {
-      transform: scale(1);
-    }
-    .paytable h3 {
-      color: var(--highlight-color);
-      margin-bottom: 5px;
-    }
-    .paytable-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 5px;
-    }
-    .paytable-item img {
-      width: 30px;
-      height: 30px;
-      margin-right: 10px;
-    }
-    .lever-container {
-      position: absolute;
-      right: -40px;
-      top: 50%;
-      transform: translateY(-50%);
-      height: 200px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .lever-base {
-      width: 40px;
-      height: 80px;
-      background-color: #333;
-      border-radius: 10px 10px 0 0;
-      position: relative;
-    }
-    .lever {
-      width: 20px;
-      height: 120px;
-      background: linear-gradient(to bottom, #c0392b, #e74c3c);
-      border-radius: 10px;
-      position: absolute;
-      top: 0;
-      left: 10px;
-      transform-origin: top center;
-      transform: rotate(0deg);
-      transition: transform 0.3s ease;
-      cursor: pointer;
-    }
-    .lever::after {
-      content: '';
-      position: absolute;
-      bottom: -15px;
-      left: 0;
-      width: 20px;
-      height: 20px;
-      background-color: #c0392b;
-      border-radius: 50%;
-    }
-    .lever.pulled {
-      transform: rotate(60deg);
-    }
-    audio {
+      z-index: 3000;
       display: none;
+      overflow-y: auto;
+      box-shadow: 
+        0 0 80px rgba(255, 182, 18, 0.6),
+        inset 0 0 40px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(20px);
     }
-    @media (max-width: 767px) {
-      .reels-container { gap: 5px; }
-      .reel { height: clamp(100px, 20vh, 200px); }
-      .slot-machine { padding: 10px; }
-      .spin-button { padding: 10px 30px; font-size: 20px; }
-      .score-card { min-width: 80px; padding: 8px; }
-      .score-value { font-size: 18px; }
-      .lever-container { display: none; }
+
+    .paytable.visible {
+      display: block;
+      animation: paytableSlideIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
-    @media (max-height: 600px) {
-      .machine-top { margin-bottom: 10px; padding: 5px; }
-      .jackpot-display { font-size: 1.2rem; }
-      .controls { padding: 5px; }
-      .score-display { margin-bottom: 10px; }
+
+    @keyframes paytableSlideIn {
+      0% { 
+        transform: translate(-50%, -50%) scale(0.7) rotateY(-90deg); 
+        opacity: 0; 
+      }
+      100% { 
+        transform: translate(-50%, -50%) scale(1) rotateY(0deg); 
+        opacity: 1; 
+      }
+    }
+
+    .paytable-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 2999;
+      display: none;
+      backdrop-filter: blur(15px);
+    }
+
+    .paytable-overlay.visible {
+      display: block;
+    }
+
+    .paytable-title {
+      text-align: center;
+      font-size: clamp(24px, 5vw, 36px);
+      font-weight: 900;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: clamp(20px, 4vw, 30px);
+      text-shadow: 0 0 20px rgba(255, 182, 18, 0.8);
+    }
+
+    .paytable-section {
+      margin-bottom: clamp(20px, 4vw, 30px);
+    }
+
+    .paytable-section h3 {
+      font-size: clamp(16px, 3vw, 24px);
+      color: var(--nfl-silver);
+      margin-bottom: clamp(12px, 3vw, 20px);
+      border-bottom: 3px solid var(--nfl-gold);
+      padding-bottom: clamp(5px, 1vw, 10px);
+      background: linear-gradient(90deg, 
+        rgba(255, 182, 18, 0.1) 0%, 
+        transparent 100%);
+      padding-left: clamp(10px, 2vw, 15px);
+      border-radius: 8px;
+    }
+
+    .payout-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: clamp(8px, 2vw, 15px);
+      margin-bottom: clamp(6px, 1.5vw, 12px);
+      background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.03) 0%, 
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0.03) 100%);
+      border-radius: 12px;
+      border: 2px solid rgba(255, 182, 18, 0.3);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+
+    .payout-item:hover {
+      background: linear-gradient(90deg, 
+        rgba(255, 182, 18, 0.1) 0%, 
+        rgba(255, 182, 18, 0.2) 50%,
+        rgba(255, 182, 18, 0.1) 100%);
+      border-color: rgba(255, 182, 18, 0.6);
+      transform: translateX(5px);
+    }
+
+    .payout-symbols {
+      display: flex;
+      align-items: center;
+      gap: clamp(5px, 1vw, 10px);
+    }
+
+    .payout-symbols img {
+      width: clamp(24px, 4vw, 40px);
+      height: clamp(24px, 4vw, 40px);
+      object-fit: contain;
+      border-radius: 8px;
+      filter: drop-shadow(0 0 5px rgba(255, 182, 18, 0.3));
+    }
+
+    .payout-value {
+      font-weight: 900;
+      color: var(--nfl-gold);
+      font-size: clamp(14px, 2.5vw, 20px);
+      text-shadow: 0 0 10px rgba(255, 182, 18, 0.6);
+    }
+
+    .paytable-close {
+      position: absolute;
+      top: clamp(10px, 2vw, 20px);
+      right: clamp(15px, 3vw, 25px);
+      background: linear-gradient(145deg, var(--nfl-red), #dc2626);
+      border: none;
+      color: white;
+      width: clamp(30px, 5vw, 45px);
+      height: clamp(30px, 5vw, 45px);
+      border-radius: 50%;
+      font-size: clamp(16px, 3vw, 24px);
+      font-weight: 900;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.3),
+        0 0 15px rgba(213, 10, 10, 0.4);
+    }
+
+    .paytable-close:hover {
+      background: linear-gradient(145deg, #dc2626, #991b1b);
+      transform: scale(1.1) rotate(90deg);
+      box-shadow: 
+        0 6px 12px rgba(0, 0, 0, 0.4),
+        0 0 25px rgba(213, 10, 10, 0.6);
+    }
+
+    /* Enhanced Coin Animation */
+    .coin-animation {
+      position: absolute;
+      width: clamp(20px, 4vw, 40px);
+      height: clamp(20px, 4vw, 40px);
+      background: radial-gradient(circle at 30% 30%, 
+        #FFD700 0%, 
+        #FFB612 50%, 
+        #FFA500 100%);
+      border-radius: 50%;
+      border: 3px solid #fff;
+      animation: coinFall 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      z-index: 1000;
+      box-shadow: 
+        0 0 15px rgba(255, 215, 0, 0.8),
+        inset 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    @keyframes coinFall {
+      0% { 
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: translateY(150px) rotate(360deg) scale(1.1);
+        opacity: 0.8;
+      }
+      100% { 
+        transform: translateY(300px) rotate(720deg) scale(0.8);
+        opacity: 0;
+      }
+    }
+
+    /* Confetti Animation */
+    @keyframes confettiDrop {
+      0% { 
+        transform: translateY(-100vh) rotate(0deg) scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: translateY(50vh) rotate(360deg) scale(1.2);
+        opacity: 0.8;
+      }
+      100% { 
+        transform: translateY(120vh) rotate(720deg) scale(0.8);
+        opacity: 0;
+      }
+    }
+
+    /* Responsive Design for All Devices */
+    @media (max-width: 1024px) {
+      .slot-machine {
+        padding: clamp(15px, 4vw, 25px);
+      }
+      
+      .controls-section {
+        grid-template-columns: 1fr;
+        gap: clamp(15px, 4vw, 25px);
+        text-align: center;
+      }
+      
+      .spin-button {
+        justify-self: center;
+      }
+      
+      .betting-controls {
+        justify-self: center;
+        grid-template-columns: repeat(4, 1fr);
+      }
+      
+      .info-displays {
+        grid-template-columns: repeat(3, 1fr);
+        gap: clamp(8px, 2vw, 12px);
+      }
+    }
+
+    @media (max-width: 768px) {
+      :root {
+        --symbol-size: min(18vw, 80px);
+        --reel-height: calc(var(--symbol-size) * 3.2);
+      }
+      
+      body {
+        padding: 5px;
+      }
+      
+      .slot-machine {
+        border-width: 4px;
+        padding: clamp(10px, 3vw, 20px);
+      }
+      
+      .reels-container {
+        gap: clamp(8px, 2vw, 15px);
+        padding: clamp(12px, 3vw, 20px);
+      }
+      
+      .info-displays {
+        grid-template-columns: 1fr;
+        gap: clamp(6px, 1.5vw, 10px);
+      }
+      
+      .betting-controls {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .game-controls {
+        gap: clamp(6px, 1.5vw, 12px);
+      }
+    }
+
+    @media (max-width: 480px) {
+      :root {
+        --symbol-size: min(22vw, 70px);
+        --reel-height: calc(var(--symbol-size) * 3.1);
+      }
+      
+      .machine-title {
+        font-size: clamp(18px, 4vw, 28px);
+      }
+      
+      .led-lights {
+        top: -15px;
+      }
+      
+      .led-light {
+        width: clamp(12px, 3vw, 20px);
+        height: clamp(12px, 3vw, 20px);
+      }
+    }
+
+    /* High DPI / Retina Display Optimizations */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+      .symbol-track img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+      }
+      
+      .nfl-logo {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+      }
+    }
+
+    /* Ultra-wide Display Support */
+    @media (min-aspect-ratio: 21/9) {
+      .slot-machine {
+        max-width: 1400px;
+      }
+      
+      .controls-section {
+        grid-template-columns: 1.2fr auto 1.2fr;
+      }
+    }
+
+    /* Accessibility Enhancements */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Focus styles for keyboard navigation */
+    button:focus {
+      outline: 3px solid var(--nfl-gold);
+      outline-offset: 2px;
+    }
+
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+      .slot-machine {
+        border-width: 6px;
+      }
+      
+      .symbol-track img {
+        border-width: 3px;
+      }
+      
+      .info-card {
+        border-width: 3px;
+      }
     }
   </style>
 </head>
 <body>
-  <header class="app-header">
-    <div class="user-info">Welcome, BensBar</div>
-    <div class="game-title">OctoSlots</div>
-    <div class="date-info">2025-06-01 15:13:45 UTC</div>
-  </header>
-
-  <!-- Audio elements embedded in the page -->
-  <audio id="spin-sound" src="sounds/spin.wav" preload="auto"></audio>
-  <audio id="stop-sound" src="sounds/stop.wav" preload="auto"></audio>
-  <audio id="win-sound" src="sounds/win.wav" preload="auto"></audio>
-  <audio id="win2-sound" src="sounds/win2.wav" preload="auto"></audio>
-  <audio id="win3-sound" src="sounds/win3.wav" preload="auto"></audio>
-  <audio id="lose-sound" src="sounds/lose.wav" preload="auto"></audio>
-  
-  <div class="slot-machine-container">
+  <div class="game-container">
     <div class="slot-machine">
-      <button class="paytable-button">?</button>
-      <div class="paytable">
-        <h3>Pay Table</h3>
-        <div class="paytable-item">
-          <img src="https://octodex.github.com/images/original.png" alt="Original">
-          <span>x3: 1000 pts</span>
-        </div>
-        <div class="paytable-item">
-          <img src="https://octodex.github.com/images/octobiwan.jpg" alt="Octobiwan">
-          <span>x3: 500 pts</span>
-        </div>
-        <div class="paytable-item">
-          <span>Any 3 matching: 250 pts</span>
-        </div>
-        <div class="paytable-item">
-          <span>Any 2 matching: 50 pts</span>
+      <!-- Enhanced LED Light Strip -->
+      <div class="led-lights">
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+        <div class="led-light"></div>
+      </div>
+
+      <!-- Premium Machine Header -->
+      <div class="machine-header">
+        <img src="./logos/nfl.png" alt="NFL Logo" class="nfl-logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQwIiBoZWlnaHQ9IjkwIiB2aWV3Qm94PSIwIDAgMTQwIDkwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZ29sZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6I0ZGRDcwMDtzdG9wLW9wYWNpdHk6MSIgLz48c3RvcCBvZmZzZXQ9IjUwJSIgc3R5bGU9InN0b3AtY29sb3I6I0ZGQjYxMjtzdG9wLW9wYWNpdHk6MSIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNGRkE1MDA7c3RvcC1vcGFjaXR5OjEiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjE0MCIgaGVpZ2h0PSI5MCIgcng9IjE1IiBmaWxsPSJ1cmwoI2dvbGQpIiBzdHJva2U9IiMwMTMzNjkiIHN0cm9rZS13aWR0aD0iNCIvPjx0ZXh0IHg9IjcwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrLCBBcmlhbCIgZm9udC1zaXplPSIzNiIgZm9udC13ZWlnaHQ9IjkwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzAxMzM2OSIgc3Ryb2tlPSIjRkZGIiBzdHJva2Utd2lkdGg9IjEiPk5GTDwvdGV4dD48L3N2Zz4='">
+        <h1 class="machine-title">🏆 NFL CHAMPIONSHIP SLOTS 🏆</h1>
+        <div class="jackpot-display" id="jackpot">
+          💎 JACKPOT: <span id="jackpot-amount">50,000</span> 💎
         </div>
       </div>
-      
-      <div class="machine-top">
-        <div class="flashing-lights">
-          <div class="light"></div>
-          <div class="light"></div>
-          <div class="light"></div>
-          <div class="light"></div>
-          <div class="light"></div>
-          <div class="light"></div>
-          <div class="light"></div>
-          <div class="light"></div>
-        </div>
-        <div class="jackpot-display">JACKPOT: 1000</div>
-      </div>
-      
+
+      <!-- Ultra Premium Reels Container -->
       <div class="reels-container">
-        <div id="reel1" class="reel">
-          <div class="slot-item top" id="reel1-top"></div>
-          <div class="slot-item middle" id="reel1-middle"></div>
-          <div class="slot-item bottom" id="reel1-bottom"></div>
-        </div>
-        <div id="reel2" class="reel">
-          <div class="slot-item top" id="reel2-top"></div>
-          <div class="slot-item middle" id="reel2-middle"></div>
-          <div class="slot-item bottom" id="reel2-bottom"></div>
-        </div>
-        <div id="reel3" class="reel">
-          <div class="slot-item top" id="reel3-top"></div>
-          <div class="slot-item middle" id="reel3-middle"></div>
-          <div class="slot-item bottom" id="reel3-bottom"></div>
-        </div>
-        <div id="win-line" class="win-line"></div>
-      </div>
-      
-      <div class="controls">
-        <div class="score-display">
-          <div class="score-card">
-            <h3>CREDITS</h3>
-            <div class="score-value" id="credits">500</div>
-          </div>
-          <div class="score-card">
-            <h3>BET</h3>
-            <div class="score-value" id="bet-amount">10</div>
-          </div>
-          <div class="score-card">
-            <h3>WIN</h3>
-            <div class="score-value" id="win-amount">0</div>
+        <div class="payline line-1" data-line="0"></div>
+        <div class="payline line-2" data-line="1"></div>
+        <div class="payline line-3" data-line="2"></div>
+        
+        <div class="reel" id="reel1">
+          <div class="symbol-track">
+            <img src="./logos/nfl.png" alt="NFL" data-symbol="NFL Shield" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJuZmxHb2xkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRkZENzAwO3N0b3Atb3BhY2l0eToxIiAvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0ZGQjYxMjtzdG9wLW9wYWNpdHk6MSIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjE1IiBmaWxsPSJ1cmwoI25mbEdvbGQpIiBzdHJva2U9IiMwMTMzNjkiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9IjUwIiB5PSI2MCIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrIiBmb250LXNpemU9IjQwIiBmb250LXdlaWdodD0iOTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDEzMzY5Ij7wn4+IPC90ZXh0Pjwvc3ZnPg=='">
+            <img src="./logos/chiefs.png" alt="Chiefs" data-symbol="Chiefs" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJjaGllZnMiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNFMzE4Mzc7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojQkIxMDI2O3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iMTUiIGZpbGw9InVybCgjY2hpZWZzKSIgc3Ryb2tlPSIjRkZCNjEyIiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI1MCIgeT0iNjAiIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayIgZm9udC1zaXplPSIzMCIgZm9udC13ZWlnaHQ9IjkwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI0ZGRiIgc3Ryb2tlPSIjRTMxODM3IiBzdHJva2Utd2lkdGg9IjEiPktDPC90ZXh0Pjwvc3ZnPg=='">
+            <img src="./logos/patriots.png" alt="Patriots" data-symbol="Patriots" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJwYXRzIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDAyMjQ0O3N0b3Atb3BhY2l0eToxIiAvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwMTEyMjtzdG9wLW9wYWNpdHk6MSIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjE1IiBmaWxsPSJ1cmwoI3BhdHMpIiBzdHJva2U9IiNDMEMwQzAiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9IjUwIiB5PSI2MCIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrIiBmb250LXNpemU9IjI4IiBmb250LXdlaWdodD0iOTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjRkZGIiBzdHJva2U9IiMwMDIyNDQiIHN0cm9rZS13aWR0aD0iMSI+TkU8L3RleHQ+PC9zdmc+'">
           </div>
         </div>
-        <button class="spin-button" id="spin-button">SPIN</button>
-      </div>
-      
-      <div class="win-message" id="win-message">
-        <h2>WINNER!</h2>
-        <p>You won <span id="win-value">250</span> credits!</p>
-        <button id="continue-button">CONTINUE</button>
-      </div>
-      
-      <div class="lever-container">
-        <div class="lever-base">
-          <div class="lever" id="lever"></div>
+        
+        <div class="reel" id="reel2">
+          <div class="symbol-track">
+            <img src="./logos/packers.png" alt="Packers" data-symbol="Packers" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJwYWNrZXJzIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMjAzNzMxO3N0b3Atb3BhY2l0eToxIiAvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzE0MjQxODtzdG9wLW9wYWNpdHk6MSIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjE1IiBmaWxsPSJ1cmwoI3BhY2tlcnMpIiBzdHJva2U9IiNGRkI2MTIiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9IjUwIiB5PSI2MCIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iOTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjRkZCNjEyIiBzdHJva2U9IiMyMDM3MzEiIHN0cm9rZS13aWR0aD0iMSI+R0I8L3RleHQ+PC9zdmc+'">
+            <img src="./logos/cowboys.png" alt="Cowboys" data-symbol="Cowboys" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJjb3dib3lzIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDQxRTQyO3N0b3Atb3BhY2l0eToxIiAvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAyMTEyMTtzdG9wLW9wYWNpdHk6MSIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjE1IiBmaWxsPSJ1cmwoI2Nvd2JveXMpIiBzdHJva2U9IiNDMEMwQzAiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9IjUwIiB5PSI2MCIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iOTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjRkZGIiBzdHJva2U9IiMwNDFFNDIiIHN0cm9rZS13aWR0aD0iMSI+REFMPC90ZXh0Pjwvc3ZnPg=='">
+            <img src="./logos/steelers.png" alt="Steelers" data-symbol="Steelers" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJzdGVlbGVycyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwMDtzdG9wLW9wYWNpdHk6MSIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMzMzM7c3RvcC1vcGFjaXR5OjEiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIxNSIgZmlsbD0idXJsKCNzdGVlbGVycykiIHN0cm9rZT0iI0ZGQjYxMiIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iNTAiIHk9IjYwIiBmb250LWZhbWlseT0iQXJpYWwgQmxhY2siIGZvbnQtc2l6ZT0iMjYiIGZvbnQtd2VpZ2h0PSI5MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNGRkI2MTIiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIxIj5QSVQ8L3RleHQ+PC9zdmc+'">
+          </div>
         </div>
+        
+        <div class="reel" id="reel3">
+          <div class="symbol-track">
+            <img src="./logos/49ers.png" alt="49ers" data-symbol="49ers" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSI0OWVycyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6I0FBMDAwMDtzdG9wLW9wYWNpdHk6MSIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM4ODAwMDA7c3RvcC1vcGFjaXR5OjEiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIxNSIgZmlsbD0idXJsKCM0OWVycykiIHN0cm9rZT0iI0ZGQjYxMiIgc3Ryb2tlLXdpZHRoPSIzIi8+PHRleHQgeD0iNTAiIHk9IjYwIiBmb250LWZhbWlseT0iQXJpYWwgQmxhY2siIGZvbnQtc2l6ZT0iMzAiIGZvbnQtd2VpZ2h0PSI5MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNGRkYiIHN0cm9rZT0iI0FBMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIj5TRjwvdGV4dD48L3N2Zz4='">"
+            <img src="./logos/eagles.png" alt="Eagles" data-symbol="Eagles" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJlYWdsZXMiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDRDNTQ7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDAzQzQ0O3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iMTUiIGZpbGw9InVybCgjZWFnbGVzKSIgc3Ryb2tlPSIjQzBDMEMwIiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI1MCIgeT0iNjAiIGZvbnQtZmFtaWx5PSJBcmlhbCBCbGFjayIgZm9udC1zaXplPSIyNiIgZm9udC13ZWlnaHQ9IjkwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI0ZGRiIgc3Ryb2tlPSIjMDA0QzU0IiBzdHJva2Utd2lkdGg9IjEiPlBISTwvdGV4dD48L3N2Zz4='">
+            <img src="./logos/falcons.png" alt="Falcons" data-symbol="Falcons" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJmYWxjb25zIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojQTcxOTMwO3N0b3Atb3BhY2l0eToxIiAvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6Izg3MTUyODtzdG9wLW9wYWNpdHk6MSIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcng9IjE1IiBmaWxsPSJ1cmwoI2ZhbGNvbnMpIiBzdHJva2U9IiNDMEMwQzAiIHN0cm9rZS13aWR0aD0iMyIvPjx0ZXh0IHg9IjUwIiB5PSI2MCIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrIiBmb250LXNpemU9IjI2IiBmb250LXdlaWdodD0iOTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjRkZGIiBzdHJva2U9IiNBNzE5MzAiIHN0cm9rZS13aWR0aD0iMSI+QVRMPC90ZXh0Pjwvc3ZnPg=='">
+          </div>
+        </div>
+      </div>
+
+      <!-- Enhanced Controls Section -->
+      <div class="controls-section">
+        <!-- Premium Info Displays -->
+        <div class="info-displays">
+          <div class="info-card">
+            <div class="info-label">💰 CREDITS</div>
+            <div class="info-value" id="credits">1,000</div>
+          </div>
+          <div class="info-card">
+            <div class="info-label">🎯 BET</div>
+            <div class="info-value" id="bet-amount">25</div>
+          </div>
+          <div class="info-card">
+            <div class="info-label">🏆 WIN</div>
+            <div class="info-value" id="win-amount">0</div>
+          </div>
+        </div>
+
+        <!-- Legendary Spin Button -->
+        <button class="spin-button" id="spin-button">
+          🎰<br>SPIN<br>🎰
+        </button>
+
+        <!-- Enhanced Betting Controls -->
+        <div class="betting-controls">
+          <button class="bet-button bet-down">BET -</button>
+          <button class="bet-button bet-up">BET +</button>
+          <button class="bet-button max-bet">MAX BET</button>
+          <button class="bet-button autoplay-button">AUTO</button>
+        </div>
+      </div>
+
+      <!-- Premium Game Controls -->
+      <div class="game-controls">
+        <button class="control-button paytable-button">📊 PAYTABLE</button>
+        <button class="control-button" onclick="toggleSound()">🔊 SOUND</button>
+        <button class="control-button" onclick="toggleFullscreen()">⛶ FULLSCREEN</button>
+        <button class="control-button" onclick="toggleDemo()">🎬 DEMO</button>
       </div>
     </div>
   </div>
+
+  <!-- Ultra Premium Win Overlay -->
+  <div class="win-overlay" id="winOverlay">
+    <div style="font-size: clamp(24px, 6vw, 48px); font-weight: 900; color: var(--nfl-gold); margin-bottom: clamp(15px, 3vw, 25px);">🏆 LEGENDARY WIN! 🏆</div>
+    <div style="font-size: clamp(20px, 4vw, 36px); font-weight: bold; color: var(--win-glow);">1,250 CREDITS!</div>
+  </div>
+
+  <!-- Enhanced Paytable Overlay -->
+  <div class="paytable-overlay"></div>
   
+  <!-- Premium Paytable Modal -->
+  <div class="paytable">
+    <button class="paytable-close">&times;</button>
+    <h2 class="paytable-title">🏆 NFL CHAMPIONSHIP PAYOUTS 🏆</h2>
+    
+    <div class="paytable-section">
+      <h3>💎 JACKPOT SYMBOLS</h3>
+      <div class="payout-item">
+        <div class="payout-symbols">
+          <img src="./logos/trophy.png" alt="Trophy" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9InRyb3BoeSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6I0ZGRDcwMDtzdG9wLW9wYWNpdHk6MSIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNGRkE1MDA7c3RvcC1vcGFjaXR5OjEiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0idXJsKCN0cm9waHkpIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjIwIiB5PSIyOCIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrIiBmb250LXNpemU9IjI0IiBmb250LXdlaWdodD0iOTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDAwIj7wn4+GPC90ZXh0Pjwvc3ZnPg=='">
+          <img src="./logos/trophy.png" alt="Trophy" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9InRyb3BoeTIiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNGRkQ3MDA7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRkZBNTAwO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcng9IjgiIGZpbGw9InVybCgjdHJvcGh5MikiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iMjAiIHk9IjI4IiBmb250LWZhbWlseT0iQXJpYWwgQmxhY2siIGZvbnQtc2l6ZT0iMjQiIGZvbnQtd2VpZ2h0PSI5MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMwMDAiPvCfj4Y8L3RleHQ+PC9zdmc+'">
+          <img src="./logos/trophy.png" alt="Trophy" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9InRyb3BoeTMiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNGRkQ3MDA7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRkZBNTAwO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcng9IjgiIGZpbGw9InVybCgjdHJvcGh5MykiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iMjAiIHk9IjI4IiBmb250LWZhbWlseT0iQXJpYWwgQmxhY2siIGZvbnQtc2l6ZT0iMjQiIGZvbnQtd2VpZ2h0PSI5MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMwMDAiPvCfj4Y8L3RleHQ+PC9zdmc+'">
+          <span>🏆 SUPER BOWL TROPHY</span>
+        </div>
+        <div class="payout-value">💎 JACKPOT!</div>
+      </div>
+    </div>
+
+    <div class="paytable-section">
+      <h3>⭐ PREMIUM SYMBOLS</h3>
+      <div class="payout-item">
+        <div class="payout-symbols">
+          <img src="./logos/afc.png" alt="AFC" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImFmYyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6I0ZGMDAwMDtzdG9wLW9wYWNpdHk6MSIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNDQzAwMDA7c3RvcC1vcGFjaXR5OjEiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0idXJsKCNhZmMpIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjIwIiB5PSIyNyIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iOTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjRkZGIj5BRkM8L3RleHQ+PC9zdmc+'">
+          <span>AFC CHAMPIONSHIP</span>
+        </div>
+        <div class="payout-value">1000x</div>
+      </div>
+      <div class="payout-item">
+        <div class="payout-symbols">
+          <img src="./logos/nfc.png" alt="NFC" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9Im5mYyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwMDBGRjtzdG9wLW9wYWNpdHk6MSIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDAwQ0M7c3RvcC1vcGFjaXR5OjEiIC8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0idXJsKCNuZmMpIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjIwIiB5PSIyNyIgZm9udC1mYW1pbHk9IkFyaWFsIEJsYWNrIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iOTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjRkZGIj5ORkM8L3RleHQ+PC9zdmc+'">
+          <span>NFC CHAMPIONSHIP</span>
+        </div>
+        <div class="payout-value">1000x</div>
+      </div>
+      <div class="payout-item">
+        <div class="payout-symbols">
+          <img src="./logos/nfl.png" alt="NFL" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9Im5mbDIiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNGRkQ3MDA7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRkZCNjEyO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcng9IjgiIGZpbGw9InVybCgjbmZsMikiIHN0cm9rZT0iIzAxMzM2OSIgc3Ryb2tlLXdpZHRoPSIyIi8+PHRleHQgeD0iMjAiIHk9IjI3IiBmb250LWZhbWlseT0iQXJpYWwgQmxhY2siIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI5MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMwMTMzNjkiPk5GTDwvdGV4dD48L3N2Zz4='">
+          <span>🏈 NFL SHIELD (WILD)</span>
+        </div>
+        <div class="payout-value">500x</div>
+      </div>
+    </div>
+
+    <div class="paytable-section">
+      <h3>🏟️ TEAM SYMBOLS</h3>
+      <div class="payout-item">
+        <div class="payout-symbols">
+          <span>🏴‍☠️ Patriots</span>
+        </div>
+        <div class="payout-value">150x</div>
+      </div>
+      <div class="payout-item">
+        <div class="payout-symbols">
+          <span>⚡ Chiefs</span>
+        </div>
+        <div class="payout-value">140x</div>
+      </div>
+      <div class="payout-item">
+        <div class="payout-symbols">
+          <span>🦅 Eagles</span>
+        </div>
+        <div class="payout-value">130x</div>
+      </div>
+      <div class="payout-item">
+        <div class="payout-symbols">
+          <span>🧀 Packers / ⭐ Cowboys / 🖤 Steelers</span>
+        </div>
+        <div class="payout-value">125x</div>
+      </div>
+      <div class="payout-item">
+        <div class="payout-symbols">
+          <span>🌉 49ers</span>
+        </div>
+        <div class="payout-value">110x</div>
+      </div>
+      <div class="payout-item">
+        <div class="payout-symbols">
+          <span>🦅 Falcons & Other Teams</span>
+        </div>
+        <div class="payout-value">100x</div>
+      </div>
+    </div>
+
+    <div class="paytable-section">
+      <h3>ℹ️ GAME RULES</h3>
+      <p style="margin-bottom: 10px; font-size: clamp(12px, 2vw, 16px);"><strong>🎯 Wild Symbol:</strong> NFL Shield substitutes for all symbols except Trophy</p>
+      <p style="margin-bottom: 10px; font-size: clamp(12px, 2vw, 16px);"><strong>💎 Jackpot:</strong> 3 Trophy symbols anywhere triggers JACKPOT!</p>
+      <p style="margin-bottom: 10px; font-size: clamp(12px, 2vw, 16px);"><strong>📈 Paylines:</strong> 3 horizontal lines pay left to right</p>
+      <p style="margin-bottom: 10px; font-size: clamp(12px, 2vw, 16px);"><strong>💰 Min Bet:</strong> 5 credits</p>
+      <p style="margin-bottom: 10px; font-size: clamp(12px, 2vw, 16px);"><strong>🎯 Max Bet:</strong> 100 credits</p>
+      <p style="font-size: clamp(12px, 2vw, 16px);"><strong>🎮 Controls:</strong> SPACE = Spin, ↑↓ = Adjust Bet, M = Max Bet</p>
+    </div>
+  </div>
+
   <script>
-    // --- Audio Setup ---
-    document.addEventListener('DOMContentLoaded', function() {
-      // HTML5 fallback audio elements
-      const fallbackAudio = {
-        spin: document.getElementById('spin-sound'),
-        stop: document.getElementById('stop-sound'),
-        win: document.getElementById('win-sound'),
-        win2: document.getElementById('win2-sound'),
-        win3: document.getElementById('win3-sound'),
-        lose: document.getElementById('lose-sound')
-      };
+    // Ultimate 4K NFL Slots Game Engine
+    class UltimateNFLSlots {
+      constructor() {
+        this.credits = 1000;
+        this.bet = 25;
+        this.maxBet = 100;
+        this.minBet = 5;
+        this.isSpinning = false;
+        this.autoplay = false;
+        this.autoplaySpins = 0;
+        this.maxAutoplaySpins = 10;
+        this.demoMode = false;
+        this.demoInterval = null;
+        this.soundEnabled = true;
 
-      // Set all fallback audio to full volume
-      Object.values(fallbackAudio).forEach(audio => { if (audio) audio.volume = 1.0; });
+        // Enhanced Game Elements
+        this.elements = {
+          reels: [
+            document.getElementById('reel1'),
+            document.getElementById('reel2'),
+            document.getElementById('reel3')
+          ],
+          spinButton: document.querySelector('.spin-button'),
+          creditsDisplay: document.getElementById('credits'),
+          betDisplay: document.getElementById('bet-amount'),
+          winDisplay: document.getElementById('win-amount'),
+          jackpotDisplay: document.getElementById('jackpot-amount'),
+          winOverlay: document.getElementById('winOverlay'),
+          betUpButton: document.querySelector('.bet-up'),
+          betDownButton: document.querySelector('.bet-down'),
+          maxBetButton: document.querySelector('.max-bet'),
+          autoplayButton: document.querySelector('.autoplay-button'),
+          ledLights: document.querySelectorAll('.led-light'),
+          paylines: document.querySelectorAll('.payline'),
+          paytable: document.querySelector('.paytable'),
+          paytableButton: document.querySelector('.paytable-button'),
+          paytableClose: document.querySelector('.paytable-close'),
+          paytableOverlay: document.querySelector('.paytable-overlay')
+        };
 
-      // Audio unlock logic for browser autoplay policies
-      let audioUnlocked = false;
-      function unlockAudio() {
-        if (audioUnlocked) return;
-        audioUnlocked = true;
-        Object.values(fallbackAudio).forEach(audio => {
-          if (audio) {
-            audio.volume = 0.01;
-            audio.play().then(() => {
-              audio.pause();
-              audio.currentTime = 0;
-              audio.volume = 1.0;
-            }).catch(() => {});
+        // Enhanced NFL Teams Database
+        this.teams = [
+          { name: 'NFL Shield', image: './logos/nfl.png', value: 500, isWild: true, isPremium: true },
+          { name: 'Trophy', image: './logos/trophy.png', value: 50000, isJackpot: true, isPremium: true },
+          { name: 'AFC', image: './logos/afc.png', value: 1000, isPremium: true },
+          { name: 'NFC', image: './logos/nfc.png', value: 1000, isPremium: true },
+          { name: 'Patriots', image: './logos/patriots.png', value: 150 },
+          { name: 'Chiefs', image: './logos/chiefs.png', value: 140 },
+          { name: 'Eagles', image: './logos/eagles.png', value: 130 },
+          { name: 'Packers', image: './logos/packers.png', value: 125 },
+          { name: 'Cowboys', image: './logos/cowboys.png', value: 125 },
+          { name: 'Steelers', image: './logos/steelers.png', value: 125 },
+          { name: '49ers', image: './logos/49ers.png', value: 110 },
+          { name: 'Falcons', image: './logos/falcons.png', value: 100 }
+        ];
+
+        // Premium Sound System
+        this.sounds = {
+          spin: this.createAudioElement('sounds/spin.wav'),
+          stop: this.createAudioElement('sounds/stop.wav'),
+          win: this.createAudioElement('sounds/win.wav'),
+          bigWin: this.createAudioElement('sounds/win3.wav'),
+          jackpot: this.createAudioElement('sounds/Ben.wav'),
+          coin: this.createAudioElement('sounds/coin.wav'),
+          lose: this.createAudioElement('sounds/lose.wav')
+        };
+
+        this.spinDuration = 2500;
+        this.reelStopDelay = 400;
+        this.jackpot = 50000;
+
+        this.init();
+      }
+
+      createAudioElement(src) {
+        const audio = new Audio(src);
+        audio.preload = 'auto';
+        audio.volume = 0.7;
+        audio.onerror = () => console.warn(`Sound file not found: ${src}`);
+        return audio;
+      }
+
+      init() {
+        this.validateElements();
+        this.initEventListeners();
+        this.initReels();
+        this.updateDisplays();
+        this.startIdleLights();
+        console.log('🎰 Ultimate NFL Slots 4K initialized successfully!');
+      }
+
+      validateElements() {
+        const missingElements = [];
+        this.elements.reels.forEach((reel, index) => {
+          if (!reel) missingElements.push(`reel${index + 1}`);
+        });
+        
+        if (missingElements.length > 0) {
+          console.error('❌ Missing critical elements:', missingElements);
+        } else {
+          console.log('✅ All reel elements validated successfully');
+        }
+      }
+
+      initEventListeners() {
+        // Spin Controls
+        this.elements.spinButton?.addEventListener('click', () => this.spin());
+        
+        // Betting Controls
+        this.elements.betUpButton?.addEventListener('click', () => this.adjustBet(5));
+        this.elements.betDownButton?.addEventListener('click', () => this.adjustBet(-5));
+        this.elements.maxBetButton?.addEventListener('click', () => this.setMaxBet());
+        this.elements.autoplayButton?.addEventListener('click', () => this.toggleAutoplay());
+
+        // UI Controls
+        this.elements.paytableButton?.addEventListener('click', () => this.showPaytable());
+        this.elements.paytableClose?.addEventListener('click', () => this.hidePaytable());
+        this.elements.paytableOverlay?.addEventListener('click', () => this.hidePaytable());
+
+        // Keyboard Controls
+        document.addEventListener('keydown', (e) => this.handleKeydown(e));
+
+        // Prevent paytable close on inside click
+        this.elements.paytable?.addEventListener('click', (e) => e.stopPropagation());
+      }
+
+      handleKeydown(e) {
+        switch(e.code) {
+          case 'Space':
+            e.preventDefault();
+            this.spin();
+            break;
+          case 'ArrowUp':
+            e.preventDefault();
+            this.adjustBet(5);
+            break;
+          case 'ArrowDown':
+            e.preventDefault();
+            this.adjustBet(-5);
+            break;
+          case 'KeyM':
+            this.setMaxBet();
+            break;
+          case 'KeyA':
+            this.toggleAutoplay();
+            break;
+          case 'KeyP':
+            this.showPaytable();
+            break;
+          case 'KeyD':
+            this.toggleDemo();
+            break;
+        }
+      }
+
+      initReels() {
+        this.elements.reels.forEach((reel, index) => {
+          if (reel) {
+            const track = reel.querySelector('.symbol-track');
+            if (track) {
+              this.setReelSymbols(index, this.getRandomReelSymbols());
+            }
           }
         });
-        document.removeEventListener('click', unlockAudio);
-        document.removeEventListener('touchstart', unlockAudio);
-        document.removeEventListener('keydown', unlockAudio);
       }
-      document.addEventListener('click', unlockAudio);
-      document.addEventListener('touchstart', unlockAudio);
-      document.addEventListener('keydown', unlockAudio);
 
-      // Play a sound by name
-      function playSound(name) {
-        try {
-          // Use the preloaded <audio> element
-          const audioElem = fallbackAudio[name];
-          if (audioElem) {
-            audioElem.currentTime = 0;
-            audioElem.volume = 1.0;
-            const playPromise = audioElem.play();
-            if (playPromise !== undefined) {
-              playPromise.catch(() => {
-                // If browser blocks play, try last-resort fallback
-                if (name === 'spin') {
-                  const newAudio = new Audio('sounds/spin.wav');
-                  newAudio.volume = 1.0;
-                  newAudio.play().catch(() => {});
-                }
-              });
-            }
-            return audioElem;
+      getRandomSymbol() {
+        return this.teams[Math.floor(Math.random() * this.teams.length)];
+      }
+
+      getRandomReelSymbols() {
+        return [this.getRandomSymbol(), this.getRandomSymbol(), this.getRandomSymbol()];
+      }
+
+      setReelSymbols(reelIndex, symbols) {
+        const reel = this.elements.reels[reelIndex];
+        if (!reel) return;
+
+        const track = reel.querySelector('.symbol-track');
+        if (!track) return;
+
+        // Ensure exactly 3 symbols
+        while (symbols.length < 3) {
+          symbols.push(this.teams[0]); // Add NFL Shield as fallback
+        }
+        symbols = symbols.slice(0, 3);
+
+        track.innerHTML = '';
+        symbols.forEach(symbol => {
+          const img = document.createElement('img');
+          img.src = symbol.image;
+          img.alt = symbol.name;
+          img.setAttribute('data-symbol', symbol.name);
+          img.onerror = () => {
+            img.src = this.createFallbackSVG(symbol);
+          };
+          track.appendChild(img);
+        });
+      }
+
+      createFallbackSVG(symbol) {
+        const colorMap = {
+          'NFL Shield': { bg: '#FFB612', text: '#013369', emoji: '🏈' },
+          'Trophy': { bg: '#FFD700', text: '#000', emoji: '🏆' },
+          'AFC': { bg: '#FF0000', text: '#FFF', emoji: 'AFC' },
+          'NFC': { bg: '#0000FF', text: '#FFF', emoji: 'NFC' },
+          'Chiefs': { bg: '#E31837', text: '#FFF', emoji: 'KC' },
+          'Patriots': { bg: '#002244', text: '#FFF', emoji: 'NE' },
+          'Packers': { bg: '#203731', text: '#FFB612', emoji: 'GB' },
+          'Cowboys': { bg: '#041E42', text: '#FFF', emoji: 'DAL' },
+          'Steelers': { bg: '#000', text: '#FFB612', emoji: 'PIT' },
+          '49ers': { bg: '#AA0000', text: '#FFF', emoji: 'SF' },
+          'Eagles': { bg: '#004C54', text: '#FFF', emoji: 'PHI' },
+          'Falcons': { bg: '#A71930', text: '#FFF', emoji: 'ATL' }
+        };
+
+        const colors = colorMap[symbol.name] || { bg: '#333', text: '#FFF', emoji: '?' };
+        
+        const svg = `
+          <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="grad_${symbol.name.replace(/\s+/g, '_')}" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:${colors.bg};stop-opacity:1" />
+                <stop offset="100%" style="stop-color:${this.adjustBrightness(colors.bg, -20)};stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <rect width="100" height="100" rx="15" fill="url(#grad_${symbol.name.replace(/\s+/g, '_')})" stroke="${colors.text}" stroke-width="3"/>
+            <text x="50" y="60" font-family="Arial Black, Arial" font-size="24" font-weight="900" text-anchor="middle" fill="${colors.text}" stroke="${colors.bg}" stroke-width="1">${colors.emoji}</text>
+          </svg>
+        `;
+        return 'data:image/svg+xml;base64,' + btoa(svg);
+      }
+
+      adjustBrightness(hex, percent) {
+        const num = parseInt(hex.replace("#", ""), 16);
+        const amt = Math.round(2.55 * percent);
+        const R = (num >> 16) + amt;
+        const G = (num >> 8 & 0x00FF) + amt;
+        const B = (num & 0x0000FF) + amt;
+        return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+          (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+          (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+      }
+
+      adjustBet(amount) {
+        if (this.isSpinning) return;
+        const newBet = Math.max(this.minBet, Math.min(this.maxBet, this.bet + amount));
+        if (newBet !== this.bet) {
+          this.bet = newBet;
+          this.updateDisplays();
+          this.playSound('coin');
+        }
+      }
+
+      setMaxBet() {
+        if (this.isSpinning) return;
+        this.bet = this.maxBet;
+        this.updateDisplays();
+        this.playSound('coin');
+      }
+
+      toggleAutoplay() {
+        this.autoplay = !this.autoplay;
+        if (this.autoplay) {
+          this.autoplaySpins = this.maxAutoplaySpins;
+          this.elements.autoplayButton?.classList.add('active');
+          if (this.elements.autoplayButton) {
+            this.elements.autoplayButton.textContent = `AUTO (${this.autoplaySpins})`;
           }
-        } catch (e) {
-          // Last-chance fallback
-          if (name === 'spin') {
-            const newAudio = new Audio('sounds/spin.wav');
-            newAudio.volume = 1.0;
-            newAudio.play().catch(() => {});
+          this.autoSpin();
+        } else {
+          this.autoplaySpins = 0;
+          this.elements.autoplayButton?.classList.remove('active');
+          if (this.elements.autoplayButton) {
+            this.elements.autoplayButton.textContent = 'AUTO';
           }
         }
-        return null;
       }
 
-      // --- Game logic hooks below ---
-      // Make sure to use playSound('spin'), playSound('win'), etc. in your game logic
-      // Example usage for spin (replace with your actual game logic calls)
-      const spinButton = document.getElementById('spin-button');
-      if (spinButton) {
-        spinButton.addEventListener('click', function() {
-          playSound('spin');
-          // ... your spin logic ...
+      async autoSpin() {
+        if (!this.autoplay || this.autoplaySpins <= 0) {
+          this.autoplay = false;
+          this.elements.autoplayButton?.classList.remove('active');
+          if (this.elements.autoplayButton) {
+            this.elements.autoplayButton.textContent = 'AUTO';
+          }
+          return;
+        }
+
+        await this.spin(true);
+        if (this.autoplay && this.autoplaySpins > 0) {
+          setTimeout(() => this.autoSpin(), 1500);
+        }
+      }
+
+      toggleDemo() {
+        this.demoMode = !this.demoMode;
+        if (this.demoMode) {
+          this.startDemo();
+        } else {
+          this.stopDemo();
+        }
+      }
+
+      startDemo() {
+        if (this.demoInterval) clearInterval(this.demoInterval);
+        this.demoInterval = setInterval(() => {
+          if (!this.isSpinning) {
+            this.spin();
+          }
+        }, 4000);
+      }
+
+      stopDemo() {
+        if (this.demoInterval) {
+          clearInterval(this.demoInterval);
+          this.demoInterval = null;
+        }
+      }
+
+      updateDisplays() {
+        if (this.elements.creditsDisplay) {
+          this.elements.creditsDisplay.textContent = this.credits.toLocaleString();
+        }
+        if (this.elements.betDisplay) {
+          this.elements.betDisplay.textContent = this.bet.toString();
+        }
+        if (this.elements.jackpotDisplay) {
+          this.elements.jackpotDisplay.textContent = this.jackpot.toLocaleString();
+        }
+      }
+
+      async spin(isAutoplay = false) {
+        if (this.isSpinning) return;
+        if (this.credits < this.bet) {
+          this.showMessage('💰 Not enough credits!');
+          this.autoplay = false;
+          return;
+        }
+
+        // Deduct bet
+        this.credits -= this.bet;
+        if (this.autoplay) {
+          this.autoplaySpins--;
+          if (this.elements.autoplayButton) {
+            this.elements.autoplayButton.textContent = `AUTO (${this.autoplaySpins})`;
+          }
+        }
+
+        this.isSpinning = true;
+        if (this.elements.spinButton) {
+          this.elements.spinButton.disabled = true;
+        }
+        this.updateDisplays();
+
+        // Clear previous state
+        this.hideWinOverlay();
+        this.clearSymbolHighlights();
+        this.hidePaylines();
+
+        // Start effects
+        this.startSpinEffects();
+        this.playSound('spin');
+
+        // Generate results
+        const finalGrid = [
+          this.getRandomReelSymbols(),
+          this.getRandomReelSymbols(),
+          this.getRandomReelSymbols()
+        ];
+
+        // Animate reels
+        const spinPromises = this.elements.reels.map(async (reel, index) => {
+          if (!reel) return;
+
+          const track = reel.querySelector('.symbol-track');
+          if (!track) return;
+
+          track.classList.add('spinning');
+          this.createSpinningSymbols(track);
+
+          const stopDelay = this.spinDuration + (index * this.reelStopDelay);
+          await this.delay(stopDelay);
+
+          track.classList.remove('spinning');
+          track.classList.add('decelerating');
+          this.setReelSymbols(index, finalGrid[index]);
+          this.playSound('stop');
+
+          await this.delay(1500);
+          track.classList.remove('decelerating');
+        });
+
+        await Promise.all(spinPromises);
+
+        // Stop effects and calculate result
+        this.stopSpinEffects();
+        const result = this.calculateWin(finalGrid);
+        await this.handleWinResult(result, finalGrid);
+
+        // Re-enable controls
+        this.isSpinning = false;
+        if (this.elements.spinButton) {
+          this.elements.spinButton.disabled = false;
+        }
+      }
+
+      createSpinningSymbols(track) {
+        const symbols = Array.from({length: 20}, () => this.getRandomSymbol());
+        track.innerHTML = '';
+        symbols.forEach(symbol => {
+          const img = document.createElement('img');
+          img.src = symbol.image;
+          img.alt = symbol.name;
+          img.onerror = () => {
+            img.src = this.createFallbackSVG(symbol);
+          };
+          track.appendChild(img);
         });
       }
 
-      // Your full slot machine game logic goes below this comment,
-      // be sure to call playSound('spin'), playSound('stop'), playSound('win'), etc. as needed.
-      // (Not included here to keep this as a drop-in fix for your sound system.)
+      calculateWin(grid) {
+        const lines = [
+          [[0,0],[1,0],[2,0]], // Top
+          [[0,1],[1,1],[2,1]], // Middle
+          [[0,2],[1,2],[2,2]]  // Bottom
+        ];
+
+        let totalWin = 0;
+        let winningLines = [];
+        let winType = 'no-win';
+
+        for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+          const line = lines[lineIndex];
+          const symbols = line.map(([c,r]) => grid[c][r]);
+
+          // Check for jackpot
+          const trophyCount = symbols.filter(s => s.isJackpot).length;
+          if (trophyCount === 3) {
+            totalWin += this.jackpot;
+            winType = 'jackpot';
+            winningLines.push({ line: lineIndex, symbols, win: this.jackpot });
+            continue;
+          }
+
+          // Check for regular wins
+          const firstNonWild = symbols.find(s => !s.isWild);
+          if (!firstNonWild) continue;
+
+          const matchCount = symbols.filter(s => s.name === firstNonWild.name || s.isWild).length;
+          
+          if (matchCount === 3) {
+            let lineWin = firstNonWild.value * this.bet / 25;
+            totalWin += lineWin;
+            winningLines.push({ line: lineIndex, symbols, win: lineWin });
+            
+            if (firstNonWild.isPremium && winType !== 'jackpot') {
+              winType = 'premium';
+            } else if (winType === 'no-win') {
+              winType = 'three-match';
+            }
+          }
+        }
+
+        return { win: totalWin, type: winType, lines: winningLines };
+      }
+
+      async handleWinResult(result, grid) {
+        if (result.win > 0) {
+          this.credits += result.win;
+          await this.showWinEffects(result, grid);
+          
+          if (this.elements.winDisplay) {
+            this.elements.winDisplay.textContent = result.win.toLocaleString();
+          }
+
+          // Play appropriate sound
+          if (result.type === 'jackpot') {
+            this.playSound('jackpot');
+            this.createJackpotCelebration();
+          } else if (result.win > this.bet * 10) {
+            this.playSound('bigWin');
+          } else {
+            this.playSound('win');
+          }
+
+          this.animateCoins(result.win);
+        } else {
+          this.playSound('lose');
+        }
+
+        this.updateDisplays();
+      }
+
+      async showWinEffects(result, grid) {
+        // Show paylines
+        result.lines.forEach(winLine => {
+          if (winLine.line < this.elements.paylines.length) {
+            this.elements.paylines[winLine.line].classList.add('active');
+          }
+        });
+
+        // Highlight symbols
+        const linePositions = [
+          [[0,0],[1,0],[2,0]],
+          [[0,1],[1,1],[2,1]],
+          [[0,2],[1,2],[2,2]]
+        ];
+
+        result.lines.forEach(winLine => {
+          if (winLine.line < linePositions.length) {
+            linePositions[winLine.line].forEach(([reelIndex, symbolIndex]) => {
+              const reel = this.elements.reels[reelIndex];
+              if (reel) {
+                const symbols = reel.querySelectorAll('.symbol-track img');
+                if (symbols[symbolIndex]) {
+                  symbols[symbolIndex].classList.add('win');
+                }
+              }
+            });
+          }
+        });
+
+        this.showWinOverlay(result);
+        this.startWinLights();
+
+        await this.delay(3000);
+
+        this.hideWinOverlay();
+        this.hidePaylines();
+        this.clearSymbolHighlights();
+        this.stopWinLights();
+      }
+
+      showWinOverlay(result) {
+        if (!this.elements.winOverlay) return;
+
+        let message = '';
+        const winAmount = result.win.toLocaleString();
+        
+        switch(result.type) {
+          case 'jackpot':
+            message = `<div style="font-size: clamp(24px, 6vw, 48px); margin-bottom: 20px;">💎 BIG WIN! 💎</div><div style="font-size: clamp(20px, 4vw, 36px);">${winAmount} CREDITS!</div>`;
+            break;
+          case 'three-match':
+            message = `<div style="font-size: clamp(24px, 6vw, 48px); margin-bottom: 20px;">🎉 THREE OF A KIND! 🎉</div><div style="font-size: clamp(20px, 4vw, 36px);">${winAmount} CREDITS!</div>`;
+            break;
+          default:
+            message = `<div style="font-size: clamp(24px, 6vw, 48px); margin-bottom: 20px;">🏈 WIN! 🏈</div><div style="font-size: clamp(20px, 4vw, 36px);">${winAmount} CREDITS!</div>`;
+        }
+
+        this.elements.winOverlay.innerHTML = message;
+        this.elements.winOverlay.classList.add('visible');
+      }
+
+      hideWinOverlay() {
+        this.elements.winOverlay?.classList.remove('visible');
+      }
+
+      hidePaylines() {
+        this.elements.paylines.forEach(payline => {
+          payline.classList.remove('active');
+        });
+      }
+
+      clearSymbolHighlights() {
+        this.elements.reels.forEach(reel => {
+          const symbols = reel.querySelectorAll('.symbol-track img');
+          symbols.forEach(symbol => symbol.classList.remove('win'));
+        });
+      }
+
+      createJackpotCelebration() {
+        // Create confetti burst
+        const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFB612', '#E31837'];
+        for (let i = 0; i < 100; i++) {
+          setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.style.cssText = `
+              position: fixed;
+              left: ${Math.random() * 100}vw;
+              top: -10px;
+              width: ${Math.random() * 10 + 5}px;
+              height: ${Math.random() * 10 + 5}px;
+              background: ${colors[Math.floor(Math.random() * colors.length)]};
+              z-index: 9999;
+              border-radius: 50%;
+              animation: confettiDrop ${Math.random() * 3 + 2}s linear forwards;
+              pointer-events: none;
+              box-shadow: 0 0 10px currentColor;
+            `;
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => confetti.remove(), 5000);
+          }, i * 50);
+        }
+      }
+
+      animateCoins(amount) {
+        const coinCount = Math.min(Math.floor(amount / 100), 30);
+        const creditsRect = this.elements.creditsDisplay?.getBoundingClientRect();
+        
+        for (let i = 0; i < coinCount; i++) {
+          setTimeout(() => {
+            const coin = document.createElement('div');
+            coin.className = 'coin-animation';
+            coin.style.left = `${Math.random() * 80 + 10}%`;
+            coin.style.top = `60%`;
+            document.querySelector('.slot-machine').appendChild(coin);
+            
+            if (creditsRect) {
+              setTimeout(() => {
+                coin.style.left = `${creditsRect.left + creditsRect.width / 2}px`;
+                coin.style.top = `${creditsRect.top + creditsRect.height / 2}px`;
+                coin.style.transform = 'scale(0.5)';
+                coin.style.opacity = '0';
+              }, 100);
+            }
+            
+            setTimeout(() => coin.remove(), 1500);
+          }, i * 100);
+        }
+      }
+
+      startSpinEffects() {
+        this.startSpinLights();
+      }
+
+      stopSpinEffects() {
+        this.stopSpinLights();
+      }
+
+      startIdleLights() {
+        this.lightInterval = setInterval(() => {
+          this.elements.ledLights.forEach(light => {
+            light.classList.toggle('on', Math.random() > 0.6);
+          });
+        }, 2000);
+      }
+
+      startSpinLights() {
+        this.stopIdleLights();
+        let index = 0;
+        this.spinLightInterval = setInterval(() => {
+          this.elements.ledLights.forEach((light, i) => {
+            light.classList.toggle('on', i === index % this.elements.ledLights.length);
+          });
+          index++;
+        }, 80);
+      }
+
+      stopSpinLights() {
+        if (this.spinLightInterval) {
+          clearInterval(this.spinLightInterval);
+          this.spinLightInterval = null;
+        }
+        this.startIdleLights();
+      }
+
+      startWinLights() {
+        this.stopIdleLights();
+        this.winLightInterval = setInterval(() => {
+          this.elements.ledLights.forEach(light => {
+            light.classList.toggle('win', Math.random() > 0.2);
+          });
+        }, 120);
+      }
+
+      stopWinLights() {
+        if (this.winLightInterval) {
+          clearInterval(this.winLightInterval);
+          this.winLightInterval = null;
+        }
+        this.elements.ledLights.forEach(light => {
+          light.classList.remove('win');
+        });
+        this.startIdleLights();
+      }
+
+      stopIdleLights() {
+        if (this.lightInterval) {
+          clearInterval(this.lightInterval);
+          this.lightInterval = null;
+        }
+      }
+
+      showPaytable() {
+        this.elements.paytable?.classList.add('visible');
+        this.elements.paytableOverlay?.classList.add('visible');
+      }
+
+      hidePaytable() {
+        this.elements.paytable?.classList.remove('visible');
+        this.elements.paytableOverlay?.classList.remove('visible');
+      }
+
+      showMessage(message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'win-overlay visible';
+        messageDiv.innerHTML = `<div style="font-size: clamp(18px, 4vw, 28px); padding: 20px;">${message}</div>`;
+        
+        document.querySelector('.slot-machine').appendChild(messageDiv);
+        setTimeout(() => messageDiv.remove(), 2500);
+      }
+
+      playSound(soundName) {
+        if (this.soundEnabled && this.sounds[soundName]) {
+          this.sounds[soundName].currentTime = 0;
+          this.sounds[soundName].play().catch(e => 
+            console.warn(`Failed to play sound: ${soundName}`, e)
+          );
+        }
+      }
+
+      delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+    }
+
+    // Global Functions
+    let gameInstance;
+    let soundEnabled = true;
+    let isFullscreen = false;
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const button = event.target;
+      button.textContent = soundEnabled ? '🔊 SOUND' : '🔇 MUTED';
+      button.style.opacity = soundEnabled ? '1' : '0.6';
+      
+      if (gameInstance) {
+        gameInstance.soundEnabled = soundEnabled;
+      }
+    }
+
+    function toggleFullscreen() {
+      const gameContainer = document.querySelector('.game-container');
+      
+      if (!isFullscreen) {
+        if (gameContainer.requestFullscreen) {
+          gameContainer.requestFullscreen();
+        } else if (gameContainer.webkitRequestFullscreen) {
+          gameContainer.webkitRequestFullscreen();
+        } else if (gameContainer.mozRequestFullScreen) {
+          gameContainer.mozRequestFullScreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        }
+      }
+    }
+
+    function toggleDemo() {
+      if (gameInstance) {
+        gameInstance.toggleDemo();
+        const button = event.target;
+        button.textContent = gameInstance.demoMode ? '⏹️ STOP DEMO' : '🎬 DEMO';
+        button.style.background = gameInstance.demoMode ? 
+          'linear-gradient(145deg, #dc2626, #991b1b)' : 
+          'linear-gradient(145deg, rgba(55, 65, 81, 0.9), rgba(31, 41, 55, 0.9))';
+      }
+    }
+
+    // Fullscreen event handlers
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+
+    function handleFullscreenChange() {
+      isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
+      const button = document.querySelector('.control-button:nth-child(3)');
+      if (button) {
+        button.textContent = isFullscreen ? '⛶ EXIT FULL' : '⛶ FULLSCREEN';
+      }
+    }
+
+    // Initialize Game
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('🎮 Initializing Ultimate NFL Slots 4K...');
+      
+      if (document.querySelector('.slot-machine')) {
+        gameInstance = new UltimateNFLSlots();
+        window.nflSlots = gameInstance; // Global access
+        
+        // Demo spin after 3 seconds
+        setTimeout(() => {
+          if (gameInstance && !gameInstance.isSpinning) {
+            gameInstance.spin();
+          }
+        }, 3000);
+        
+        console.log('🚀 Game ready! Press SPACE to spin!');
+      } else {
+        console.error('❌ Slot machine container not found');
+      }
     });
+
+    // Mobile viewport optimization
+    function setVH() {
+      let vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+
+    setVH();
+    window.addEventListener('resize', setVH);
+    window.addEventListener('orientationchange', () => setTimeout(setVH, 100));
+
+    // Touch optimization
+    document.addEventListener('touchstart', function() {}, { passive: true });
+
+    // Prevent zoom on double-tap
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function (event) {
+      const now = (new Date()).getTime();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+
+    // Performance monitoring
+    if (typeof performance !== 'undefined' && performance.mark) {
+      performance.mark('nfl-slots-4k-loaded');
+      console.log('📊 Performance monitoring enabled');
+    }
+
+    // Error handling
+    window.addEventListener('error', (e) => {
+      console.error('🚨 Game Error:', e.error);
+    });
+
+    console.log('🏆 Ultimate NFL Slots 4K - Ready to play!');
   </script>
 </body>
-</html>
+</html> 48px); margin-bottom: 20px;">🏆 JACKPOT! 🏆</div><div style="font-size: clamp(20px, 4vw, 36px);">${winAmount} CREDITS!</div>`;
+            break;
+          case 'premium':
+            message = `<div style="font-size: clamp(24px, 6vw,
