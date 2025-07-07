@@ -437,6 +437,8 @@
       gap: 15px;
       margin-top: 25px;
       flex-wrap: wrap;
+      z-index: 10;
+      position: relative;
     }
 
     .control-button {
@@ -451,13 +453,26 @@
       font-size: 14px;
       text-transform: uppercase;
       letter-spacing: 1px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 120px;
+      margin: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     }
 
-    .control-button:hover {
-      background: linear-gradient(145deg, var(--nfl-gold), #f59e0b);
-      color: #000;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    @media (max-width: 768px) {
+      .game-controls {
+        gap: 8px;
+        margin-top: 15px;
+      }
+      
+      .control-button {
+        padding: 8px 12px;
+        font-size: 12px;
+        border-width: 2px;
+        min-width: 80px;
+      }
     }
 
     .win-overlay {
@@ -505,14 +520,30 @@
         inset 0 0 30px rgba(0, 0, 0, 0.5);
     }
 
+    @media (max-width: 768px) {
+      .paytable {
+        width: 85%;
+        max-width: 360px;
+        max-height: 70vh;
+        padding: 15px;
+        border-width: 4px;
+        font-size: 14px;
+      }
+      
+      .paytable-title {
+        font-size: 20px;
+        margin-bottom: 15px;
+      }
+      
+      .payout-symbols img {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
     .paytable.visible {
       display: block;
       animation: paytableSlideIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    }
-
-    @keyframes paytableSlideIn {
-      0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
-      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
     }
 
     .paytable-overlay {
@@ -679,6 +710,60 @@
       .led-light {
         width: 12px;
         height: 12px;
+      }
+      .game-controls {
+        gap: 8px;
+        margin-top: 15px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .control-button {
+        padding: 8px 12px;
+        font-size: 12px;
+        border-width: 2px;
+        min-width: 80px;
+        margin: 3px;
+      }
+      .paytable {
+        width: 85%;
+        max-width: 320px;
+        max-height: 60vh;
+        padding: 15px;
+        border-width: 3px;
+      }
+      .paytable-title {
+        font-size: 18px;
+      }
+      .paytable-section h3 {
+        font-size: 16px;
+      }
+      .payout-item {
+        padding: 6px;
+        margin-bottom: 5px;
+      }
+    }
+
+    /* Specific optimizations for iPhone 16 Pro Max */
+    @media (device-width: 1290px) and (device-height: 2796px) and (-webkit-device-pixel-ratio: 3) {
+      .game-controls {
+        margin-top: 20px;
+        gap: 12px;
+      }
+      .control-button {
+        min-width: 110px;
+        padding: 10px 16px;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        margin: 4px;
+      }
+      .paytable {
+        width: 80%;
+        max-width: 600px;
+        max-height: 65vh;
       }
     }
 
@@ -991,28 +1076,8 @@
           maxBetButton: document.querySelector('.max-bet'),
           autoplayButton: document.querySelector('.autoplay-button'),
           ledLights: document.querySelectorAll('.led-light'),
-          paylines: document.querySelectorAll('.payline'),
-          paytable: document.querySelector('.paytable'),
-          paytableButton: document.querySelector('.paytable-button'),
-          paytableClose: document.querySelector('.paytable-close'),
-          paytableOverlay: document.querySelector('.paytable-overlay')
+          paylines: document.querySelectorAll('.payline')
         };
-
-        // FIXED: Validate that all three reel elements are found
-        console.log('Reel element validation:');
-        this.elements.reels.forEach((reel, index) => {
-          if (!reel) {
-            console.error(`CRITICAL ERROR: Reel element ${index + 1} (reel${index + 1}) not found in DOM!`);
-          } else {
-            console.log(`✓ Reel ${index + 1} (${reel.id}) found successfully`);
-            const track = reel.querySelector('.symbol-track');
-            if (!track) {
-              console.error(`CRITICAL ERROR: .symbol-track not found in ${reel.id}!`);
-            } else {
-              console.log(`✓ Symbol track found in ${reel.id}`);
-            }
-          }
-        });
 
         console.log('Elements initialized:', this.elements);
 
