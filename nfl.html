@@ -216,7 +216,8 @@
     }
 
     .reel {
-      height: 240px;
+      height: 260px; /* Increased to show all three rows clearly on desktop */
+      min-height: 260px;
       background: linear-gradient(180deg, #1a1a2e 0%, #000000 50%, #1a1a2e 100%);
       border: 4px solid var(--chrome);
       border-radius: 15px;
@@ -234,7 +235,7 @@
       height: 100%;
       justify-content: space-around;
       align-items: center;
-      padding: 0;
+      padding: 20px 0; /* Added padding to ensure symbols are properly spaced */
       transition: transform 0.1s ease;
       position: relative;
     }
@@ -257,10 +258,10 @@
       100% { transform: translateY(-1200px); }
     }
     
-    /* Deceleration animation to slow down smoothly */
+    /* Improved deceleration animation to ensure smooth transition with all rows visible */
     @keyframes reelDecelerate {
       0% { transform: translateY(0); }
-      100% { transform: translateY(-80px); }
+      100% { transform: translateY(-240px); }
     }
 
     /* FIXED: Enhanced symbol styling */
@@ -316,6 +317,13 @@
     .payline.line-1 { top: 25%; }
     .payline.line-2 { top: 50%; }
     .payline.line-3 { top: 75%; }
+    
+    /* Desktop payline adjustments */
+    @media (min-width: 769px) {
+      .payline.line-1 { top: 25%; }
+      .payline.line-2 { top: 50%; }
+      .payline.line-3 { top: 75%; }
+    }
 
     @media (max-width: 768px) {
       .payline.line-2 { top: 48.5%; }
@@ -898,8 +906,22 @@
       }
     }
 
-    /* Landscape orientation adjustments */
-    @media (orientation: landscape) {
+    /* Desktop-specific adjustments */
+    @media (min-width: 769px) {
+      .reel {
+        height: 260px;
+        min-height: 260px;
+      }
+      .symbol-track {
+        padding: 15px 0;
+      }
+      .symbol-track img {
+        margin: 10px 0; /* Add spacing between symbols for desktop */
+      }
+    }
+    
+    /* Landscape orientation adjustments for mobile */
+    @media (max-width: 768px) and (orientation: landscape) {
       .reel {
         height: 180px;
         min-height: 180px;
@@ -1380,18 +1402,35 @@
           console.log(`Trimmed reel ${reelIndex} to exactly 3 symbols`);
         }
 
+        // Get appropriate size based on device orientation and size
+        const isMobile = window.innerWidth <= 768;
+        const isPortrait = window.innerHeight > window.innerWidth;
+        const isIphone = /iPhone/.test(navigator.userAgent);
+        
+        // Size adjustments
+        let symbolSize = '80px';
+        if (isMobile) {
+          if (isPortrait) {
+            // Portrait iPhone needs larger symbols
+            symbolSize = isIphone ? '65px' : '48px';
+          } else {
+            // Landscape mobile needs smaller symbols
+            symbolSize = '48px';
+          }
+        }
+        
         // Create symbols with proper spacing and no gaps
         const symbolElements = validSymbols.map((symbol, symbolIndex) => {
           const img = document.createElement('img');
           img.src = symbol.image;
           img.alt = symbol.name;
           img.setAttribute('data-symbol', symbol.name);
-          img.style.width = '80px';
-          img.style.height = '80px';
+          img.style.width = symbolSize;
+          img.style.height = symbolSize;
           img.style.objectFit = 'contain';
           img.style.borderRadius = '10px';
           img.style.display = 'block';
-          img.style.margin = '0';
+          img.style.margin = isPortrait && isMobile ? '6px 0' : '10px 0';
           img.style.padding = '0';
           img.style.flexShrink = '0';
           
@@ -1407,6 +1446,15 @@
 
         // Clear existing content and add new symbols
         track.innerHTML = '';
+        
+        // Ensure proper alignment for all three rows
+        track.style.display = 'flex';
+        track.style.flexDirection = 'column';
+        track.style.justifyContent = 'space-between';
+        track.style.alignItems = 'center';
+        track.style.height = '100%';
+        track.style.padding = '10px 0';
+        
         symbolElements.forEach(element => track.appendChild(element));
         
         console.log(`Reel ${reelIndex} now has ${symbolElements.length} symbol elements in DOM`);
@@ -1814,8 +1862,22 @@
           }
         }
         
-        // Create all symbols
-        reelStrip.forEach(symbol => {
+        // Set proper height and padding for consistent symbol display
+        track.style.display = 'flex';
+        track.style.flexDirection = 'column';
+        track.style.justifyContent = 'space-around';
+        track.style.alignItems = 'center';
+        track.style.paddingTop = '20px';    // Important for showing all symbols
+        track.style.paddingBottom = '20px'; // Important for showing all symbols
+        
+        // Always ensure at least 6 visible symbols at the beginning
+        // This guarantees the bottom row is always visible
+        const initialVisibleSymbols = 6;
+        const leadingSymbols = reelStrip.slice(0, initialVisibleSymbols);
+        
+        // Create all symbols, starting with duplicates of the first few to ensure
+        // the bottom row is always visible from the start
+        [...leadingSymbols, ...reelStrip].forEach(symbol => {
           const img = document.createElement('img');
           img.src = symbol.image;
           img.alt = symbol.name;
@@ -2204,17 +2266,35 @@
 
     // (Demo button creation now handled above)
 
-    // Adjust reels based on screen orientation
+    // Adjust reels based on screen orientation and device type
     function adjustReelsForOrientation() {
       const reels = document.querySelectorAll('.reel');
       const isPortrait = window.innerHeight > window.innerWidth;
       const isMobile = window.innerWidth <= 768;
+      const isDesktop = !isMobile;
       
-      if (isMobile) {
-        // Calculate how many symbols should be visible in viewport
-        const symbolsPerReel = isPortrait ? 3 : 3; // Always show 3 symbols minimum
-        
-        reels.forEach(reel => {
+      reels.forEach(reel => {
+        // Desktop adjustments
+        if (isDesktop) {
+          // Ensure height for desktop to show 3 rows
+          reel.style.height = '260px';
+          
+          // Get all symbols in the reel
+          const track = reel.querySelector('.symbol-track');
+          if (track) {
+            track.style.padding = '15px 0';
+            // Ensure proper spacing between symbols
+            const symbols = track.querySelectorAll('img');
+            symbols.forEach(symbol => {
+              symbol.style.margin = '10px 0';
+            });
+          }
+        }
+        // Mobile adjustments
+        else {
+          // Calculate how many symbols should be visible in viewport
+          const symbolsPerReel = isPortrait ? 3 : 3; // Always show 3 symbols minimum
+          
           // Adjust height if needed
           if (isPortrait) {
             // Ensure minimum height for portrait mode
@@ -2226,14 +2306,20 @@
           // Get all symbols in the reel
           const track = reel.querySelector('.symbol-track');
           if (track) {
-            // Ensure proper spacing between symbols
+            // Ensure proper spacing between symbols for mobile
             const symbols = track.querySelectorAll('img');
             symbols.forEach(symbol => {
-              symbol.style.marginBottom = isPortrait ? '10px' : '0';
+              symbol.style.margin = isPortrait ? '10px 0' : '5px 0';
             });
           }
-        });
-      }
+        }
+      });
+      
+      // Make sure paylines are visible and properly positioned
+      document.querySelectorAll('.payline').forEach((payline, index) => {
+        // Ensure visibility
+        payline.style.display = 'block';
+      });
     }
 
     // Call on page load, resize and orientation change
