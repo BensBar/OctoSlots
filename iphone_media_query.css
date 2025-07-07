@@ -1,0 +1,21 @@
+/* iPhone 16 Pro Max specific adjustments */
+@media only screen 
+  and (device-width: 430px) 
+  and (device-height: 932px) 
+  and (-webkit-device-pixel-ratio: 3) {
+  .reel {
+    height: 200px;
+  }
+  .symbol-track {
+    padding: 8px 0;
+    justify-content: space-between;
+  }
+  .symbol-track img {
+    width: 50px;
+    height: 50px;
+    margin: 6px 0;
+  }
+  .payline.line-1 { top: 25%; }
+  .payline.line-2 { top: 48.8%; }
+  .payline.line-3 { top: 75%; }
+}
