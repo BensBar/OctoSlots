@@ -240,18 +240,25 @@
     }
 
     .symbol-track.spinning {
-      animation: reelSpinSmooth 0.15s linear infinite;
-      filter: blur(3px);
+      animation: reelSpinSmooth 0.8s linear infinite;
+      filter: blur(2px);
       transition: filter 0.3s;
     }
 
     .symbol-track.decelerating {
+      animation: reelDecelerate 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
       filter: blur(0px);
       transition: filter 0.3s;
     }
 
-    /* FIXED: Smooth continuous spinning animation */
+    /* Enhanced smooth continuous spinning animation showing all symbols */
     @keyframes reelSpinSmooth {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-1200px); }
+    }
+    
+    /* Deceleration animation to slow down smoothly */
+    @keyframes reelDecelerate {
       0% { transform: translateY(0); }
       100% { transform: translateY(-80px); }
     }
@@ -1558,9 +1565,8 @@
 
         console.log('Final grid generated:', finalGrid);
 
-        // Enhanced reel spinning with seamless animation
-
-
+        // Enhanced reel spinning with complete symbol variety
+        // This shows ALL NFL team symbols during the spinning animation
         // --- Parallel reel spin logic with correct sound sequence ---
         const stopSound = (soundName) => {
           if (this.sounds[soundName]) {
@@ -1714,12 +1720,30 @@
 
       // Create seamless spinning symbols
       createSpinningSymbols(track, reelIndex) {
-        // Fill the spinning track with 100 random picks from teams for true variety
-        const symbolsToShow = Array.from({length: 100}, () => this.teams[Math.floor(Math.random() * this.teams.length)]);
-
+        // Create a complete set of all NFL teams to ensure full variety
+        let allTeams = [...this.teams];
+        
+        // Shuffle the teams to get random order
+        const shuffleTeams = (array) => {
+          for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+          }
+          return array;
+        };
+        
+        allTeams = shuffleTeams(allTeams);
+        
+        // Create multiple sets of all teams to ensure enough symbols for spinning
+        // This creates a full "reel strip" like in real slot machines
+        const reelStrip = [];
+        for (let i = 0; i < 5; i++) { // Create 5 complete cycles of all teams
+          reelStrip.push(...shuffleTeams([...allTeams]));
+        }
+        
         // Clear track and add spinning symbols
         track.innerHTML = '';
-        symbolsToShow.forEach(symbol => {
+        reelStrip.forEach(symbol => {
           const img = document.createElement('img');
           img.src = symbol.image;
           img.alt = symbol.name;
@@ -1738,6 +1762,9 @@
           };
           track.appendChild(img);
         });
+        
+        // Add a dataset property to help with tracking
+        track.dataset.totalSymbols = reelStrip.length;
       }
 
       hideWinOverlay() {
