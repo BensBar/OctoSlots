@@ -685,11 +685,12 @@
         padding: 6px;
       }
       .reel {
-        height: 120px;
+        height: 200px; /* Increased height to show all rows in portrait mode */
+        min-height: 200px;
       }
       .symbol-track img {
-        width: 38px;
-        height: 38px;
+        width: 48px;
+        height: 48px;
       }
       .controls-section {
         grid-template-columns: 1fr;
@@ -774,18 +775,6 @@
       }
     }
 
-    .symbol-track.spinning {
-      animation: reelSpinSmooth 0.15s linear infinite;
-      filter: blur(3px);
-      transition: filter 0.3s;
-    }
-
-    .symbol-track.decelerating {
-      animation: reelDecelerate 1.5s cubic-bezier(0.23, 1, 0.320, 1) forwards;
-      filter: blur(0px);
-      transition: filter 0.3s;
-    }
-
     @media (min-width: 1200px) and (min-device-pixel-ratio: 3) {
       .slot-machine {
         max-width: 900px;
@@ -851,6 +840,70 @@
       color: #fff !important;
       box-shadow: 0 0 32px #00eaff, 0 0 64px #0055ff !important;
       border: 2px solid #fff !important;
+    }
+
+    /* iPhone-specific optimizations for portrait mode */
+    @media only screen 
+    and (max-device-width: 428px) 
+    and (orientation: portrait) {
+      .reels-container {
+        margin: 10px 0;
+        padding: 10px;
+      }
+      .reel {
+        height: 240px;
+        min-height: 240px;
+      }
+      .symbol-track {
+        justify-content: space-between;
+      }
+      .symbol-track img {
+        width: 56px;
+        height: 56px;
+      }
+      /* Ensure all three paylines are visible */
+      .payline.line-1 { top: 25%; }
+      .payline.line-2 { top: 50%; }
+      .payline.line-3 { top: 75%; }
+    }
+
+    /* iPhone 14 Pro Max, iPhone 15 Pro Max, iPhone 16 Pro Max */
+    @media only screen 
+    and (min-device-width: 428px)
+    and (max-device-width: 430px)
+    and (min-device-height: 926px) 
+    and (orientation: portrait) {
+      .reel {
+        height: 280px;
+        min-height: 280px;
+      }
+      .symbol-track img {
+        width: 65px;
+        height: 65px;
+      }
+    }
+
+    /* iPhone 16 Pro Max specific adjustments */
+    @media only screen 
+    and (device-width: 1290px) 
+    and (device-height: 2796px) 
+    and (orientation: portrait) {
+      .reel {
+        height: 320px;
+        min-height: 320px;
+      }
+      .symbol-track img {
+        width: 80px;
+        height: 80px;
+      }
+    }
+
+    /* Landscape orientation adjustments */
+    @media (orientation: landscape) {
+      .reel {
+        height: 180px;
+        min-height: 180px;
+      }
     }
   </style>
 </head>
@@ -1743,23 +1796,44 @@
         
         // Clear track and add spinning symbols
         track.innerHTML = '';
+        
+        // Get appropriate size based on device orientation and size
+        const isMobile = window.innerWidth <= 768;
+        const isPortrait = window.innerHeight > window.innerWidth;
+        const isIphone = /iPhone/.test(navigator.userAgent);
+        
+        // Size adjustments
+        let symbolSize = '80px';
+        if (isMobile) {
+          if (isPortrait) {
+            // Portrait iPhone needs larger symbols
+            symbolSize = isIphone ? '65px' : '48px';
+          } else {
+            // Landscape mobile needs smaller symbols
+            symbolSize = '48px';
+          }
+        }
+        
+        // Create all symbols
         reelStrip.forEach(symbol => {
           const img = document.createElement('img');
           img.src = symbol.image;
           img.alt = symbol.name;
           img.setAttribute('data-symbol', symbol.name);
-          img.style.width = '80px';
-          img.style.height = '80px';
+          img.style.width = symbolSize;
+          img.style.height = symbolSize;
           img.style.objectFit = 'contain';
           img.style.borderRadius = '10px';
           img.style.display = 'block';
-          img.style.margin = '0';
+          img.style.margin = isPortrait && isMobile ? '6px 0' : '0';
           img.style.padding = '0';
           img.style.flexShrink = '0';
+          
           // Add fallback for missing logos
           img.onerror = () => {
             img.src = this.createFallbackSVG(symbol);
           };
+          
           track.appendChild(img);
         });
         
@@ -2129,6 +2203,45 @@
     document.addEventListener('touchstart', function() {}, { passive: true });
 
     // (Demo button creation now handled above)
+
+    // Adjust reels based on screen orientation
+    function adjustReelsForOrientation() {
+      const reels = document.querySelectorAll('.reel');
+      const isPortrait = window.innerHeight > window.innerWidth;
+      const isMobile = window.innerWidth <= 768;
+      
+      if (isMobile) {
+        // Calculate how many symbols should be visible in viewport
+        const symbolsPerReel = isPortrait ? 3 : 3; // Always show 3 symbols minimum
+        
+        reels.forEach(reel => {
+          // Adjust height if needed
+          if (isPortrait) {
+            // Ensure minimum height for portrait mode
+            if (reel.clientHeight < 200) {
+              reel.style.height = '240px';
+            }
+          }
+          
+          // Get all symbols in the reel
+          const track = reel.querySelector('.symbol-track');
+          if (track) {
+            // Ensure proper spacing between symbols
+            const symbols = track.querySelectorAll('img');
+            symbols.forEach(symbol => {
+              symbol.style.marginBottom = isPortrait ? '10px' : '0';
+            });
+          }
+        });
+      }
+    }
+
+    // Call on page load, resize and orientation change
+    window.addEventListener('load', adjustReelsForOrientation);
+    window.addEventListener('resize', adjustReelsForOrientation);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(adjustReelsForOrientation, 300);
+    });
   </script>
 </body>
 </html>
