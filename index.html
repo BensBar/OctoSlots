@@ -1469,9 +1469,13 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
       reels.forEach((reel, index) => fillReel(reel)); // preload strips
 
       // Start all reels spinning at the same time, but stop them individually
+      // Enhanced 4K spinning effects
+      reels.forEach(reel => {
+        reel.classList.add('spinning');
+        reel.style.willChange = 'transform';
+      });
 
       const spinTimes = [1800, 2300, 2800];
-
 
       // REVERT: Use original logic (no onStopPhaseStart, no setTimeout for spinSound)
       const reelPromises = reels.map((reel, i) => animateReel(reel, spinTimes[i], stops[i]));
@@ -1491,6 +1495,12 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
           stopSound.play();
         }
       }
+      
+      // Remove spinning effects after all reels stop
+      reels.forEach(reel => {
+        reel.classList.remove('spinning');
+        reel.style.willChange = 'auto';
+      });
       // Wait for stop.wav to start before win/lose logic
       await new Promise(resolve => setTimeout(resolve, 350));
 
@@ -1520,6 +1530,19 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
           }
         }
         return '';
+      }
+      
+      function getCenterSymbolElement(reel) {
+        const reelRect = reel.getBoundingClientRect();
+        const centerY = reelRect.top + reelRect.height / 2;
+        const symbols = Array.from(reel.querySelectorAll('.symbol'));
+        for (let symbolDiv of symbols) {
+          const rect = symbolDiv.getBoundingClientRect();
+          if (rect.top <= centerY && rect.bottom >= centerY) {
+            return symbolDiv;
+          }
+        }
+        return null;
       }
       // Get the three center symbols by DOM position
       const symbolsLanded = reelsArr.map(reel => getCenterSymbolSrc(reel));
@@ -1594,12 +1617,28 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
         winSound.currentTime = 0;
         winSound.play();
         
+        // Enhanced 4K particle effects and celebration
         sparkleEffect();
+        triggerWinCelebration(payout);
+        
+        // Add winning symbol highlighting
+        const reelElements = document.querySelectorAll('.reel');
+        reelElements.forEach(reel => {
+          const centerSymbol = getCenterSymbolElement(reel);
+          if (centerSymbol && centerSymbol.querySelector('img').src === winSymbol) {
+            centerSymbol.classList.add('winning');
+          }
+        });
+        
         // Start winning lights animation
         startLights(true);
         setTimeout(() => {
           winBanner.style.display = 'none';
-        }, 2000);
+          // Remove winning highlights
+          document.querySelectorAll('.symbol.winning').forEach(symbol => {
+            symbol.classList.remove('winning');
+          });
+        }, 3000);
       } else {
         lastWin = 0;
         updateDisplay();
@@ -1686,6 +1725,233 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
         addArchLights('.slot-arch-lights-bottom', 18);
       });
     };
+
+    // Enhanced 4K Particle Effects System
+    function createParticleEffect(centerX, centerY, particleCount = 15, effectType = 'sparkle') {
+      const particleTypes = ['sparkle', 'star', 'gold', 'diamond'];
+      const colors = ['#FFD700', '#FFA500', '#FF8C00', '#FFFF00', '#00FF00'];
+      
+      for (let i = 0; i < particleCount; i++) {
+        setTimeout(() => {
+          const particle = document.createElement('div');
+          particle.className = `particle-4k ${effectType}`;
+          
+          // Random position around center
+          const angle = (Math.PI * 2 * i) / particleCount + Math.random() * 0.5;
+          const distance = 50 + Math.random() * 100;
+          const startX = centerX + Math.cos(angle) * (distance * 0.1);
+          const startY = centerY + Math.sin(angle) * (distance * 0.1);
+          const endX = centerX + Math.cos(angle) * distance;
+          const endY = centerY + Math.sin(angle) * distance;
+          
+          particle.style.cssText = `
+            position: fixed;
+            left: ${startX}px;
+            top: ${startY}px;
+            width: ${4 + Math.random() * 8}px;
+            height: ${4 + Math.random() * 8}px;
+            background: radial-gradient(circle, ${colors[Math.floor(Math.random() * colors.length)]} 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+            animation: particle-float-4k ${2 + Math.random() * 2}s ease-out forwards;
+            --end-x: ${endX}px;
+            --end-y: ${endY}px;
+            --rotation: ${Math.random() * 720}deg;
+            transform: translateZ(0);
+            will-change: transform, opacity;
+          `;
+          
+          document.body.appendChild(particle);
+          
+          // Remove particle after animation
+          setTimeout(() => {
+            if (particle.parentNode) {
+              particle.parentNode.removeChild(particle);
+            }
+          }, 4000);
+        }, i * 50);
+      }
+    }
+
+    // Enhanced win celebration with 4K effects
+    function triggerWinCelebration(winAmount) {
+      const slotMachine = document.querySelector('.slot-base');
+      const rect = slotMachine.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      
+      // Create multiple particle bursts
+      createParticleEffect(centerX, centerY, 20, 'sparkle');
+      setTimeout(() => createParticleEffect(centerX - 50, centerY - 50, 15, 'star'), 300);
+      setTimeout(() => createParticleEffect(centerX + 50, centerY - 50, 15, 'gold'), 600);
+      setTimeout(() => createParticleEffect(centerX, centerY + 50, 12, 'diamond'), 900);
+      
+      // Enhanced light show
+      startLights(true);
+      setTimeout(() => {
+        stopLights();
+        startLights(true);
+      }, 1000);
+      setTimeout(() => stopLights(), 3000);
+      
+      // Screen flash effect for big wins
+      if (winAmount >= 500) {
+        const flash = document.createElement('div');
+        flash.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%);
+          pointer-events: none;
+          z-index: 999;
+          animation: flash-4k 0.5s ease-out forwards;
+        `;
+        document.body.appendChild(flash);
+        setTimeout(() => {
+          if (flash.parentNode) {
+            flash.parentNode.removeChild(flash);
+          }
+        }, 500);
+      }
+    }
+
+    // Enhanced iOS optimization and orientation handling
+    function initializeIOSOptimizations() {
+      // iOS viewport height fix
+      const setVH = () => {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      };
+      
+      setVH();
+      window.addEventListener('resize', setVH);
+      window.addEventListener('orientationchange', () => {
+        setTimeout(setVH, 100);
+      });
+      
+      // iOS-specific touch handling
+      document.addEventListener('touchstart', function() {}, { passive: true });
+      document.addEventListener('touchmove', function(e) {
+        // Prevent scrolling on game area
+        if (e.target.closest('.slot-arch-frame')) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+      
+      // Hardware acceleration for smooth animations
+      const acceleratedElements = document.querySelectorAll('.reel, .symbol, button, .slot-arch-frame');
+      acceleratedElements.forEach(element => {
+        element.style.transform = 'translateZ(0)';
+        element.style.backfaceVisibility = 'hidden';
+        element.style.webkitBackfaceVisibility = 'hidden';
+      });
+    }
+
+    // Enhanced animation system with 4K effects
+    function enhanceAnimations() {
+      // Add CSS for 4K particle animations
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes particle-float-4k {
+          0% {
+            transform: translate(0, 0) scale(0) rotate(0deg);
+            opacity: 0;
+          }
+          10% {
+            opacity: 1;
+          }
+          90% {
+            opacity: 1;
+          }
+          100% {
+            transform: translate(calc(var(--end-x) - 50vw), calc(var(--end-y) - 50vh)) scale(1.5) rotate(var(--rotation));
+            opacity: 0;
+          }
+        }
+        
+        @keyframes flash-4k {
+          0% { opacity: 0; }
+          50% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        
+        /* Enhanced 4K reel spinning effects */
+        .reel.spinning {
+          animation: reel-glow-4k 0.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes reel-glow-4k {
+          0% {
+            box-shadow: 
+              0 4px 20px rgba(0,0,0,0.3),
+              0 0 0 2px rgba(255,215,0,0.2),
+              inset 0 0 20px rgba(255,255,255,0.1);
+          }
+          100% {
+            box-shadow: 
+              0 4px 20px rgba(0,0,0,0.3),
+              0 0 0 2px rgba(255,215,0,0.6),
+              inset 0 0 20px rgba(255,255,255,0.3),
+              0 0 30px rgba(255,215,0,0.4);
+          }
+        }
+        
+        /* Enhanced symbol highlighting */
+        .symbol.winning {
+          animation: symbol-pulse-4k 1s ease-in-out infinite alternate;
+        }
+        
+        @keyframes symbol-pulse-4k {
+          0% {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+          }
+          100% {
+            transform: scale(1.15);
+            box-shadow: 0 0 20px rgba(255,215,0,0.8);
+          }
+        }
+        
+        /* Enhanced button interactions */
+        button.spin {
+          transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        button.spin:active {
+          transform: translateY(2px) scale(0.98);
+        }
+        
+        /* 4K optimizations for high-DPI displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+          .symbol img {
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: optimize-contrast;
+            image-rendering: crisp-edges;
+          }
+          
+          .slot-arch-frame {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // Initialize all enhancements
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeIOSOptimizations();
+      enhanceAnimations();
+      
+      // Add iPhone-specific CSS file
+      const iPhoneCSS = document.createElement('link');
+      iPhoneCSS.rel = 'stylesheet';
+      iPhoneCSS.href = 'iphone_media_query.css';
+      document.head.appendChild(iPhoneCSS);
+    });
   </script>
 
 </body></html>
