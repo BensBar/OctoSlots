@@ -81,18 +81,20 @@
     }
 
     .game-container {
-      width: 100vw;
+      width: 100%;
       min-height: 100dvh;
       display: flex;
       justify-content: center;
       align-items: center;
       position: relative;
       perspective: 1000px;
+      padding: 0 clamp(5px, 1vw, 20px);
+      box-sizing: border-box;
     }
 
     .slot-machine {
       width: 100%;
-      max-width: none;
+      max-width: min(100%, 1200px);
       max-height: var(--machine-height);
       background: var(--machine-body);
       border: 8px solid var(--nfl-silver);
@@ -995,10 +997,14 @@
         padding: 0;
       }
       
+      .game-container {
+        padding: 0 clamp(5px, 1.5vw, 15px);
+      }
+      
       .slot-machine {
         border-width: 4px;
         padding: clamp(10px, 3vw, 20px);
-        max-width: none !important;
+        max-width: min(95vw, 600px);
       }
       
       .reels-container {
@@ -1026,6 +1032,16 @@
         --reel-height: calc(var(--symbol-size) * 3.1);
       }
       
+      .game-container {
+        padding: 0 clamp(3px, 1vw, 10px);
+      }
+      
+      .slot-machine {
+        max-width: min(98vw, 450px);
+        padding: clamp(8px, 2vw, 15px);
+        border-width: 3px;
+      }
+      
       .machine-title {
         font-size: clamp(18px, 4vw, 28px);
       }
@@ -1037,6 +1053,40 @@
       .led-light {
         width: clamp(12px, 3vw, 20px);
         height: clamp(12px, 3vw, 20px);
+      }
+    }
+
+    /* Portrait Orientation Optimizations */
+    @media (orientation: portrait) {
+      .game-container {
+        padding: 0 clamp(8px, 2vw, 15px);
+      }
+      
+      .slot-machine {
+        max-width: min(95vw, 500px);
+        padding: clamp(12px, 3vw, 25px);
+      }
+      
+      :root {
+        --symbol-size: min(20vw, 75px);
+        --reel-height: calc(var(--symbol-size) * 3.2);
+      }
+    }
+
+    /* Landscape Orientation Optimizations */
+    @media (orientation: landscape) {
+      .game-container {
+        padding: 0 clamp(10px, 2vw, 25px);
+      }
+      
+      .slot-machine {
+        max-width: min(90vw, 900px);
+        max-height: min(85vh, 700px);
+      }
+      
+      :root {
+        --symbol-size: min(8vw, 90px);
+        --reel-height: calc(var(--symbol-size) * 3.5);
       }
     }
 
