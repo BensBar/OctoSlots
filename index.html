@@ -465,7 +465,6 @@
       background: var(--reels-bg, var(--slot-bg));
       position: relative;
       margin-bottom: 2rem;
-      background-image: linear-gradient(180deg, #fff2 0%, #fff0 100%), repeating-linear-gradient(90deg, #fff1 0 2px, transparent 2px 12px);
       border-top: 10px solid #fff8;
       border-bottom: 10px solid #fff8;
     }
@@ -1997,6 +1996,13 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
       
       // Handle color changes
       colorPicker.addEventListener('input', (e) => {
+        const newColor = e.target.value;
+        updateReelColors(newColor);
+        localStorage.setItem('octoslots-reel-color', newColor);
+      });
+      
+      // Also handle change event for better browser compatibility
+      colorPicker.addEventListener('change', (e) => {
         const newColor = e.target.value;
         updateReelColors(newColor);
         localStorage.setItem('octoslots-reel-color', newColor);
