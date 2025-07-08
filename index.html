@@ -79,9 +79,9 @@
         max-width: 90vw;
       }
       .toggle-mode {
-        font-size: 1.1rem;
+        font-size: 1rem;
         padding: 0.5rem 1.2rem;
-        border-radius: 1.2rem;
+        border-radius: 1rem;
         margin: 0.5rem 0 0.2rem 0;
       }
       .slot-arch-lights, .slot-arch-lights-bottom {
@@ -363,23 +363,27 @@
       pointer-events: none;
     }
 
-    /* Button to toggle light/dark mode */
+    /* Button to toggle light/dark mode - moved to bottom */
     .toggle-mode {
-      position: absolute;
-      top: 1.5rem;
-      right: 2rem;
       background: var(--button-bg);
       color: var(--button-color);
       border: none;
-      padding: 0.7rem 1.2rem;
-      border-radius: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.8rem;
       cursor: pointer;
-      font-size: 1.1rem;
-      box-shadow: 0 2px 12px #0006;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 8px #0004;
       transition: background 0.2s;
     }
     .toggle-mode:hover {
       background: #b71c1c;
+    }
+    
+    /* Footer container for toggle button */
+    .toggle-mode-footer {
+      text-align: center;
+      padding: 1rem 0;
+      margin-top: 1rem;
     }
     /* Slot machine reels container */
     .reels {
@@ -1001,15 +1005,7 @@
   <audio id="win-sound" src="sounds/win.wav"></audio>
   <audio id="lose-sound" src="sounds/lose.wav"></audio>
 
-  <!-- Button to toggle between light and dark mode (now always visible and sticky on mobile) -->
-  <div class="toggle-mode-bar">
-    <button class="toggle-mode" onclick="toggleMode()">🌙</button>
-  </div>
   <div class="slot-arch-frame">
-    <!-- Toggle button is now inside the slot machine arch for mobile visibility -->
-    <div class="toggle-mode-arch">
-      <button class="toggle-mode" onclick="toggleMode()">🌙</button>
-    </div>
     <div class="slot-arch-lights"></div>
     <div class="slot-arch-top">
       <div class="slot-arch-title-arc">
@@ -1027,57 +1023,7 @@
     <div class="container">
 </style>
 <style>
-    /* Toggle button inside slot arch for mobile */
-    .toggle-mode-arch {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding-top: max(env(safe-area-inset-top), 0.5rem);
-      padding-bottom: 0.2rem;
-      background: transparent;
-      z-index: 100;
-    }
-    .toggle-mode-arch .toggle-mode {
-      font-size: 1.1rem;
-      padding: 0.6rem 2rem;
-      border-radius: 1.2rem;
-      margin: 0.1rem 0 0.2rem 0;
-      width: 90vw;
-      max-width: 400px;
-      box-shadow: 0 2px 8px #0002;
-    }
-    @media (max-width: 450px) and (min-height: 800px) {
-      .toggle-mode-bar { display: none !important; }
-      .toggle-mode-arch { display: flex !important; }
-    }
-    @media (min-width: 451px) {
-      .toggle-mode-bar { display: flex !important; }
-      .toggle-mode-arch { display: none !important; }
-    }
-    /* Always show toggle bar at top, safe for iPhone notch */
-    .toggle-mode-bar {
-      width: 100vw;
-      position: sticky;
-      top: 0;
-      left: 0;
-      z-index: 1000;
-      background: var(--bg-gradient);
-      padding-top: env(safe-area-inset-top, 0.5rem);
-      padding-bottom: 0.2rem;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-    }
-    .toggle-mode {
-      font-size: 1.2rem;
-      padding: 0.7rem 2.2rem;
-      border-radius: 1.5rem;
-      margin: 0.2rem 0;
-      width: 90vw;
-      max-width: 400px;
-      box-shadow: 0 2px 8px #0002;
-    }
+
     @media (max-width: 450px) and (min-height: 800px) {
       html, body {
         min-height: 100dvh;
@@ -1177,6 +1123,11 @@
           <span class="pay-label">2 of any</span>
           <span class="pay-mult">x5</span>
         </div>
+      </div>
+      
+      <!-- Light/Dark mode toggle button moved to bottom -->
+      <div class="toggle-mode-footer">
+        <button class="toggle-mode" onclick="toggleMode()">🌙</button>
       </div>
     </div>
   </div>
