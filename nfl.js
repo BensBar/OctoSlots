@@ -1361,12 +1361,10 @@
             stopClone.currentTime = 0;
             stopClone.play();
           }
-          // After the 3rd reel, stop spin.wav and immediately play win/lose sound
+          // Stop spin sound when the final (3rd) reel starts decelerating
           if (index === 2) {
+            console.log('Final reel started decelerating, stopping spin sound...');
             stopSound('spin');
-            // Calculate and handle win right away
-            const result = this.calculateWin(finalGrid);
-            await this.handleWinResult(result, finalGrid);
           }
           // Wait for a natural deceleration (matches previous animation: 1.5s)
           await this.delay(1500);
@@ -1380,7 +1378,10 @@
         // Stop spinning effects
         this.stopSpinEffects();
 
-        // (No longer need to call handleWinResult here)
+        // Now that all reels have completed their animations, calculate and handle the win
+        console.log('All reels animation completed, calculating win...');
+        const result = this.calculateWin(finalGrid);
+        await this.handleWinResult(result, finalGrid);
 
         // Re-enable controls
         this.isSpinning = false;
