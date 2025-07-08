@@ -1208,7 +1208,7 @@
   <script>
     // Fill all reels on page load to prevent blanks
     window.addEventListener('DOMContentLoaded', () => {
-      [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')].forEach(reel => fillReel(reel));
+      [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')].forEach(reel => fillReel(reel, null, true));
     });
     // List of symbol image URLs for the reels
     const rawSymbols = [
@@ -1256,8 +1256,20 @@
     const winSound = document.getElementById('win-sound');
 
     // Fill a reel with random symbols. Optionally, stop at a specific symbol index.
-    function fillReel(reel, stopAt = null) {
+    function fillReel(reel, stopAt = null, forceRefresh = false) {
       const strip = reel.querySelector('.reel-strip');
+      
+      // Only clear and rebuild if forced or if strip is empty/has insufficient symbols
+      const existingSymbols = strip.querySelectorAll('.symbol');
+      if (!forceRefresh && existingSymbols.length >= 40) {
+        // Reel already has sufficient symbols, just position if needed
+        if (stopAt !== null) {
+          const centeredPosition = stopAt * 128 - 64;
+          strip.style.transform = `translateY(${-centeredPosition}px)`;
+        }
+        return;
+      }
+      
       strip.innerHTML = '';
       // Add 40 random symbols to the reel (prevents animation blanks)
       const reelSymbols = [];
@@ -1349,12 +1361,14 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
       const elapsed = ts - startTime;
       
       if (elapsed < spinTime) {
-        // Improved animation with easing
+        // Improved animation with easing and better seamless wrapping
         const progress = elapsed / spinTime;
         const easeOut = 1 - Math.pow(1 - progress, 3);
         const speed = 3 + (2 * (1 - easeOut)); // Start fast, slow down
         
-        lastY = (elapsed * speed) % (totalSymbols * symbolHeight);
+        // More stable modulo calculation to prevent visual gaps
+        const totalHeight = totalSymbols * symbolHeight;
+        lastY = ((elapsed * speed) % totalHeight + totalHeight) % totalHeight;
         strip.style.transform = `translateY(${-lastY}px)`;
         frame = requestAnimationFrame(spinLoop);
       } else {
@@ -1488,8 +1502,8 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
       const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
       // Pick a random stop position for each reel (symbol indices 0-19)
       const stops = reels.map(() => Math.floor(Math.random() * 20));
-      // Fill each reel with random symbols
-      reels.forEach((reel, index) => fillReel(reel)); // preload strips
+      // Ensure reels have symbols (only fill if empty or insufficient)
+      reels.forEach((reel, index) => fillReel(reel)); // check and preload strips only if needed
 
       // Start all reels spinning at the same time, but stop them individually
       // Enhanced 4K spinning effects
@@ -1709,9 +1723,9 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
 
     // When the page loads, fill each reel with random symbols and update display
     window.onload = () => {
-      fillReel(document.getElementById('reel1'), Math.floor(Math.random() * 20));
-      fillReel(document.getElementById('reel2'), Math.floor(Math.random() * 20));
-      fillReel(document.getElementById('reel3'), Math.floor(Math.random() * 20));
+      fillReel(document.getElementById('reel1'), Math.floor(Math.random() * 20), true);
+      fillReel(document.getElementById('reel2'), Math.floor(Math.random() * 20), true);
+      fillReel(document.getElementById('reel3'), Math.floor(Math.random() * 20), true);
       updateDisplay();
       // Add slot machine handle
       const handle = document.createElement('div');
