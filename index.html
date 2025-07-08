@@ -1354,7 +1354,10 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
         const easeOut = 1 - Math.pow(1 - progress, 3);
         const speed = 3 + (2 * (1 - easeOut)); // Start fast, slow down
         
-        lastY = (elapsed * speed) % (totalSymbols * symbolHeight);
+        // Calculate continuous position to prevent black flashing
+        const rawY = elapsed * speed;
+        lastY = rawY % (totalSymbols * symbolHeight);
+        // Ensure smooth continuous motion without jumps
         strip.style.transform = `translateY(${-lastY}px)`;
         frame = requestAnimationFrame(spinLoop);
       } else {
@@ -1391,10 +1394,7 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
             } else {
               strip.style.transform = `translateY(${-targetY}px)`;
               strip.style.filter = 'none';
-              // Add winning effect if this reel has winning symbols
-              setTimeout(() => {
-                reel.classList.add('win-effect');
-              }, 100);
+              // Preserve visual continuity - no forced redraw
               resolve();
             }
           }

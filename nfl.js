@@ -1351,10 +1351,9 @@
           // Only the stopping is staggered
           await this.delay(this.spinDuration + (index * this.reelStopDelay));
 
-          // Stop spinning and set final symbols
+          // Stop spinning and start deceleration
           track.classList.remove('spinning');
           track.classList.add('decelerating');
-          this.setReelSymbols(index, finalGrid[index]);
           // Play stop.wav as a new instance for each reel
           if (this.sounds['stop']) {
             const stopClone = this.sounds['stop'].cloneNode();
@@ -1369,6 +1368,9 @@
           // Wait for a natural deceleration (matches previous animation: 1.5s)
           await this.delay(1500);
           track.classList.remove('decelerating');
+          
+          // Set final symbols after deceleration completes to preserve visual continuity
+          this.setReelSymbols(index, finalGrid[index]);
 
         });
 
