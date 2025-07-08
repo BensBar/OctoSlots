@@ -1,21 +1,179 @@
-/* iPhone 16 Pro Max specific adjustments */
+/* iPhone 16 Pro Max specific adjustments - Enhanced for 4K */
 @media only screen 
   and (device-width: 430px) 
   and (device-height: 932px) 
   and (-webkit-device-pixel-ratio: 3) {
+  
+  /* Enhanced hardware acceleration for iPhone 16 Pro Max */
+  html, body {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  
+  /* Optimized container for iPhone 16 Pro Max */
+  .container {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    max-width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Enhanced reels for iPhone 16 Pro Max 4K display */
+  .reels {
+    width: 95vw;
+    max-width: 95vw;
+    height: 18rem;
+    margin: 1rem auto;
+    box-shadow: 0 0 80px 20px #FFD70066, 
+                0 0 0 15px #fff3 inset, 
+                0 10px 40px #000c, 
+                0 0 0 10px #fff5 inset;
+    border-width: 8px;
+    backdrop-filter: blur(2px);
+  }
+  
   .reel {
-    height: 200px;
+    height: 18rem;
+    margin: 0 2px;
+    border-width: 4px;
+    /* Enhanced 4K glow effect */
+    box-shadow: 0 0 20px #FFD70040, 
+                0 4px 16px #0008,
+                0 0 0 2px #fff2 inset;
+    backdrop-filter: blur(1px);
   }
-  .symbol-track {
-    padding: 8px 0;
-    justify-content: space-between;
+  
+  .reel.spinning {
+    box-shadow: 0 0 30px #FFD70080, 
+                0 0 60px #FF8C0060,
+                0 6px 20px #000a,
+                0 0 0 3px #fff4 inset;
+    transform: scale(1.03);
   }
-  .symbol-track img {
-    width: 50px;
-    height: 50px;
-    margin: 6px 0;
+  
+  /* Enhanced symbol rendering for Retina display */
+  .symbol {
+    height: 5.5rem;
+    margin: 0.1rem 0;
   }
-  .payline.line-1 { top: 25%; }
-  .payline.line-2 { top: 48.8%; }
-  .payline.line-3 { top: 75%; }
+  
+  .symbol img {
+    max-height: 5.2rem;
+    max-width: 100%;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+    filter: contrast(1.1) saturate(1.1);
+  }
+  
+  /* Enhanced button for iPhone 16 Pro Max */
+  button.spin {
+    font-size: 2.2rem;
+    padding: 0.6em 2.5em;
+    margin: 1.5rem 0;
+    width: 85vw;
+    max-width: 85vw;
+    box-shadow: 0 10px 40px rgba(255,215,0,0.5), 
+                0 5px 20px rgba(255,140,0,0.4),
+                0 0 0 4px rgba(255,255,255,0.3) inset;
+    backdrop-filter: blur(4px);
+  }
+  
+  button.spin:hover {
+    box-shadow: 0 15px 60px rgba(255,215,0,0.7), 
+                0 8px 30px rgba(255,140,0,0.5),
+                0 0 0 5px rgba(255,255,255,0.4) inset;
+  }
+  
+  /* Enhanced pay table for iPhone 16 Pro Max */
+  .pay-table {
+    width: 95vw;
+    max-width: 95vw;
+    font-size: 1.1rem;
+    padding: 0.8rem 0.5rem;
+    margin: 1rem 0;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 20px #0008,
+                0 0 0 2px #fff2 inset;
+  }
+  
+  .pay-symbol {
+    width: 1.4rem;
+    height: 1.4rem;
+    filter: contrast(1.1) saturate(1.1);
+  }
+  
+  /* Enhanced arcade lights for iPhone 16 Pro Max */
+  .slot-arch-lights, .slot-arch-lights-bottom {
+    width: 96vw;
+    max-width: 96vw;
+    gap: 0.4rem;
+    margin: 0.5rem 0;
+  }
+  
+  .slot-arch-light {
+    width: 2rem;
+    height: 2rem;
+    box-shadow: 0 0 15px currentColor, 
+                0 0 30px currentColor,
+                0 2px 8px #0006;
+    filter: brightness(1.2);
+  }
+  
+  .slot-arch-light.on {
+    box-shadow: 0 0 25px currentColor, 
+                0 0 50px currentColor,
+                0 0 75px currentColor,
+                0 2px 8px #0006;
+    filter: brightness(1.5);
+  }
+  
+  /* Optimized title for iPhone 16 Pro Max */
+  .slot-arch-title-arc svg {
+    height: 60px;
+    width: 95vw;
+    max-width: 95vw;
+  }
+  
+  .slot-arch-emoji {
+    font-size: 2.8rem;
+    margin: 0.5rem 0;
+  }
+  
+  /* Enhanced sparkle effects for iPhone 16 Pro Max */
+  .sparkle {
+    width: 25px;
+    height: 25px;
+    filter: brightness(1.3) saturate(1.2);
+  }
+  
+  .sparkle::before {
+    font-size: 20px;
+  }
+  
+  /* Performance optimizations */
+  .reel-strip {
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform-style: preserve-3d;
+  }
+  
+  /* Enhanced win effects */
+  .win-effect {
+    animation: winGlow 1.5s ease-in-out infinite;
+    filter: brightness(1.2) saturate(1.3);
+  }
+  
+  /* Safe area adjustments for iPhone 16 Pro Max */
+  .toggle-mode {
+    top: calc(env(safe-area-inset-top) + 1rem);
+    right: calc(env(safe-area-inset-right) + 1rem);
+  }
 }
