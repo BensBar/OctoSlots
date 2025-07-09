@@ -242,11 +242,11 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      /* Enhanced safe area support for iPhones */
-      padding-top: calc(env(safe-area-inset-top) + 33vh);
-      padding-bottom: env(safe-area-inset-bottom);
-      padding-left: env(safe-area-inset-left);
-      padding-right: env(safe-area-inset-right);
+      /* Enhanced safe area support for iPhones - reduced excessive padding */
+      padding-top: max(env(safe-area-inset-top, 0), 4vh);
+      padding-bottom: env(safe-area-inset-bottom, 0);
+      padding-left: env(safe-area-inset-left, 0);
+      padding-right: env(safe-area-inset-right, 0);
     }
     
     body {
@@ -330,6 +330,7 @@
       align-items: center;
       justify-content: center;
       box-sizing: border-box;
+      min-height: calc(100vh - 8vh); /* Ensure enough space for all content including spin button */
     }
     /* Remove old .header, add arched title and emoji styles */
     .slot-arch-title-arc {
