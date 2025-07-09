@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Enhanced Fallback Test</title>
+    <style>
+        .test-container { display: flex; flex-wrap: wrap; gap: 10px; padding: 20px; }
+        .test-item { width: 150px; height: 150px; border: 2px solid #ccc; display: flex; flex-direction: column; align-items: center; padding: 10px; }
+        .test-item img { width: 100px; height: 100px; object-fit: contain; }
+        .test-title { font-weight: bold; margin-bottom: 10px; }
+        
+        /* CSS fallback styles */
+        .symbol img[src=""], .symbol img:not([src]) {
+          background: linear-gradient(145deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
+          border-radius: 8px;
+          position: relative;
+        }
+        
+        .symbol img[src=""]:after, .symbol img:not([src]):after {
+          content: "🐙";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 2.5rem;
+          color: white;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1>Enhanced Fallback System Test</h1>
+    <div class="test-container" id="test-container"></div>
+    
+    <script>
+        const tests = [
+            { name: 'Valid Image', src: 'images/original.png' },
+            { name: 'Broken URL 1', src: 'images/nonexistent.png' },
+            { name: 'Broken URL 2', src: 'images/missing-file.gif' },
+            { name: 'Empty String', src: '' },
+            { name: 'Invalid URL', src: 'not-a-real-image.png' },
+            { name: 'Valid Image 2', src: 'images/surftocat.png' }
+        ];
+        
+        const container = document.getElementById('test-container');
+        
+        tests.forEach((test, index) => {
+            const testDiv = document.createElement('div');
+            testDiv.className = 'test-item symbol';
+            
+            const title = document.createElement('div');
+            title.className = 'test-title';
+            title.textContent = test.name;
+            testDiv.appendChild(title);
+            
+            const img = document.createElement('img');
+            img.src = test.src;
+            img.alt = test.name;
+            
+            // Enhanced fallback handling
+            img.onerror = function() {
+                console.log('Image failed to load:', this.src, 'Applying enhanced fallback strategy.');
+                this.onerror = null; // Prevent infinite loops
+                
+                // Try fallback to original image first
+                if (this.src !== 'images/original.png') {
+                    this.src = 'images/original.png';
+                    // Set up secondary fallback to SVG if original also fails
+                    this.onerror = function() {
+                        console.log('Original fallback also failed, using enhanced SVG placeholder.');
+                        this.onerror = null;
+                        // Enhanced SVG placeholder with better visual design
+                        this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23FFD700;stop-opacity:1" /><stop offset="100%" style="stop-color:%23FFA500;stop-opacity:1" /></linearGradient></defs><rect width="100%" height="100%" fill="url(%23grad)" rx="12"/><circle cx="64" cy="45" r="12" fill="white"/><circle cx="54" cy="42" r="3" fill="%23333"/><circle cx="74" cy="42" r="3" fill="%23333"/><path d="M 45 70 Q 64 90 83 70" stroke="white" stroke-width="4" fill="none"/><text x="50%" y="90%" font-size="14" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-weight="bold">OCTO</text></svg>';
+                    };
+                } else {
+                    // Already tried original, go straight to enhanced SVG
+                    this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23FFD700;stop-opacity:1" /><stop offset="100%" style="stop-color:%23FFA500;stop-opacity:1" /></linearGradient></defs><rect width="100%" height="100%" fill="url(%23grad)" rx="12"/><circle cx="64" cy="45" r="12" fill="white"/><circle cx="54" cy="42" r="3" fill="%23333"/><circle cx="74" cy="42" r="3" fill="%23333"/><path d="M 45 70 Q 64 90 83 70" stroke="white" stroke-width="4" fill="none"/><text x="50%" y="90%" font-size="14" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-weight="bold">OCTO</text></svg>';
+                }
+            };
+            
+            img.onload = function() {
+                console.log('✓ Image loaded successfully:', this.src);
+            };
+            
+            testDiv.appendChild(img);
+            container.appendChild(testDiv);
+        });
+    </script>
+</body>
+</html>

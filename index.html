@@ -572,7 +572,7 @@
       display: none;
     }
     
-    /* Enhanced symbol image styles */
+    /* Enhanced symbol image styles with better fallback support */
     .symbol img {
       max-height: var(--symbol-size);
       max-width: 100%;
@@ -587,6 +587,24 @@
       border: none !important;
       transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       display: block;
+    }
+    
+    /* Improved fallback for images that fail to load */
+    .symbol img[src=""], .symbol img:not([src]) {
+      background: linear-gradient(145deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
+      border-radius: 8px;
+      position: relative;
+    }
+    
+    .symbol img[src=""]:after, .symbol img:not([src]):after {
+      content: "🐙";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.5rem;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
     
     .symbol img:hover {
@@ -1301,12 +1319,12 @@
               this.onerror = function() {
                 console.log('Original fallback also failed, using SVG placeholder.');
                 this.onerror = null;
-                // Final fallback: use a styled SVG placeholder that matches game aesthetic
-                this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23FFD700;stop-opacity:1" /><stop offset="100%" style="stop-color:%23FFA500;stop-opacity:1" /></linearGradient></defs><rect width="100%" height="100%" fill="url(%23grad)" rx="8"/><circle cx="40" cy="30" r="8" fill="white"/><path d="M 25 45 Q 40 60 55 45" stroke="white" stroke-width="3" fill="none"/><text x="50%" y="75%" font-size="8" text-anchor="middle" fill="white" font-family="Arial">OCTO</text></svg>';
+                // Final fallback: use an enhanced SVG placeholder that matches game aesthetic
+                this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23FFD700;stop-opacity:1" /><stop offset="100%" style="stop-color:%23FFA500;stop-opacity:1" /></linearGradient></defs><rect width="100%" height="100%" fill="url(%23grad)" rx="12"/><circle cx="64" cy="45" r="12" fill="white"/><circle cx="54" cy="42" r="3" fill="%23333"/><circle cx="74" cy="42" r="3" fill="%23333"/><path d="M 45 70 Q 64 90 83 70" stroke="white" stroke-width="4" fill="none"/><text x="50%" y="90%" font-size="14" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-weight="bold">OCTO</text></svg>';
               };
             } else {
-              // Already tried original, go straight to SVG
-              this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23FFD700;stop-opacity:1" /><stop offset="100%" style="stop-color:%23FFA500;stop-opacity:1" /></linearGradient></defs><rect width="100%" height="100%" fill="url(%23grad)" rx="8"/><circle cx="40" cy="30" r="8" fill="white"/><path d="M 25 45 Q 40 60 55 45" stroke="white" stroke-width="3" fill="none"/><text x="50%" y="75%" font-size="8" text-anchor="middle" fill="white" font-family="Arial">OCTO</text></svg>';
+              // Already tried original, go straight to enhanced SVG
+              this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23FFD700;stop-opacity:1" /><stop offset="100%" style="stop-color:%23FFA500;stop-opacity:1" /></linearGradient></defs><rect width="100%" height="100%" fill="url(%23grad)" rx="12"/><circle cx="64" cy="45" r="12" fill="white"/><circle cx="54" cy="42" r="3" fill="%23333"/><circle cx="74" cy="42" r="3" fill="%23333"/><path d="M 45 70 Q 64 90 83 70" stroke="white" stroke-width="4" fill="none"/><text x="50%" y="90%" font-size="14" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-weight="bold">OCTO</text></svg>';
             }
           };
           
