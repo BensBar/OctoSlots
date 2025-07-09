@@ -1265,7 +1265,9 @@
       if (!forceRefresh && existingSymbols.length >= 40) {
         // Reel already has sufficient symbols, just position if needed
         if (stopAt !== null) {
-          const centeredPosition = stopAt * 128 - 64;
+          // Use same alignment calculation as animateToStop to center symbol on win line
+          const reelCenterY = 192; // 24rem / 2 = 192px (center of reel container where win line is)
+          const centeredPosition = stopAt * 128 + 64 - reelCenterY; // Center symbol on win line
           strip.style.transform = `translateY(${-centeredPosition}px)`;
         }
         return;
@@ -1334,8 +1336,9 @@
 
       // If a stop position is given, set the strip position so the chosen symbol is centered
       if (stopAt !== null) {
-        // Center the symbol in the viewing window (same logic as animateToStop)  
-        const centeredPosition = stopAt * 128 - 64; // Updated for 8rem symbols with no gaps
+        // Center the symbol in the viewing window (same logic as animateToStop)
+        const reelCenterY = 192; // 24rem / 2 = 192px (center of reel container where win line is)  
+        const centeredPosition = stopAt * 128 + 64 - reelCenterY; // Center symbol on win line
         strip.style.transform = `translateY(${-centeredPosition}px)`;
       }
     }
@@ -1382,7 +1385,13 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
     }
         
         function animateToStop(currentModY, stopAt, onStopPhaseStart) {
-          const targetY = stopAt * symbolHeight - (symbolHeight / 2); // Perfect center for symbols with no gaps
+          // Calculate target position to center the symbol on the win line
+          // The reel container is 384px (24rem) tall, win line is at 50% = 192px
+          // Each symbol is 128px (8rem) tall
+          // Symbol at index 'stopAt' has its center at: stopAt * 128 + 64 pixels from strip top
+          // To align this center with win line at 192px from reel top, we translate strip up by:
+          const reelCenterY = 192; // 24rem / 2 = 192px (center of reel container where win line is)
+          const targetY = stopAt * symbolHeight + (symbolHeight / 2) - reelCenterY; // Center symbol on win line
           let forwardDistance = (targetY - currentModY + totalSymbols * symbolHeight) % (totalSymbols * symbolHeight);
           // Call the callback at the exact moment the stop phase starts
           if (typeof onStopPhaseStart === 'function') {
