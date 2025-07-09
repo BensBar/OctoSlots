@@ -1456,8 +1456,31 @@
 
       // Create seamless spinning symbols
       createSpinningSymbols(track, reelIndex) {
-        // Fill the spinning track with 100 random picks from teams for true variety
-        const symbolsToShow = Array.from({length: 100}, () => this.teams[Math.floor(Math.random() * this.teams.length)]);
+        // First, preserve current symbols to avoid blank period during transition
+        const currentSymbols = [];
+        const existingImages = track.querySelectorAll('img');
+        existingImages.forEach(img => {
+          if (img.getAttribute('data-symbol')) {
+            // Find the team object for this symbol
+            const teamName = img.getAttribute('data-symbol');
+            const team = this.teams.find(t => t.name === teamName);
+            if (team) {
+              currentSymbols.push(team);
+            }
+          }
+        });
+
+        // Create base symbol array starting with current symbols for continuity
+        const symbolsToShow = [];
+        
+        // Start with current symbols if they exist to maintain visual continuity
+        if (currentSymbols.length > 0) {
+          symbolsToShow.push(...currentSymbols);
+        }
+        
+        // Fill the remaining spinning track with random picks from teams for true variety
+        const additionalSymbols = Array.from({length: 100}, () => this.teams[Math.floor(Math.random() * this.teams.length)]);
+        symbolsToShow.push(...additionalSymbols);
 
         // Clear track and add spinning symbols
         track.innerHTML = '';

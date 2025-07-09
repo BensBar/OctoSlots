@@ -1839,6 +1839,20 @@
 
       // Create seamless spinning symbols
       createSpinningSymbols(track, reelIndex) {
+        // First, preserve current symbols to avoid blank period during transition
+        const currentSymbols = [];
+        const existingImages = track.querySelectorAll('img');
+        existingImages.forEach(img => {
+          if (img.getAttribute('data-symbol')) {
+            // Find the team object for this symbol
+            const teamName = img.getAttribute('data-symbol');
+            const team = this.teams.find(t => t.name === teamName);
+            if (team) {
+              currentSymbols.push(team);
+            }
+          }
+        });
+        
         // Create a complete set of all NFL teams to ensure full variety
         let allTeams = [...this.teams];
         
@@ -1856,6 +1870,12 @@
         // Create multiple sets of all teams to ensure enough symbols for spinning
         // This creates a full "reel strip" like in real slot machines
         const reelStrip = [];
+        
+        // Start with current symbols if they exist to maintain visual continuity
+        if (currentSymbols.length > 0) {
+          reelStrip.push(...currentSymbols);
+        }
+        
         for (let i = 0; i < 5; i++) { // Create 5 complete cycles of all teams
           reelStrip.push(...shuffleTeams([...allTeams]));
         }
