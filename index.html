@@ -71,10 +71,21 @@
         padding: 0.2rem 0.1rem;
         width: 98vw;
         max-width: 98vw;
+        margin: 0.5rem auto;
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
       }
       .pay-symbol {
         width: 1.2rem;
         height: 1.2rem;
+      }
+      .pay-symbol-small {
+        width: 0.9rem;
+        height: 0.9rem;
+      }
+      .wild-symbols {
+        gap: 0.1rem;
       }
       .spin-btn, #spin-btn {
         font-size: 1.3rem;
@@ -233,6 +244,34 @@
       .pay-label, .pay-mult {
         font-size: 0.92rem;
       }
+    }
+
+    /* Wild symbols styling */
+    .wild-row {
+      background: linear-gradient(45deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1));
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 4px;
+      padding: 0.3rem;
+    }
+    .wild-symbols {
+      display: flex;
+      gap: 0.2rem;
+      margin-right: 0.5rem;
+    }
+    .pay-symbol-small {
+      width: 1rem;
+      height: 1rem;
+      object-fit: contain;
+      border-radius: 2px;
+    }
+    .wild-row .pay-label small {
+      font-size: 0.75em;
+      opacity: 0.8;
+    }
+    .wild-row .pay-mult {
+      color: #FFD700;
+      font-weight: 800;
+      text-shadow: 0 0 6px #fff, 0 0 12px #FFD700;
     }
 
     /* Main body styles with improved iPhone safe area handling */
@@ -548,6 +587,8 @@
       left: 0;
       will-change: transform;
       transition: filter 0.2s;
+      min-height: 100%;
+      background: transparent;
     }
     /* Enhanced symbol styles for 4K */
     .symbol {
@@ -562,6 +603,9 @@
       border-radius: 0;
       transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       position: relative;
+      /* Ensure symbols are always visible during animation */
+      min-height: var(--symbol-size);
+      overflow: hidden;
     }
     
     .symbol::before {
@@ -1078,8 +1122,26 @@
         width: 1.1rem;
         height: 1.1rem;
       }
+      .pay-symbol-small {
+        width: 0.8rem;
+        height: 0.8rem;
+      }
       .pay-label, .pay-mult {
         font-size: 0.92rem;
+      }
+      .wild-symbols {
+        gap: 0.15rem;
+        margin-right: 0.3rem;
+      }
+      .wild-row {
+        padding: 0.2rem;
+      }
+      .pay-table {
+        display: flex !important;
+        visibility: visible !important;
+        margin: 0.8rem auto !important;
+        width: 95vw !important;
+        max-width: 95vw !important;
       }
     }
 
@@ -1196,19 +1258,29 @@
           <span class="pay-mult">x100</span>
         </div>
         <div class="pay-row">
-          <img src="images/daftpunktocat-guy.gif" alt="Daftpunktocat" class="pay-symbol" />
-          <span class="pay-label">3 Daftpunktocat</span>
-          <span class="pay-mult">x50</span>
+          <img src="images/daftpunktocat-guy.gif" alt="Wild Symbol" class="pay-symbol" />
+          <span class="pay-label">3 WILDS (JACKPOT)</span>
+          <span class="pay-mult">x100</span>
+        </div>
+        <div class="pay-row wild-row">
+          <div class="wild-symbols">
+            <img src="images/daftpunktocat-guy.gif" alt="Wild" class="pay-symbol-small" />
+            <img src="octocats/octocats/daftpunktocat-thomas.gif" alt="Wild" class="pay-symbol-small" />
+            <img src="octocats/octocats/nyantocat.gif" alt="Wild" class="pay-symbol-small" />
+            <img src="octocats/octocats/maxtocat.gif" alt="Wild" class="pay-symbol-small" />
+          </div>
+          <span class="pay-label">WILD SYMBOLS<br><small>Substitute for any symbol</small></span>
+          <span class="pay-mult">WILD</span>
         </div>
         <div class="pay-row">
           <img src="images/surftocat.png" alt="Other Octocats" class="pay-symbol" />
-          <span class="pay-label">3 of any other</span>
+          <span class="pay-label">3 of any kind</span>
           <span class="pay-mult">x10</span>
         </div>
         <div class="pay-row">
           <img src="images/original.png" alt="Any Octocat" class="pay-symbol" />
-          <span class="pay-label">2 of any</span>
-          <span class="pay-mult">x5</span>
+          <span class="pay-label">2 of any kind</span>
+          <span class="pay-mult">x2</span>
         </div>
       </div>
       
@@ -1249,8 +1321,86 @@
       'images/spidertocat.png',
       'images/vinyltocat.png',
       'images/octobiwan.png',
-      'images/boxertocat_octodex.png',
-      'images/megacat.png'
+      'images/hula_loop_octodex03.gif',
+      // Only transparent PNG and GIF files from octocats folder
+      'octocats/octocats/Mardigrastocat.png',
+      'octocats/octocats/Professortocat_v2.png',
+      'octocats/octocats/Robotocat.png',
+      'octocats/octocats/adventure-cat.png',
+      'octocats/octocats/agendacat.png',
+      'octocats/octocats/bannekat.png',
+      'octocats/octocats/bear-cavalry.png',
+      'octocats/octocats/bouncercat.png',
+      'octocats/octocats/catstello.png',
+      'octocats/octocats/class-act.png',
+      'octocats/octocats/deckfailcat.png',
+      'octocats/octocats/defunktocat.png',
+      'octocats/octocats/dinotocat.png',
+      'octocats/octocats/dodgetocat_v2.png',
+      'octocats/octocats/droctocat.png',
+      'octocats/octocats/droidtocat.png',
+      'octocats/octocats/dunetocat.png',
+      'octocats/octocats/electrocat.png',
+      'octocats/octocats/femalecodertocat.png',
+      'octocats/octocats/filmtocat.png',
+      'octocats/octocats/foundingfather_v2.png',
+      'octocats/octocats/front-end-conftocat.png',
+      'octocats/octocats/gangnamtocat.png',
+      'octocats/octocats/gobbleotron.gif',
+      'octocats/octocats/goretocat.png',
+      'octocats/octocats/grinchtocat.gif',
+      'octocats/octocats/heisencat.png',
+      'octocats/octocats/herme-t-crabb.png',
+      'octocats/octocats/homercat.png',
+      'octocats/octocats/inflatocat.png',
+      'octocats/octocats/jetpacktocat.png',
+      'octocats/octocats/kimonotocat.png',
+      'octocats/octocats/labtocat.png',
+      'octocats/octocats/luchadortocat.png',
+      'octocats/octocats/maxtocat.gif',
+      'octocats/octocats/megacat-2.png',
+      'octocats/octocats/minertocat.png',
+      'octocats/octocats/minion.png',
+      'octocats/octocats/momtocat.png',
+      'octocats/octocats/motherhubbertocat.png',
+      'octocats/octocats/mountietocat.png',
+      'octocats/octocats/mummytocat.gif',
+      'octocats/octocats/murakamicat.png',
+      'octocats/octocats/nyantocat.gif',
+      'octocats/octocats/octofez.png',
+      'octocats/octocats/octoliberty.png',
+      'octocats/octocats/oktobercat.png',
+      'octocats/octocats/orderedlistocat.png',
+      'octocats/octocats/original.png',
+      'octocats/octocats/poptocat.png',
+      'octocats/octocats/poptocat_v2.png',
+      'octocats/octocats/puppeteer.png',
+      'octocats/octocats/pusheencat.png',
+      'octocats/octocats/pythocat.png',
+      'octocats/octocats/red-polo.png',
+      'octocats/octocats/repo.png',
+      'octocats/octocats/riddlocat.png',
+      'octocats/octocats/saketocat.png',
+      'octocats/octocats/saritocat.png',
+      'octocats/octocats/shoptocat.png',
+      'octocats/octocats/skatetocat.png',
+      'octocats/octocats/skitchtocat.png',
+      'octocats/octocats/snowoctocat.png',
+      'octocats/octocats/spectrocat.png',
+      'octocats/octocats/spidertocat.png',
+      'octocats/octocats/spocktocat.png',
+      'octocats/octocats/steroidtocat.png',
+      'octocats/octocats/stormtroopocat.png',
+      'octocats/octocats/strongbadtocat.png',
+      'octocats/octocats/supportcat.png',
+      'octocats/octocats/swagtocat.png',
+      'octocats/octocats/thanktocat.png',
+      'octocats/octocats/topguntocat.png',
+      'octocats/octocats/trekkie.png',
+      'octocats/octocats/twenty-percent-cooler-octocat.png',
+      'octocats/octocats/waldocat.png',
+      'octocats/octocats/welcometocat.png',
+      'octocats/octocats/yaktocat.png'
     ];
 
     // Filter out any empty, null, or undefined symbols to prevent blank spaces
@@ -1263,10 +1413,32 @@
     // Function to get a valid random symbol (never returns empty)
     function getValidRandomSymbol() {
       if (symbols.length === 0) {
+        console.warn('No symbols available, using fallback');
         // Fallback to original if no valid symbols (should never happen)
         return 'images/original.png';
       }
-      return symbols[Math.floor(Math.random() * symbols.length)];
+      
+      // 25% chance to get a wild symbol for easier wins
+      const isWildRoll = Math.random() < 0.25;
+      if (isWildRoll) {
+        const wildSymbols = [
+          'images/daftpunktocat-guy.gif',
+          'octocats/octocats/daftpunktocat-guy.gif',
+          'octocats/octocats/daftpunktocat-thomas.gif',
+          'octocats/octocats/maxtocat.gif',
+          'octocats/octocats/nyantocat.gif',
+          'octocats/octocats/gobbleotron.gif',
+          'octocats/octocats/grinchtocat.gif',
+          'octocats/octocats/mummytocat.gif'
+        ];
+        const wildSymbol = wildSymbols[Math.floor(Math.random() * wildSymbols.length)];
+        console.log('Selected WILD symbol:', wildSymbol);
+        return wildSymbol;
+      }
+      
+      const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+      console.log('Selected symbol:', symbol);
+      return symbol;
     }
 
     // Get audio elements for sound effects
@@ -1291,10 +1463,16 @@
         return;
       }
       
+      // Clear any existing content and reset strip state
       strip.innerHTML = '';
-      // Add 40 random symbols to the reel (prevents animation blanks)
+      strip.style.transform = 'translateY(0px)';
+      strip.style.filter = 'none';
+      
+      // Create a larger buffer of symbols to ensure no gaps during animation
       const reelSymbols = [];
-      for (let i = 0; i < 40; i++) {
+      const symbolsToCreate = 80; // Increased significantly to prevent blanks during fast spinning
+      
+      for (let i = 0; i < symbolsToCreate; i++) {
         const sym = document.createElement('div');
         sym.className = 'symbol';
         const img = document.createElement('img');
@@ -1302,33 +1480,127 @@
         // Pick a valid random symbol from the filtered list
         const symbol = getValidRandomSymbol();
         
-        // Only proceed if we have a valid symbol
+        // Always create a symbol, even if image fails
         if (symbol && symbol.trim().length > 0) {
+          // Set up the image with immediate fallback display
+          img.style.display = 'block';
+          img.style.width = '100%';
+          img.style.height = '100%';
+          img.style.objectFit = 'contain';
+          
+          // Add temporary placeholder content to prevent blank spots
+          sym.style.minHeight = '128px';
+          sym.style.background = 'linear-gradient(45deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1))';
+          sym.style.display = 'flex';
+          sym.style.alignItems = 'center';
+          sym.style.justifyContent = 'center';
+          
+          // Add a temporary emoji while image loads
+          const tempText = document.createElement('div');
+          tempText.textContent = '🐙';
+          tempText.style.fontSize = '48px';
+          tempText.style.opacity = '0.3';
+          sym.appendChild(tempText);
+          
           img.src = symbol;
           img.alt = 'Octocat Symbol';
           
-          // Enhanced fallback handling with multiple levels of error recovery
+          // When image loads successfully, remove placeholder
+          img.onload = function() {
+            sym.style.background = 'none';
+            if (tempText.parentNode) {
+              tempText.remove();
+            }
+          };
+          
+          // Pre-load image to prevent blank symbols during rapid spins
+          img.loading = 'eager';
+          img.decoding = 'sync';
+          
+          // Add a placeholder background while image loads
+          img.style.backgroundColor = 'transparent';
+          img.style.minHeight = '128px';
+          img.style.minWidth = '100%';
+          
+          // Enhanced fallback handling with immediate visible fallback
           img.onerror = function() {
-            console.log('Image failed to load:', this.src, 'Applying fallback strategy.');
+            console.warn('Image failed to load:', this.src);
             this.onerror = null; // Prevent infinite loops
+            
+            // Immediately set a visible fallback to prevent blank spots
+            this.style.backgroundColor = '#FFD700';
+            this.style.background = 'linear-gradient(45deg, #FFD700, #FFA500)';
+            this.style.borderRadius = '8px';
             
             // Try fallback to original image first
             if (this.src !== 'images/original.png') {
               this.src = 'images/original.png';
+              this.style.backgroundColor = 'transparent';
+              this.style.background = 'none';
+              this.style.borderRadius = '0';
+              
               // Set up secondary fallback
               this.onerror = function() {
-                console.log('Original fallback also failed, using SVG placeholder.');
+                console.warn('Original fallback also failed, using guaranteed fallback.');
                 this.onerror = null;
-                // Final fallback: use an enhanced SVG placeholder that matches game aesthetic
-                this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23FFD700;stop-opacity:1" /><stop offset="100%" style="stop-color:%23FFA500;stop-opacity:1" /></linearGradient></defs><rect width="100%" height="100%" fill="url(%23grad)" rx="12"/><circle cx="64" cy="45" r="12" fill="white"/><circle cx="54" cy="42" r="3" fill="%23333"/><circle cx="74" cy="42" r="3" fill="%23333"/><path d="M 45 70 Q 64 90 83 70" stroke="white" stroke-width="4" fill="none"/><text x="50%" y="90%" font-size="14" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-weight="bold">OCTO</text></svg>';
+                // Use a guaranteed working fallback from main images folder
+                this.src = 'images/octobiwan.png';
+                this.style.backgroundColor = 'transparent';
+                this.style.background = 'none';
+                this.style.borderRadius = '0';
+                
+                // Final fallback if even that fails
+                this.onerror = function() {
+                  this.onerror = null;
+                  console.error('All image fallbacks failed, using SVG');
+                  // Last resort SVG placeholder that's guaranteed to work
+                  this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23FFD700;stop-opacity:1" /><stop offset="100%" style="stop-color:%23FFA500;stop-opacity:1" /></linearGradient></defs><rect width="100%" height="100%" fill="url(%23grad)" rx="12"/><circle cx="64" cy="45" r="12" fill="white"/><circle cx="54" cy="42" r="3" fill="%23333"/><circle cx="74" cy="42" r="3" fill="%23333"/><path d="M 45 70 Q 64 90 83 70" stroke="white" stroke-width="4" fill="none"/><text x="50%" y="90%" font-size="14" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-weight="bold">🐙</text></svg>';
+                  this.style.backgroundColor = 'transparent';
+                  this.style.background = 'none';
+                  this.style.borderRadius = '0';
+                };
               };
             } else {
-              // Already tried original, go straight to enhanced SVG
-              this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23FFD700;stop-opacity:1" /><stop offset="100%" style="stop-color:%23FFA500;stop-opacity:1" /></linearGradient></defs><rect width="100%" height="100%" fill="url(%23grad)" rx="12"/><circle cx="64" cy="45" r="12" fill="white"/><circle cx="54" cy="42" r="3" fill="%23333"/><circle cx="74" cy="42" r="3" fill="%23333"/><path d="M 45 70 Q 64 90 83 70" stroke="white" stroke-width="4" fill="none"/><text x="50%" y="90%" font-size="14" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-weight="bold">OCTO</text></svg>';
+              // Already tried original, try octobiwan
+              this.src = 'images/octobiwan.png';
+              this.style.backgroundColor = 'transparent';
+              this.style.background = 'none';
+              this.style.borderRadius = '0';
+              
+              this.onerror = function() {
+                this.onerror = null;
+                console.error('All fallbacks failed, using SVG');
+                // Final SVG fallback
+                this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23FFD700;stop-opacity:1" /><stop offset="100%" style="stop-color:%23FFA500;stop-opacity:1" /></linearGradient></defs><rect width="100%" height="100%" fill="url(%23grad)" rx="12"/><circle cx="64" cy="45" r="12" fill="white"/><circle cx="54" cy="42" r="3" fill="%23333"/><circle cx="74" cy="42" r="3" fill="%23333"/><path d="M 45 70 Q 64 90 83 70" stroke="white" stroke-width="4" fill="none"/><text x="50%" y="90%" font-size="14" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-weight="bold">🐙</text></svg>';
+                this.style.backgroundColor = 'transparent';
+                this.style.background = 'none';
+                this.style.borderRadius = '0';
+              };
             }
           };
           
+          // Add image to symbol after all setup
           sym.appendChild(img);
+          strip.appendChild(sym);
+          reelSymbols.push(sym.cloneNode(true));
+        } else {
+          // Fallback if no symbol available - create one anyway to prevent blanks
+          console.warn('No symbol available, creating guaranteed fallback');
+          sym.style.minHeight = '128px';
+          sym.style.background = 'linear-gradient(45deg, #FFD700, #FFA500)';
+          sym.style.borderRadius = '8px';
+          sym.style.display = 'flex';
+          sym.style.alignItems = 'center';
+          sym.style.justifyContent = 'center';
+          
+          // Create a guaranteed visible element
+          const fallbackContent = document.createElement('div');
+          fallbackContent.style.fontSize = '48px';
+          fallbackContent.style.color = 'white';
+          fallbackContent.style.textShadow = '2px 2px 4px rgba(0,0,0,0.5)';
+          fallbackContent.textContent = '🐙';
+          sym.appendChild(fallbackContent);
+          
           strip.appendChild(sym);
           reelSymbols.push(sym.cloneNode(true));
         }
@@ -1336,19 +1608,40 @@
       
       // Ensure we have symbols (safety check)
       if (reelSymbols.length === 0) {
-        console.warn('No valid symbols could be created, adding fallback symbol');
-        const fallbackSym = document.createElement('div');
-        fallbackSym.className = 'symbol';
-        const fallbackImg = document.createElement('img');
-        fallbackImg.src = 'images/original.png';
-        fallbackImg.alt = 'Fallback Octocat';
-        fallbackSym.appendChild(fallbackImg);
-        strip.appendChild(fallbackSym);
-        reelSymbols.push(fallbackSym.cloneNode(true));
+        console.error('No valid symbols could be created, adding multiple fallback symbols');
+        // Add 10 guaranteed fallback symbols
+        for (let i = 0; i < 10; i++) {
+          const fallbackSym = document.createElement('div');
+          fallbackSym.className = 'symbol';
+          fallbackSym.style.minHeight = '128px';
+          fallbackSym.style.background = 'linear-gradient(45deg, #FFD700, #FFA500)';
+          fallbackSym.style.borderRadius = '8px';
+          fallbackSym.style.display = 'flex';
+          fallbackSym.style.alignItems = 'center';
+          fallbackSym.style.justifyContent = 'center';
+          
+          const fallbackContent = document.createElement('div');
+          fallbackContent.style.fontSize = '48px';
+          fallbackContent.style.color = 'white';
+          fallbackContent.style.textShadow = '2px 2px 4px rgba(0,0,0,0.5)';
+          fallbackContent.textContent = '🐙';
+          fallbackSym.appendChild(fallbackContent);
+          
+          strip.appendChild(fallbackSym);
+          reelSymbols.push(fallbackSym.cloneNode(true));
+        }
       }
       
-      // Duplicate the first 3 symbols at the end for seamless looping
-      for (let i = 0; i < Math.min(3, reelSymbols.length); i++) {
+      // If we have very few symbols, pad with more
+      while (reelSymbols.length < 20) {
+        console.warn('Padding reel with additional symbols');
+        const extraSym = reelSymbols[0].cloneNode(true);
+        strip.appendChild(extraSym);
+        reelSymbols.push(extraSym);
+      }
+      
+      // Duplicate the first 5 symbols at the end for seamless looping
+      for (let i = 0; i < Math.min(5, reelSymbols.length); i++) {
         strip.appendChild(reelSymbols[i].cloneNode(true));
       }
 
@@ -1365,17 +1658,26 @@
 function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
   return new Promise(resolve => {
         const strip = reel.querySelector('.reel-strip');
+        
+        // Safety check: ensure the reel has symbols before animating
+        const existingSymbols = strip.querySelectorAll('.symbol');
+        if (existingSymbols.length < 40) {
+          console.warn('Reel has insufficient symbols before animation, refilling...');
+          // Emergency refill - this should not happen if fillReel worked correctly
+          fillReel(reel, null, true);
+        }
+        
         reel.classList.add('spinning');
         
         let spinning = true;
         let startTime = null;
         let lastY = 0;
         let frame;
-        const totalSymbols = 43; // 40 + 3 duplicates for seamless loop
+        const totalSymbols = 85; // 80 + 5 duplicates for seamless loop
         const symbolHeight = 128; // Enhanced for 4K: 8rem = 128px
         
-        // Enhanced spinning with acceleration and blur
-        strip.style.filter = 'blur(3px)';
+        // Enhanced spinning with acceleration and subtle blur
+        strip.style.filter = 'blur(1px)';
         strip.style.transition = 'filter 0.3s ease-out';
         
     function spinLoop(ts) {
@@ -1386,7 +1688,7 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
         // Improved animation with easing and better seamless wrapping
         const progress = elapsed / spinTime;
         const easeOut = 1 - Math.pow(1 - progress, 3);
-        const speed = 3 + (2 * (1 - easeOut)); // Start fast, slow down
+        const speed = 2.5 + (1.5 * (1 - easeOut)); // Slightly slower to prevent rendering gaps
         
         // More stable modulo calculation to prevent visual gaps
         const totalHeight = totalSymbols * symbolHeight;
@@ -1426,7 +1728,7 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
             const modY = ((y % (totalSymbols * symbolHeight)) + (totalSymbols * symbolHeight)) % (totalSymbols * symbolHeight);
             strip.style.transform = `translateY(${-modY}px)`;
             // Gradually remove blur as it slows down
-            const blurAmount = 3 * (1 - progress);
+            const blurAmount = 1 * (1 - progress);
             strip.style.filter = `blur(${blurAmount}px)`;
             if (progress < 1) {
               requestAnimationFrame(animStep);
@@ -1530,8 +1832,8 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
       const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
       // Pick a random stop position for each reel (symbol indices 0-19)
       const stops = reels.map(() => Math.floor(Math.random() * 20));
-      // Ensure reels have symbols (only fill if empty or insufficient)
-      reels.forEach((reel, index) => fillReel(reel)); // check and preload strips only if needed
+      // Ensure reels have symbols - force refresh to prevent blank reels during spinning
+      reels.forEach((reel, index) => fillReel(reel, null, true)); // force refresh to prevent blanks
 
       // Start all reels spinning at the same time, but stop them individually
       // Enhanced 4K spinning effects
@@ -1572,7 +1874,24 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
       // Re-enable spin button after sounds finish
       document.getElementById('spin-btn').disabled = false;
 
-      // --- WIN LOGIC ---
+      // --- WIN LOGIC WITH WILD CARDS ---
+      // Define wild symbols that can substitute for any other symbol
+      const wildSymbols = [
+        'daftpunktocat-guy.gif',
+        'daftpunktocat-thomas.gif',
+        'maxtocat.gif',
+        'nyantocat.gif',
+        'gobbleotron.gif',
+        'grinchtocat.gif',
+        'mummytocat.gif'
+      ];
+      
+      // Function to check if a symbol is wild
+      function isWildSymbol(src) {
+        if (!src) return false;
+        return wildSymbols.some(wild => src.includes(wild));
+      }
+      
       // Only consider the center row (middle symbol) of each reel
       // Get the center index for each reel
       const reelsArr = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
@@ -1613,33 +1932,71 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
       const symbolsLanded = reelsArr.map(reel => getCenterSymbolSrc(reel));
       // Filter out empty or invalid symbols before counting
       const validSymbolsLanded = symbolsLanded.filter(src => src && src.trim().length > 0);
-      // Count occurrences of each valid symbol in the center row
-      const counts = {};
-      validSymbolsLanded.forEach(src => { counts[src] = (counts[src] || 0) + 1; });
-      let winType = null;
-      let winSymbol = null;
-      let payout = 0;
-      let jackpotSymbols = [
-        'https://bensbar.github.io/OctoSlots/images/daftpunktocat-guy.gif',
-        'https://bensbar.github.io/OctoSlots/images/original.png'
-      ];
-      // Find the actual max count and its symbol
-      let maxCount = 0;
-      let maxSymbol = null;
-      for (let src in counts) {
-        if (counts[src] > maxCount) {
-          maxCount = counts[src];
-          maxSymbol = src;
+      
+      console.log('Symbols landed:', validSymbolsLanded);
+      
+      // Enhanced win detection with wild cards
+      function checkWinWithWilds(symbols) {
+        if (symbols.length !== 3) return { type: null, symbol: null, count: 0 };
+        
+        const wilds = symbols.filter(s => isWildSymbol(s));
+        const regulars = symbols.filter(s => !isWildSymbol(s));
+        
+        console.log('Wilds:', wilds.length, 'Regulars:', regulars);
+        
+        // All wilds = jackpot
+        if (wilds.length === 3) {
+          return { type: 'jackpot', symbol: wilds[0], count: 3 };
         }
+        
+        // 2 wilds + 1 regular = 3 of a kind
+        if (wilds.length === 2 && regulars.length === 1) {
+          return { type: 'three', symbol: regulars[0], count: 3 };
+        }
+        
+        // 1 wild + 2 regulars
+        if (wilds.length === 1 && regulars.length === 2) {
+          // Check if the 2 regulars match
+          if (regulars[0] === regulars[1]) {
+            return { type: 'three', symbol: regulars[0], count: 3 };
+          } else {
+            // Wild + 2 different = 2 of a kind (wild pairs with one)
+            return { type: 'two', symbol: regulars[0], count: 2 };
+          }
+        }
+        
+        // No wilds - traditional matching
+        if (wilds.length === 0) {
+          const counts = {};
+          regulars.forEach(src => { counts[src] = (counts[src] || 0) + 1; });
+          
+          let maxCount = 0;
+          let maxSymbol = null;
+          for (let src in counts) {
+            if (counts[src] > maxCount) {
+              maxCount = counts[src];
+              maxSymbol = src;
+            }
+          }
+          
+          if (maxCount === 3) {
+            // Check if it's a jackpot symbol
+            const jackpotSymbols = ['original.png', 'daftpunktocat-guy.gif'];
+            const isJackpot = jackpotSymbols.some(jp => maxSymbol.includes(jp));
+            return { type: isJackpot ? 'jackpot' : 'three', symbol: maxSymbol, count: 3 };
+          } else if (maxCount === 2) {
+            return { type: 'two', symbol: maxSymbol, count: 2 };
+          }
+        }
+        
+        return { type: null, symbol: null, count: 0 };
       }
-      // Check for 3 of a kind (jackpot or normal)
-      if (maxCount === 3) {
-        winType = jackpotSymbols.includes(maxSymbol) ? 'jackpot' : 'three';
-        winSymbol = maxSymbol;
-      } else if (maxCount === 2) {
-        winType = 'two';
-        winSymbol = maxSymbol;
-      }
+      
+      const winResult = checkWinWithWilds(validSymbolsLanded);
+      let winType = winResult.type;
+      let winSymbol = winResult.symbol;
+      let payout = 0;
+      
       // Set payout
       if (winType === 'jackpot') {
         payout = 100 * betAmount;
@@ -1648,6 +2005,8 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
       } else if (winType === 'two') {
         payout = 2 * betAmount;
       }
+      
+      console.log('Win result:', winType, 'Payout:', payout);
 
       // Show win if any
       const lastWinSymbols = document.getElementById('last-win-symbols');
