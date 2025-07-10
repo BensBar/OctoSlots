@@ -647,23 +647,6 @@
     }
     
     /* Improved fallback for images that fail to load */
-    .symbol img[src=""], .symbol img:not([src]) {
-      background: linear-gradient(145deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
-      border-radius: 8px;
-      position: relative;
-    }
-    
-    .symbol img[src=""]:after, .symbol img:not([src]):after {
-      content: "🐙";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 2.5rem;
-      color: white;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    }
-    
     .symbol img:hover {
       transform: none;
       box-shadow: none !important;
@@ -1316,36 +1299,49 @@
     });
     // List of symbol image URLs for the reels
     const rawSymbols = [
+      // Images from /images/ directory (verified to exist)
+      'images/boxertocat_octodex.png',
+      'images/daftpunktocat-guy.gif',
+      'images/dinotocat.png',
+      'images/droidtocat.png',
+      'images/hula_loop_octodex03.gif',
+      'images/inspectocat.png',
+      'images/ironcat.png',
+      'images/megacat.png',
+      'images/minion.png',
+      'images/octobiwan.png',
       'images/original.png',
+      'images/plumber.png',
+      'images/repo.png',
+      'images/securitocat.png',
+      'images/spidertocat.png',
       'images/surftocat.png',
+      'images/topguntocat.png',
+      'images/vinyltocat.png',
       'images/yogitocat.png',
+      // Duplicate some popular ones for better distribution
       'images/boxertocat_octodex.png',
       'images/dinotocat.png',
-      'images/plumber.png',
-      'images/securitocat.png',
-      'images/inspectocat.png',
       'images/daftpunktocat-guy.gif',
       'images/minion.png',
       'images/droidtocat.png',
       'images/ironcat.png',
       'images/topguntocat.png',
       'images/megacat.png',
-      'images/repo.png',
-      'images/spidertocat.png',
-      'images/vinyltocat.png',
       'images/octobiwan.png',
       'images/hula_loop_octodex03.gif',
-      // Only transparent PNG and GIF files from octocats folder
-      'octocats/octocats/Mardigrastocat.png',
-      'octocats/octocats/Professortocat_v2.png',
-      'octocats/octocats/Robotocat.png',
+      // Images from /octocats/octocats/ directory (verified to exist)
       'octocats/octocats/adventure-cat.png',
       'octocats/octocats/agendacat.png',
-      'octocats/octocats/bannekat.png',
       'octocats/octocats/bear-cavalry.png',
+      'octocats/octocats/benevocats.png',
       'octocats/octocats/bouncercat.png',
+      'octocats/octocats/carlostocat.gif',
       'octocats/octocats/catstello.png',
+      'octocats/octocats/cherryontop-o-cat.png',
       'octocats/octocats/class-act.png',
+      'octocats/octocats/daftpunktocat-guy.gif',
+      'octocats/octocats/daftpunktocat-thomas.gif',
       'octocats/octocats/deckfailcat.png',
       'octocats/octocats/defunktocat.png',
       'octocats/octocats/dinotocat.png',
@@ -1361,7 +1357,6 @@
       'octocats/octocats/gangnamtocat.png',
       'octocats/octocats/gobbleotron.gif',
       'octocats/octocats/goretocat.png',
-      'octocats/octocats/grinchtocat.gif',
       'octocats/octocats/heisencat.png',
       'octocats/octocats/herme-t-crabb.png',
       'octocats/octocats/homercat.png',
@@ -1370,6 +1365,7 @@
       'octocats/octocats/kimonotocat.png',
       'octocats/octocats/labtocat.png',
       'octocats/octocats/luchadortocat.png',
+      'octocats/octocats/Mardigrastocat.png',
       'octocats/octocats/maxtocat.gif',
       'octocats/octocats/megacat-2.png',
       'octocats/octocats/minertocat.png',
@@ -1377,34 +1373,31 @@
       'octocats/octocats/momtocat.png',
       'octocats/octocats/motherhubbertocat.png',
       'octocats/octocats/mountietocat.png',
-      'octocats/octocats/mummytocat.gif',
       'octocats/octocats/murakamicat.png',
-      'octocats/octocats/nyantocat.gif',
       'octocats/octocats/octofez.png',
-      'octocats/octocats/octoliberty.png',
       'octocats/octocats/oktobercat.png',
       'octocats/octocats/orderedlistocat.png',
       'octocats/octocats/original.png',
       'octocats/octocats/poptocat.png',
       'octocats/octocats/poptocat_v2.png',
+      'octocats/octocats/Professortocat_v2.png',
       'octocats/octocats/puppeteer.png',
       'octocats/octocats/pusheencat.png',
       'octocats/octocats/pythocat.png',
       'octocats/octocats/red-polo.png',
       'octocats/octocats/repo.png',
       'octocats/octocats/riddlocat.png',
+      'octocats/octocats/Robotocat.png',
       'octocats/octocats/saketocat.png',
       'octocats/octocats/saritocat.png',
       'octocats/octocats/shoptocat.png',
       'octocats/octocats/skatetocat.png',
       'octocats/octocats/skitchtocat.png',
       'octocats/octocats/snowoctocat.png',
-      'octocats/octocats/spectrocat.png',
       'octocats/octocats/spidertocat.png',
       'octocats/octocats/spocktocat.png',
       'octocats/octocats/steroidtocat.png',
       'octocats/octocats/stormtroopocat.png',
-      'octocats/octocats/strongbadtocat.png',
       'octocats/octocats/supportcat.png',
       'octocats/octocats/swagtocat.png',
       'octocats/octocats/thanktocat.png',
@@ -1436,13 +1429,12 @@
       if (isWildRoll) {
         const wildSymbols = [
           'images/daftpunktocat-guy.gif',
+          'images/hula_loop_octodex03.gif',
+          'octocats/octocats/carlostocat.gif',
           'octocats/octocats/daftpunktocat-guy.gif',
           'octocats/octocats/daftpunktocat-thomas.gif',
-          'octocats/octocats/maxtocat.gif',
-          'octocats/octocats/nyantocat.gif',
           'octocats/octocats/gobbleotron.gif',
-          'octocats/octocats/grinchtocat.gif',
-          'octocats/octocats/mummytocat.gif'
+          'octocats/octocats/maxtocat.gif'
         ];
         const wildSymbol = wildSymbols[Math.floor(Math.random() * wildSymbols.length)];
         console.log('Selected WILD symbol:', wildSymbol);
@@ -1489,12 +1481,11 @@
         const sym = document.createElement('div');
         sym.className = 'symbol';
         
-        // GUARANTEED visible content - never blank
+        // Clean symbol styling
         sym.style.minHeight = '128px';
         sym.style.height = '128px';
         sym.style.width = '100%';
         sym.style.background = '#ffffff';
-        sym.style.border = '1px solid #ccc';
         sym.style.borderRadius = '4px';
         sym.style.display = 'flex';
         sym.style.alignItems = 'center';
@@ -1502,82 +1493,25 @@
         sym.style.position = 'relative';
         sym.style.overflow = 'hidden';
         
-        // Always add visible text content as absolute fallback
-        const textContent = document.createElement('div');
-        textContent.style.fontSize = '40px';
-        textContent.style.color = '#666';
-        textContent.style.fontWeight = 'bold';
-        textContent.style.position = 'absolute';
-        textContent.style.zIndex = '1';
-        textContent.textContent = '🐙';
-        sym.appendChild(textContent);
-        
-        // Try to add image on top
+        // Add image directly - no fallback needed since all symbols are verified to exist
         const symbol = getValidRandomSymbol();
-        if (symbol && symbol.trim().length > 0) {
-          const img = document.createElement('img');
-          img.style.position = 'absolute';
-          img.style.top = '0';
-          img.style.left = '0';
-          img.style.width = '100%';
-          img.style.height = '100%';
-          img.style.objectFit = 'contain';
-          img.style.zIndex = '2';
-          img.src = symbol;
-          img.alt = 'Octocat';
-          
-          // If image loads, hide text
-          img.onload = function() {
-            textContent.style.display = 'none';
-            sym.style.background = 'transparent';
-            sym.style.border = 'none';
-          };
-          
-          // If image fails, keep text visible
-          img.onerror = function() {
-            this.style.display = 'none';
-            textContent.style.display = 'block';
-          };
-          
-          sym.appendChild(img);
-        }
+        const img = document.createElement('img');
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'contain';
+        img.src = symbol;
+        img.alt = 'Octocat';
+        
+        // Clean white background, no border on successful load
+        img.onload = function() {
+          sym.style.background = '#ffffff';
+          sym.style.border = 'none';
+        };
+        
+        sym.appendChild(img);
         
         strip.appendChild(sym);
         reelSymbols.push(sym);
-      }
-      
-      // Ensure we have symbols (safety check)
-      if (reelSymbols.length === 0) {
-        console.error('No valid symbols could be created, adding multiple fallback symbols');
-        // Add 10 guaranteed fallback symbols
-        for (let i = 0; i < 10; i++) {
-          const fallbackSym = document.createElement('div');
-          fallbackSym.className = 'symbol';
-          fallbackSym.style.minHeight = '128px';
-          fallbackSym.style.background = 'linear-gradient(45deg, #FFD700, #FFA500)';
-          fallbackSym.style.borderRadius = '8px';
-          fallbackSym.style.display = 'flex';
-          fallbackSym.style.alignItems = 'center';
-          fallbackSym.style.justifyContent = 'center';
-          
-          const fallbackContent = document.createElement('div');
-          fallbackContent.style.fontSize = '48px';
-          fallbackContent.style.color = 'white';
-          fallbackContent.style.textShadow = '2px 2px 4px rgba(0,0,0,0.5)';
-          fallbackContent.textContent = '🐙';
-          fallbackSym.appendChild(fallbackContent);
-          
-          strip.appendChild(fallbackSym);
-          reelSymbols.push(fallbackSym.cloneNode(true));
-        }
-      }
-      
-      // If we have very few symbols, pad with more
-      while (reelSymbols.length < 20) {
-        console.warn('Padding reel with additional symbols');
-        const extraSym = reelSymbols[0].cloneNode(true);
-        strip.appendChild(extraSym);
-        reelSymbols.push(extraSym);
       }
       
       // Duplicate the first 10 symbols at the end for seamless looping
