@@ -71,15 +71,6 @@
       .reel-strip {
         min-width: 0;
       }
-      .symbol {
-        height: 3.5rem;
-        min-width: 0;
-        min-height: 3.5rem;
-      }
-      .symbol img {
-        max-height: 3.2rem;
-        max-width: 90%;
-      }
       .pay-table {
         font-size: 1.05rem;
         padding: 0.2rem 0.1rem;
@@ -297,6 +288,24 @@
         padding-bottom: 5vh; /* Add bottom padding for scrolling */
       }
       
+      /* Fix reel height to ensure 3 rows are visible */
+      .reels {
+        height: 24rem; /* Maintain proper 3-symbol height */
+        min-height: 24rem;
+      }
+      
+      .reel {
+        height: 24rem; /* Ensure reels maintain proper height */
+        min-height: 24rem;
+      }
+      
+      /* Ensure symbols maintain proper size for 3-row visibility */
+      .symbol {
+        height: 8rem;
+        min-height: 8rem;
+        max-height: 8rem;
+      }
+      
       body {
         background: var(--bg-gradient);
         overflow-y: auto; /* Allow vertical scrolling */
@@ -325,6 +334,23 @@
         transform: scale(0.55); /* Even smaller for very small phones */
         margin-top: -3vh;
         padding-bottom: 8vh;
+      }
+      
+      /* Maintain reel proportions on very small phones */
+      .reels {
+        height: 24rem;
+        min-height: 24rem;
+      }
+      
+      .reel {
+        height: 24rem;
+        min-height: 24rem;
+      }
+      
+      .symbol {
+        height: 8rem;
+        min-height: 8rem;
+        max-height: 8rem;
       }
       
       .pay-table {
@@ -1236,11 +1262,10 @@
           <path id="arcPath" d="M 60 100 Q 350 10 640 100" fill="transparent" stroke="none"/>
           <text width="100%">
             <textPath href="#arcPath" startOffset="50%" text-anchor="middle" dominant-baseline="middle" style="font-size:2.8rem;fill:#fff;stroke:#b71c1c;stroke-width:2;letter-spacing:0.12em;font-weight:700;text-shadow:0 0 16px #fff,0 0 32px #b71c1c;">
-              OctoSlots
+              🎰 OctoSlots 🎰
             </textPath>
           </text>
         </svg>
-        <div class="slot-arch-emoji" style="margin-bottom:0.2rem;">🎰</div>
       </div>
     </div>
     <div class="container">
