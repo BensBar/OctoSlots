@@ -255,8 +255,86 @@
         width: 1.1rem;
         height: 1.1rem;
       }
+      .pay-symbol-small {
+        width: 0.8rem;
+        height: 0.8rem;
+      }
       .pay-label, .pay-mult {
         font-size: 0.92rem;
+      }
+      .wild-symbols {
+        gap: 0.15rem;
+        margin-right: 0.3rem;
+      }
+      .wild-row {
+        padding: 0.2rem;
+      }
+      .pay-table {
+        display: flex !important;
+        visibility: visible !important;
+        margin: 0.8rem auto !important;
+        width: 95vw !important;
+        max-width: 95vw !important;
+      }
+    }
+
+    /* Comprehensive mobile scaling for all phones and small devices */
+    @media (max-width: 700px) and (max-height: 1000px) {
+      html, body {
+        font-size: 12px; /* Reduce base font size */
+        height: 100vh;
+        width: 100vw;
+        overflow-x: hidden;
+        padding: 0;
+        margin: 0;
+      }
+      
+      .container {
+        transform: scale(0.65); /* Scale down entire game significantly */
+        transform-origin: top center;
+        width: 100vw;
+        margin-top: -2vh; /* Pull up to compensate for scaling */
+        padding-bottom: 5vh; /* Add bottom padding for scrolling */
+      }
+      
+      body {
+        background: var(--bg-gradient);
+        overflow-y: auto; /* Allow vertical scrolling */
+        -webkit-overflow-scrolling: touch;
+        padding-top: max(env(safe-area-inset-top, 0), 2vh);
+        padding-bottom: max(env(safe-area-inset-bottom, 0), 2vh);
+      }
+      
+      .pay-table {
+        font-size: 0.9rem;
+        margin-top: 1rem;
+        margin-bottom: 2rem; /* Ensure space at bottom */
+        width: 95vw;
+        max-width: 95vw;
+      }
+      
+      .credits {
+        margin-bottom: 3rem; /* Extra space at bottom */
+        font-size: 0.8rem;
+      }
+    }
+
+    /* Extra small phones - even more aggressive scaling */
+    @media (max-width: 400px) {
+      .container {
+        transform: scale(0.55); /* Even smaller for very small phones */
+        margin-top: -3vh;
+        padding-bottom: 8vh;
+      }
+      
+      .pay-table {
+        font-size: 0.8rem;
+        margin-bottom: 3rem;
+      }
+      
+      .credits {
+        margin-bottom: 4rem;
+        font-size: 0.7rem;
       }
     }
 
