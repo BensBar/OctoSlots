@@ -290,13 +290,13 @@
       
       /* Fix reel height to ensure 3 rows are visible */
       .reels {
-        height: 24rem; /* Maintain proper 3-symbol height */
-        min-height: 24rem;
+        height: 26rem; /* Maintain proper 3-symbol height */
+        min-height: 26rem;
       }
       
       .reel {
-        height: 24rem; /* Ensure reels maintain proper height */
-        min-height: 24rem;
+        height: 26rem; /* Ensure reels maintain proper height */
+        min-height: 26rem;
       }
       
       /* Ensure symbols maintain proper size for 3-row visibility */
@@ -338,13 +338,13 @@
       
       /* Maintain reel proportions on very small phones */
       .reels {
-        height: 24rem;
-        min-height: 24rem;
+        height: 26rem;
+        min-height: 26rem;
       }
       
       .reel {
-        height: 24rem;
-        min-height: 24rem;
+        height: 26rem;
+        min-height: 26rem;
       }
       
       .symbol {
@@ -614,7 +614,7 @@
     .reels {
       display: flex;
       overflow: visible;
-      height: 24rem;
+      height: 26rem;
       width: 36rem;
       max-width: 95vw;
       border: 6px solid #bfa100;
@@ -1364,9 +1364,8 @@
         <div class="pay-row wild-row">
           <div class="wild-symbols">
             <img src="images/daftpunktocat-guy.gif" alt="Wild" class="pay-symbol-small" />
+            <img src="octocats/octocats/daftpunktocat-guy.gif" alt="Wild" class="pay-symbol-small" />
             <img src="octocats/octocats/daftpunktocat-thomas.gif" alt="Wild" class="pay-symbol-small" />
-            <img src="octocats/octocats/nyantocat.gif" alt="Wild" class="pay-symbol-small" />
-            <img src="octocats/octocats/maxtocat.gif" alt="Wild" class="pay-symbol-small" />
           </div>
           <span class="pay-label">WILD SYMBOLS<br><small>Substitute for any symbol</small></span>
           <span class="pay-mult">WILD</span>
@@ -1532,12 +1531,8 @@
       if (isWildRoll) {
         const wildSymbols = [
           'images/daftpunktocat-guy.gif',
-          'images/hula_loop_octodex03.gif',
-          'octocats/octocats/carlostocat.gif',
           'octocats/octocats/daftpunktocat-guy.gif',
-          'octocats/octocats/daftpunktocat-thomas.gif',
-          'octocats/octocats/gobbleotron.gif',
-          'octocats/octocats/maxtocat.gif'
+          'octocats/octocats/daftpunktocat-thomas.gif'
         ];
         const wildSymbol = wildSymbols[Math.floor(Math.random() * wildSymbols.length)];
         console.log('Selected WILD symbol:', wildSymbol);
@@ -1564,7 +1559,7 @@
         // Reel already has sufficient symbols, just position if needed
         if (stopAt !== null) {
           // Use same alignment calculation as animateToStop to center symbol on win line
-          const reelCenterY = 192; // 24rem / 2 = 192px (center of reel container where win line is)
+          const reelCenterY = 208; // 26rem / 2 = 208px (center of reel container where win line is)
           const centeredPosition = stopAt * 128 + 64 - reelCenterY; // Center symbol on win line
           strip.style.transform = `translateY(${-centeredPosition}px)`;
         }
@@ -1623,9 +1618,8 @@
       }
 
       // If a stop position is given, set the strip position so the chosen symbol is centered
-      if (stopAt !== null) {
-        // Center the symbol in the viewing window (same logic as animateToStop)
-        const reelCenterY = 192; // 24rem / 2 = 192px (center of reel container where win line is)  
+      if (stopAt !== null) {        // Center the symbol in the viewing window (same logic as animateToStop)
+        const reelCenterY = 208; // 26rem / 2 = 208px (center of reel container where win line is)
         const centeredPosition = stopAt * 128 + 64 - reelCenterY; // Center symbol on win line
         strip.style.transform = `translateY(${-centeredPosition}px)`;
       }
@@ -1683,11 +1677,11 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
         
         function animateToStop(currentModY, stopAt, onStopPhaseStart) {
           // Calculate target position to center the symbol on the win line
-          // The reel container is 384px (24rem) tall, win line is at 50% = 192px
+          // The reel container is 416px (26rem) tall, win line is at 50% = 208px
           // Each symbol is 128px (8rem) tall
           // Symbol at index 'stopAt' has its center at: stopAt * 128 + 64 pixels from strip top
-          // To align this center with win line at 192px from reel top, we translate strip up by:
-          const reelCenterY = 192; // 24rem / 2 = 192px (center of reel container where win line is)
+          // To align this center with win line at 208px from reel top, we translate strip up by:
+          const reelCenterY = 208; // 26rem / 2 = 208px (center of reel container where win line is)
           const targetY = stopAt * symbolHeight + (symbolHeight / 2) - reelCenterY; // Center symbol on win line
           let forwardDistance = (targetY - currentModY + totalSymbols * symbolHeight) % (totalSymbols * symbolHeight);
           // Call the callback at the exact moment the stop phase starts
@@ -1855,12 +1849,7 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
       // Define wild symbols that can substitute for any other symbol
       const wildSymbols = [
         'daftpunktocat-guy.gif',
-        'daftpunktocat-thomas.gif',
-        'maxtocat.gif',
-        'nyantocat.gif',
-        'gobbleotron.gif',
-        'grinchtocat.gif',
-        'mummytocat.gif'
+        'daftpunktocat-thomas.gif'
       ];
       
       // Function to check if a symbol is wild
