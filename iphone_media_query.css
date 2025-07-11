@@ -20,6 +20,11 @@
   .payline.line-1 { top: 25%; }
   .payline.line-2 { top: 48.8%; }
   .payline.line-3 { top: 75%; }
+  
+  /* Fix win line alignment for iPhone 16 Pro Max */
+  .win-line {
+    top: calc(50% - 0.5rem) !important;
+  }
 }
 
 /* General iPhone Portrait Mode Optimizations */

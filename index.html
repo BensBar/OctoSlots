@@ -1617,24 +1617,63 @@
           img.src = symbol;
           img.alt = 'Symbol';
           
+          // Add timeout to prevent blank symbols
+          let imageLoaded = false;
+          const fallbackTimeout = setTimeout(() => {
+            if (!imageLoaded) {
+              console.warn('Image loading timeout for:', symbol, '- using emoji fallback');
+              img.remove();
+              const fallbackEmoji = fallbackSymbols[Math.floor(Math.random() * fallbackSymbols.length)];
+              sym.style.fontSize = '4rem';
+              sym.style.textAlign = 'center';
+              sym.style.color = '#333';
+              sym.style.textShadow = '0 2px 4px rgba(0,0,0,0.3)';
+              sym.textContent = fallbackEmoji;
+              sym.style.background = '#ffffff';
+              sym.style.border = 'none';
+            }
+          }, 3000); // 3 second timeout
+          
           // Success: clean white background, no border
           img.onload = function() {
+            imageLoaded = true;
+            clearTimeout(fallbackTimeout);
             sym.style.background = '#ffffff';
             sym.style.border = 'none';
           };
           
-          // Error: fallback to emoji
+          // Enhanced error handling: fallback to original.png first, then emoji
           img.onerror = function() {
-            console.warn('Image failed to load:', symbol, '- using emoji fallback');
-            img.remove();
-            const fallbackEmoji = fallbackSymbols[Math.floor(Math.random() * fallbackSymbols.length)];
-            sym.style.fontSize = '4rem';
-            sym.style.textAlign = 'center';
-            sym.style.color = '#333';
-            sym.style.textShadow = '0 2px 4px rgba(0,0,0,0.3)';
-            sym.textContent = fallbackEmoji;
-            sym.style.background = '#ffffff';
-            sym.style.border = 'none';
+            imageLoaded = true;
+            clearTimeout(fallbackTimeout);
+            console.warn('Image failed to load:', symbol, '- trying original.png fallback');
+            // First try original.png as fallback
+            if (symbol !== 'images/original.png') {
+              img.src = 'images/original.png';
+              img.onerror = function() {
+                console.warn('original.png also failed to load - using emoji fallback');
+                img.remove();
+                const fallbackEmoji = fallbackSymbols[Math.floor(Math.random() * fallbackSymbols.length)];
+                sym.style.fontSize = '4rem';
+                sym.style.textAlign = 'center';
+                sym.style.color = '#333';
+                sym.style.textShadow = '0 2px 4px rgba(0,0,0,0.3)';
+                sym.textContent = fallbackEmoji;
+                sym.style.background = '#ffffff';
+                sym.style.border = 'none';
+              };
+            } else {
+              // If original.png itself failed, go directly to emoji
+              img.remove();
+              const fallbackEmoji = fallbackSymbols[Math.floor(Math.random() * fallbackSymbols.length)];
+              sym.style.fontSize = '4rem';
+              sym.style.textAlign = 'center';
+              sym.style.color = '#333';
+              sym.style.textShadow = '0 2px 4px rgba(0,0,0,0.3)';
+              sym.textContent = fallbackEmoji;
+              sym.style.background = '#ffffff';
+              sym.style.border = 'none';
+            }
           };
           
           sym.appendChild(img);
