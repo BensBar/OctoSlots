@@ -858,10 +858,10 @@
     }
   
     /* Gold line that appears on win */
-    /* Win line: perfectly centered, with animated glowing effect */
+    /* Win line: perfectly centered with middle row symbols */
     .win-line {
       position: absolute;
-      top: 50%;
+      top: calc(50% - 1rem); /* Adjusted to align with center of middle symbols */
       left: 0;
       width: 100%;
       height: 0.5rem;
@@ -1516,12 +1516,18 @@
       symbol.trim().length > 0
     );
 
+    // Emoji fallback symbols for when images fail to load
+    const fallbackSymbols = [
+      '🍒', '🍋', '🍊', '🍇', '🔔', '⭐', '💎', '🎰',
+      '🎲', '🍀', '💰', '🏆', '🎯', '🎊', '🎁', '🌟'
+    ];
+
     // Function to get a valid random symbol (never returns empty)
     function getValidRandomSymbol() {
       if (symbols.length === 0) {
-        console.warn('No symbols available, using fallback');
-        // Fallback to original if no valid symbols (should never happen)
-        return 'images/original.png';
+        console.warn('No symbols available, using emoji fallback');
+        // Use emoji fallback if no valid image symbols
+        return fallbackSymbols[Math.floor(Math.random() * fallbackSymbols.length)];
       }
       
       // 25% chance to get a wild symbol for easier wins
@@ -1589,22 +1595,50 @@
         sym.style.position = 'relative';
         sym.style.overflow = 'hidden';
         
-        // Add image directly - no fallback needed since all symbols are verified to exist
+        // Enhanced symbol creation with fallback support
         const symbol = getValidRandomSymbol();
-        const img = document.createElement('img');
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.objectFit = 'contain';
-        img.src = symbol;
-        img.alt = 'Octocat';
         
-        // Clean white background, no border on successful load
-        img.onload = function() {
+        // Check if symbol is an emoji or image path
+        if (fallbackSymbols.includes(symbol)) {
+          // Display emoji symbol directly
+          sym.style.fontSize = '4rem';
+          sym.style.textAlign = 'center';
+          sym.style.color = '#333';
+          sym.style.textShadow = '0 2px 4px rgba(0,0,0,0.3)';
+          sym.textContent = symbol;
           sym.style.background = '#ffffff';
           sym.style.border = 'none';
-        };
-        
-        sym.appendChild(img);
+        } else {
+          // Display image with fallback handling
+          const img = document.createElement('img');
+          img.style.width = '100%';
+          img.style.height = '100%';
+          img.style.objectFit = 'contain';
+          img.src = symbol;
+          img.alt = 'Symbol';
+          
+          // Success: clean white background, no border
+          img.onload = function() {
+            sym.style.background = '#ffffff';
+            sym.style.border = 'none';
+          };
+          
+          // Error: fallback to emoji
+          img.onerror = function() {
+            console.warn('Image failed to load:', symbol, '- using emoji fallback');
+            img.remove();
+            const fallbackEmoji = fallbackSymbols[Math.floor(Math.random() * fallbackSymbols.length)];
+            sym.style.fontSize = '4rem';
+            sym.style.textAlign = 'center';
+            sym.style.color = '#333';
+            sym.style.textShadow = '0 2px 4px rgba(0,0,0,0.3)';
+            sym.textContent = fallbackEmoji;
+            sym.style.background = '#ffffff';
+            sym.style.border = 'none';
+          };
+          
+          sym.appendChild(img);
+        }
         
         strip.appendChild(sym);
         reelSymbols.push(sym);
@@ -1617,7 +1651,7 @@
 
       // If a stop position is given, set the strip position so the chosen symbol is centered
       if (stopAt !== null) {        // Center the symbol in the viewing window (same logic as animateToStop)
-        const reelCenterY = 208; // 26rem / 2 = 208px (center of reel container where win line is)
+        const reelCenterY = 192; // Updated: 26rem / 2 - 1rem = 208px - 16px = 192px (center of middle symbols)
         const centeredPosition = stopAt * 128 + 64 - reelCenterY; // Center symbol on win line
         strip.style.transform = `translateY(${-centeredPosition}px)`;
       }
@@ -1675,11 +1709,11 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
         
         function animateToStop(currentModY, stopAt, onStopPhaseStart) {
           // Calculate target position to center the symbol on the win line
-          // The reel container is 416px (26rem) tall, win line is at 50% = 208px
+          // The reel container is 416px (26rem) tall, win line is now at calc(50% - 1rem) = 192px
           // Each symbol is 128px (8rem) tall
           // Symbol at index 'stopAt' has its center at: stopAt * 128 + 64 pixels from strip top
-          // To align this center with win line at 208px from reel top, we translate strip up by:
-          const reelCenterY = 208; // 26rem / 2 = 208px (center of reel container where win line is)
+          // To align this center with win line at 192px from reel top, we translate strip up by:
+          const reelCenterY = 192; // Updated: 26rem / 2 - 1rem = 208px - 16px = 192px (center of middle symbols)
           const targetY = stopAt * symbolHeight + (symbolHeight / 2) - reelCenterY; // Center symbol on win line
           let forwardDistance = (targetY - currentModY + totalSymbols * symbolHeight) % (totalSymbols * symbolHeight);
           // Call the callback at the exact moment the stop phase starts
