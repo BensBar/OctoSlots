@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Updated Fallback Logic</title>
+    <style>
+        .symbol { width: 120px; height: 120px; border: 2px solid #ccc; margin: 10px; display: inline-block; position: relative; }
+        .symbol img { width: 100%; height: 100%; object-fit: contain; }
+        .test-container { padding: 20px; }
+        .test-item { margin: 10px 0; }
+        .log { font-family: monospace; font-size: 12px; color: #666; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Testing Updated Image Fallback Logic</h1>
+    <p>This test validates that emoji fallbacks have been removed and only original.png is used as fallback.</p>
+    
+    <div class="test-container">
+        <div class="test-item">
+            <h3>Test 1: Valid image (should load normally)</h3>
+            <div class="symbol" id="test1"></div>
+            <div class="log" id="log1"></div>
+        </div>
+        
+        <div class="test-item">
+            <h3>Test 2: Invalid image (should fallback to original.png)</h3>
+            <div class="symbol" id="test2"></div>
+            <div class="log" id="log2"></div>
+        </div>
+        
+        <div class="test-item">
+            <h3>Test 3: Invalid image with timeout (should try original.png on timeout)</h3>
+            <div class="symbol" id="test3"></div>
+            <div class="log" id="log3"></div>
+        </div>
+    </div>
+    
+    <script>
+        function createTestSymbol(containerId, logId, imageSrc, testTimeout = false) {
+            const container = document.getElementById(containerId);
+            const log = document.getElementById(logId);
+            
+            function addLog(message) {
+                log.innerHTML += message + '<br>';
+                console.log(message);
+            }
+            
+            // Clear container
+            container.innerHTML = '';
+            log.innerHTML = '';
+            
+            const img = document.createElement('img');
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'contain';
+            img.src = imageSrc;
+            img.alt = 'Test Symbol';
+            
+            addLog(`Loading: ${imageSrc}`);
+            
+            // Add timeout to prevent blank symbols (simulating the game logic)
+            let imageLoaded = false;
+            const fallbackTimeout = setTimeout(() => {
+                if (!imageLoaded) {
+                    addLog(`Image loading timeout for: ${imageSrc} - trying original.png fallback`);
+                    // Try original.png as fallback
+                    if (imageSrc !== 'images/original.png') {
+                        img.src = 'images/original.png';
+                        img.onerror = function() {
+                            addLog('original.png also failed to load after timeout - no further fallback');
+                            // Do nothing if original.png also fails
+                        };
+                    } else {
+                        addLog('original.png itself timed out - no further fallback');
+                        // Do nothing if original.png itself timed out
+                    }
+                }
+            }, testTimeout ? 1000 : 3000); // Shorter timeout for test 3
+            
+            // Success handler
+            img.onload = function() {
+                imageLoaded = true;
+                clearTimeout(fallbackTimeout);
+                addLog(`Image loaded successfully: ${this.src}`);
+            };
+            
+            // Error handler
+            img.onerror = function() {
+                imageLoaded = true;
+                clearTimeout(fallbackTimeout);
+                addLog(`Image failed to load: ${imageSrc} - trying original.png fallback`);
+                // First try original.png as fallback
+                if (imageSrc !== 'images/original.png') {
+                    img.src = 'images/original.png';
+                    img.onerror = function() {
+                        addLog('original.png also failed to load - no further fallback');
+                        // Do nothing if original.png also fails
+                    };
+                } else {
+                    // If original.png itself failed, do nothing
+                    addLog('original.png failed to load - no further fallback');
+                }
+            };
+            
+            container.appendChild(img);
+        }
+        
+        // Run tests
+        window.onload = function() {
+            // Test 1: Valid image
+            createTestSymbol('test1', 'log1', 'images/original.png');
+            
+            // Test 2: Invalid image (immediate error)
+            createTestSymbol('test2', 'log2', 'images/nonexistent.png');
+            
+            // Test 3: Invalid image with timeout simulation
+            createTestSymbol('test3', 'log3', 'images/slow-nonexistent.png', true);
+        };
+    </script>
+</body>
+</html>
