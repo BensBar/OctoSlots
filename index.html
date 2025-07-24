@@ -1563,7 +1563,7 @@
         // Reel already has sufficient symbols, just position if needed
         if (stopAt !== null) {
           // Use same alignment calculation as animateToStop to center symbol on win line
-          const reelCenterY = 208; // 26rem / 2 = 208px (center of reel container where win line is)
+          const reelCenterY = 192; // 26rem / 2 - 1rem = 208px - 16px = 192px (center of middle symbols)
           const centeredPosition = stopAt * 128 + 64 - reelCenterY; // Center symbol on win line
           strip.style.transform = `translateY(${-centeredPosition}px)`;
         }
