@@ -23,7 +23,7 @@
   
   /* Fix win line alignment for iPhone 16 Pro Max */
   .win-line {
-    top: calc(50% - 0.5rem) !important;
+    top: 50% !important;
   }
 }
 
