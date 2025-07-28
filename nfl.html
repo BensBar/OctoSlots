@@ -244,18 +244,12 @@
       animation: reelSpinSmooth 0.8s linear infinite;
       filter: blur(2px);
       transition: filter 0.3s;
-      /* These ensure the track has enough height to show all symbols */
-      height: auto !important;
-      min-height: 100% !important;
-      overflow: visible !important;
+      /* Keep the track constrained to reel height during spinning */
+      height: 100%;
+      min-height: 100%;
     }
     
-    /* Preloaded symbols to ensure bottom row is always visible */
-    .symbol-track .preload-symbol {
-      opacity: 1 !important;
-      position: relative !important;
-      z-index: 10 !important;
-    }
+    /* Removed preload-symbol CSS - no longer needed with simplified spinning */
 
     .symbol-track.decelerating {
       animation: reelDecelerate 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
@@ -263,10 +257,10 @@
       transition: filter 0.3s;
     }
 
-    /* Enhanced smooth continuous spinning animation showing all symbols */
+    /* Enhanced smooth spinning animation with appropriate distance for reduced symbols */
     @keyframes reelSpinSmooth {
       0% { transform: translateY(0); }
-      100% { transform: translateY(-1200px); }
+      100% { transform: translateY(-800px); }
     }
     
     /* Improved deceleration animation to ensure smooth transition with all rows visible */
@@ -1460,25 +1454,13 @@
         // Clear existing content
         track.innerHTML = '';
         
-        // Add padding elements to ensure all rows are visible
-        const paddingTop = document.createElement('div');
-        paddingTop.style.width = '100%';
-        paddingTop.style.height = '10px';
-        track.appendChild(paddingTop);
-        
-        // Add all symbol elements
+        // Add all symbol elements directly without padding divs
         symbolElements.forEach(element => track.appendChild(element));
-        
-        // Add padding bottom to ensure the bottom row is always visible
-        const paddingBottom = document.createElement('div');
-        paddingBottom.style.width = '100%';
-        paddingBottom.style.height = '10px';
-        track.appendChild(paddingBottom);
         
         console.log(`Reel ${reelIndex} now has ${symbolElements.length} symbol elements in DOM`);
         
-        // Validate the final result
-        const finalSymbolCount = track.children.length;
+        // Validate the final result - check actual img elements, not all children
+        const finalSymbolCount = track.querySelectorAll('img').length;
         if (finalSymbolCount !== 3) {
           console.error(`ERROR: Reel ${reelIndex} has ${finalSymbolCount} symbols instead of 3!`);
         } else {
@@ -1876,8 +1858,10 @@
           reelStrip.push(...currentSymbols);
         }
         
-        for (let i = 0; i < 5; i++) { // Create 5 complete cycles of all teams
-          reelStrip.push(...shuffleTeams([...allTeams]));
+        // Create enough symbols for smooth spinning without overwhelming the display
+        // Add 15-20 random symbols - enough for visual variety during spin
+        for (let i = 0; i < 20; i++) {
+          reelStrip.push(allTeams[Math.floor(Math.random() * allTeams.length)]);
         }
         
         // Clear track and add spinning symbols
@@ -1909,21 +1893,8 @@
         track.style.paddingBottom = '0';     // Reduced padding to show bottom row
         track.style.position = 'relative';   // Important for absolute positioning
         
-        // Calculate how many symbols to show based on device
-        const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        const visibleRows = 4; // We always want to show at least 4 rows (3 + 1 for smooth transition)
-        const additionalSymbols = 9; // Extra symbols for smooth scrolling
-        
-        // Always ensure enough visible symbols at the beginning and end
-        // This ensures the bottom row is always visible during spinning
-        const initialVisibleSymbols = visibleRows + additionalSymbols;
-        const leadingSymbols = reelStrip.slice(0, initialVisibleSymbols);
-        
-        // Add preloader symbols that are positioned to ensure bottom row is always visible
-        const preloadSymbols = reelStrip.slice(-3); // Take last 3 symbols for preloading
-        
-        // Create all symbols, with extra symbols at start and end for seamless looping
-        [...preloadSymbols, ...leadingSymbols, ...reelStrip].forEach((symbol, index) => {
+        // Create spinning symbols - just use the reel strip we created
+        reelStrip.forEach((symbol, index) => {
           const img = document.createElement('img');
           img.src = symbol.image;
           img.alt = symbol.name;
@@ -1940,12 +1911,6 @@
           img.style.padding = '0';
           img.style.flexShrink = '0';
           img.style.opacity = '1'; // Ensure visibility
-          
-          // For the first few symbols, add class to help with positioning
-          if (index < 3) {
-            img.classList.add('preload-symbol');
-            img.style.opacity = '1'; // Make sure they're visible
-          }
           
           // Add fallback for missing logos
           img.onerror = () => {
