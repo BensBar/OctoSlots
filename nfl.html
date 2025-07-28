@@ -1407,65 +1407,112 @@
           console.log(`Trimmed reel ${reelIndex} to exactly 3 symbols`);
         }
 
-        // Create symbols with proper spacing and no gaps
-        const symbolElements = validSymbols.map((symbol, symbolIndex) => {
-          const img = document.createElement('img');
-          img.src = symbol.image;
-          img.alt = symbol.name;
-          img.setAttribute('data-symbol', symbol.name);
+        // FIXED: Seamless transition without DOM clearing to prevent flickering
+        const currentImages = Array.from(track.querySelectorAll('img'));
+        
+        // Get appropriate size based on device orientation and size
+        const isMobile = window.innerWidth <= 768;
+        const isPortrait = window.innerHeight > window.innerWidth;
+        const isIphone = /iPhone/.test(navigator.userAgent);
+        
+        // Size adjustments
+        let symbolSize = '80px';
+        if (isMobile) {
+          if (isPortrait) {
+            symbolSize = isIphone ? '65px' : '48px';
+          } else {
+            symbolSize = '48px';
+          }
+        }
+
+        if (currentImages.length === 3) {
+          // Simple case: replace the 3 current symbols with new ones (no DOM clearing)
+          validSymbols.forEach((symbol, symbolIndex) => {
+            if (currentImages[symbolIndex]) {
+              const img = currentImages[symbolIndex];
+              img.src = symbol.image;
+              img.alt = symbol.name;
+              img.setAttribute('data-symbol', symbol.name);
+              img.style.width = symbolSize;
+              img.style.height = symbolSize;
+              img.style.objectFit = 'contain';
+              img.style.borderRadius = '10px';
+              img.style.display = 'block';
+              img.style.margin = isPortrait && isMobile ? '10px 0' : '10px 0';
+              img.style.padding = '0';
+              img.style.flexShrink = '0';
+              img.style.opacity = '1';
+              
+              // Add fallback SVG for missing logos
+              img.onerror = () => {
+                console.log(`Image failed to load for ${symbol.name}, using fallback SVG`);
+                img.src = this.createFallbackSVG(symbol);
+              };
+              
+              console.log(`Updated symbol element ${symbolIndex} for reel ${reelIndex}: ${symbol.name}`);
+            }
+          });
+        } else {
+          // Complex case: we have many spinning symbols, transition to just 3
+          // Keep the DOM visible and transition smoothly without clearing
           
-          // Get appropriate size based on device orientation and size
-          const isMobile = window.innerWidth <= 768;
-          const isPortrait = window.innerHeight > window.innerWidth;
-          const isIphone = /iPhone/.test(navigator.userAgent);
+          // Replace first 3 with final symbols (maintain visibility)
+          validSymbols.forEach((symbol, symbolIndex) => {
+            if (currentImages[symbolIndex]) {
+              const img = currentImages[symbolIndex];
+              img.src = symbol.image;
+              img.alt = symbol.name;
+              img.setAttribute('data-symbol', symbol.name);
+              img.style.width = symbolSize;
+              img.style.height = symbolSize;
+              img.style.objectFit = 'contain';
+              img.style.borderRadius = '10px';
+              img.style.display = 'block';
+              img.style.margin = isPortrait && isMobile ? '10px 0' : '10px 0';
+              img.style.padding = '0';
+              img.style.flexShrink = '0';
+              img.style.opacity = '1';
+              
+              img.onerror = () => {
+                img.src = this.createFallbackSVG(symbol);
+              };
+              
+              console.log(`Transitioned symbol element ${symbolIndex} for reel ${reelIndex}: ${symbol.name}`);
+            }
+          });
           
-          // Size adjustments
-          let symbolSize = '80px';
-          if (isMobile) {
-            if (isPortrait) {
-              // Portrait iPhone needs larger symbols
-              symbolSize = isIphone ? '65px' : '48px';
-            } else {
-              // Landscape mobile needs smaller symbols
-              symbolSize = '48px';
+          // Remove extra symbols smoothly to avoid sudden disappearing
+          for (let i = 3; i < currentImages.length; i++) {
+            const img = currentImages[i];
+            if (img && img.parentNode) {
+              img.style.transition = 'opacity 0.2s ease-out';
+              img.style.opacity = '0';
+              setTimeout(() => {
+                if (img.parentNode) {
+                  img.parentNode.removeChild(img);
+                }
+              }, 200);
             }
           }
-          
-          img.style.width = symbolSize;
-          img.style.height = symbolSize;
-          img.style.objectFit = 'contain';
-          img.style.borderRadius = '10px';
-          img.style.display = 'block';
-          img.style.margin = isPortrait && isMobile ? '10px 0' : '10px 0';
-          img.style.padding = '0';
-          img.style.flexShrink = '0';
-          img.style.opacity = '1'; // Ensure visibility
-          
-          // Add fallback SVG for missing logos
-          img.onerror = () => {
-            console.log(`Image failed to load for ${symbol.name}, using fallback SVG`);
-            img.src = this.createFallbackSVG(symbol);
-          };
-          
-          console.log(`Created symbol element ${symbolIndex} for reel ${reelIndex}: ${symbol.name}`);
-          return img;
-        });
-
-        // Clear existing content
-        track.innerHTML = '';
-        
-        // Add all symbol elements directly without padding divs
-        symbolElements.forEach(element => track.appendChild(element));
-        
-        console.log(`Reel ${reelIndex} now has ${symbolElements.length} symbol elements in DOM`);
-        
-        // Validate the final result - check actual img elements, not all children
-        const finalSymbolCount = track.querySelectorAll('img').length;
-        if (finalSymbolCount !== 3) {
-          console.error(`ERROR: Reel ${reelIndex} has ${finalSymbolCount} symbols instead of 3!`);
-        } else {
-          console.log(`SUCCESS: Reel ${reelIndex} correctly has 3 symbols`);
         }
+        
+        // Ensure track layout is correct for final symbols
+        track.style.display = 'flex';
+        track.style.flexDirection = 'column';
+        track.style.justifyContent = 'space-around';
+        track.style.alignItems = 'center';
+        
+        console.log(`Reel ${reelIndex} seamlessly transitioned to ${validSymbols.length} final symbols`);
+        
+        // Validate the final result after transition
+        setTimeout(() => {
+          const finalSymbolCount = track.querySelectorAll('img').length;
+          if (finalSymbolCount !== 3) {
+            console.error(`ERROR: Reel ${reelIndex} has ${finalSymbolCount} symbols instead of 3 after transition!`);
+          } else {
+            console.log(`SUCCESS: Reel ${reelIndex} correctly has 3 symbols after seamless transition`);
+          }
+        }, 250);
       }
 
       // Create fallback SVG for missing logos
@@ -1851,6 +1898,14 @@
         
         // Create multiple sets of all teams to ensure enough symbols for spinning
         // This creates a full "reel strip" like in real slot machines
+        
+        // FIXED: Maintain visual continuity - avoid clearing DOM during spinning transition
+        // Instead of clearing completely, transition smoothly from current symbols to spinning
+        
+        // Get current symbols and preserve them
+        const currentImages = Array.from(track.querySelectorAll('img'));
+        
+        // Build the reel strip starting with current symbols for continuity
         const reelStrip = [];
         
         // Start with current symbols if they exist to maintain visual continuity
@@ -1858,14 +1913,10 @@
           reelStrip.push(...currentSymbols);
         }
         
-        // Create enough symbols for smooth spinning without overwhelming the display
-        // Add 15-20 random symbols - enough for visual variety during spin
+        // Create enough additional symbols for smooth spinning animation
         for (let i = 0; i < 20; i++) {
           reelStrip.push(allTeams[Math.floor(Math.random() * allTeams.length)]);
         }
-        
-        // Clear track and add spinning symbols
-        track.innerHTML = '';
         
         // Get appropriate size based on device orientation and size
         const isMobile = window.innerWidth <= 768;
@@ -1876,25 +1927,41 @@
         let symbolSize = '80px';
         if (isMobile) {
           if (isPortrait) {
-            // Portrait iPhone needs larger symbols
             symbolSize = isIphone ? '65px' : '48px';
           } else {
-            // Landscape mobile needs smaller symbols
             symbolSize = '48px';
           }
         }
         
-        // Set proper height and padding for consistent symbol display
-        track.style.display = 'flex';
-        track.style.flexDirection = 'column';
-        track.style.justifyContent = 'space-between'; // Changed to space-between
-        track.style.alignItems = 'center';
-        track.style.paddingTop = '0';        // Reduced padding to show bottom row
-        track.style.paddingBottom = '0';     // Reduced padding to show bottom row
-        track.style.position = 'relative';   // Important for absolute positioning
+        // Update existing symbols and add new ones without clearing the DOM
+        const targetSymbolCount = reelStrip.length;
         
-        // Create spinning symbols - just use the reel strip we created
-        reelStrip.forEach((symbol, index) => {
+        // Update existing images to match the beginning of our reel strip
+        currentImages.forEach((img, index) => {
+          if (index < reelStrip.length) {
+            const symbol = reelStrip[index];
+            img.src = symbol.image;
+            img.alt = symbol.name;
+            img.setAttribute('data-symbol', symbol.name);
+            img.style.width = symbolSize;
+            img.style.height = symbolSize;
+            img.style.objectFit = 'contain';
+            img.style.borderRadius = '10px';
+            img.style.display = 'block';
+            img.style.margin = isPortrait ? '10px 0' : '8px 0';
+            img.style.padding = '0';
+            img.style.flexShrink = '0';
+            img.style.opacity = '1';
+            
+            img.onerror = () => {
+              img.src = this.createFallbackSVG(symbol);
+            };
+          }
+        });
+        
+        // Add additional symbols if we need more than what currently exists
+        for (let i = currentImages.length; i < targetSymbolCount; i++) {
+          const symbol = reelStrip[i];
           const img = document.createElement('img');
           img.src = symbol.image;
           img.alt = symbol.name;
@@ -1904,24 +1971,29 @@
           img.style.objectFit = 'contain';
           img.style.borderRadius = '10px';
           img.style.display = 'block';
-          
-          // Adjust margins based on device
-          const margin = isPortrait ? '10px 0' : '8px 0';
-          img.style.margin = margin;
+          img.style.margin = isPortrait ? '10px 0' : '8px 0';
           img.style.padding = '0';
           img.style.flexShrink = '0';
-          img.style.opacity = '1'; // Ensure visibility
+          img.style.opacity = '1';
           
-          // Add fallback for missing logos
           img.onerror = () => {
             img.src = this.createFallbackSVG(symbol);
           };
           
           track.appendChild(img);
-        });
+        }
+        
+        // Set proper track layout for spinning animation
+        track.style.display = 'flex';
+        track.style.flexDirection = 'column';
+        track.style.justifyContent = 'space-between';
+        track.style.alignItems = 'center';
+        track.style.paddingTop = '0';
+        track.style.paddingBottom = '0';
+        track.style.position = 'relative';
         
         // Add a dataset property to help with tracking
-        track.dataset.totalSymbols = reelStrip.length;
+        track.dataset.totalSymbols = targetSymbolCount;
       }
 
       hideWinOverlay() {
