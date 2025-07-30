@@ -1509,6 +1509,9 @@
           const finalSymbolCount = track.querySelectorAll('img').length;
           if (finalSymbolCount !== 3) {
             console.error(`ERROR: Reel ${reelIndex} has ${finalSymbolCount} symbols instead of 3 after transition!`);
+            // Emergency fix: Re-render the symbols if they disappeared
+            console.log(`RECOVERY: Attempting to restore symbols for reel ${reelIndex}`);
+            this.setReelSymbols(reelIndex, validSymbols);
           } else {
             console.log(`SUCCESS: Reel ${reelIndex} correctly has 3 symbols after seamless transition`);
           }
@@ -1792,12 +1795,49 @@
 
         // Now that all reels have completed their animations, calculate and handle the win
         console.log('All reels animation completed, calculating win...');
+        
+        // Final validation to ensure all symbols are visible
+        this.validateAllReelSymbols(finalGrid);
+        
         const result = this.calculateWin(finalGrid);
         await this.handleWinResult(result, finalGrid);
 
         // Re-enable controls
         this.isSpinning = false;
         this.elements.spinButton && (this.elements.spinButton.disabled = false);
+      }
+
+      // Validates that all reels have the correct number of visible symbols
+      validateAllReelSymbols(expectedGrid) {
+        console.log('🔍 Final validation: Checking all reel symbols are visible...');
+        
+        this.elements.reels.forEach((reel, index) => {
+          if (!reel) return;
+          
+          const track = reel.querySelector('.symbol-track');
+          if (!track) return;
+          
+          const symbols = track.querySelectorAll('img');
+          const visibleSymbols = Array.from(symbols).filter(img => 
+            img.offsetHeight > 0 && img.offsetWidth > 0 && 
+            img.style.opacity !== '0' && img.style.display !== 'none'
+          );
+          
+          if (visibleSymbols.length !== 3) {
+            console.error(`🚨 CRITICAL: Reel ${index} has ${visibleSymbols.length} visible symbols instead of 3!`);
+            console.log(`🔧 RECOVERY: Attempting to restore symbols for reel ${index}`);
+            
+            // Emergency recovery: Force re-render with expected symbols
+            if (expectedGrid[index] && expectedGrid[index].length === 3) {
+              this.setReelSymbols(index, expectedGrid[index]);
+            } else {
+              // Last resort: Use random symbols
+              this.setReelSymbols(index, this.getRandomReelSymbols());
+            }
+          } else {
+            console.log(`✅ Reel ${index} validation passed: ${visibleSymbols.length} symbols visible`);
+          }
+        });
       }
 
       async handleWinResult(result, grid) {
