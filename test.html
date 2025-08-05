@@ -354,14 +354,20 @@
 
     .symbol-track.spinning {
       animation: reelSpinSmooth 0.08s linear infinite;
-      filter: blur(4px) brightness(0.8);
+      filter: blur(1px) brightness(0.9); /* FIXED: Reduced blur from 4px to 1px to maintain visibility */
       transition: filter 0.4s ease;
+      /* FIXED: Ensure visibility during spinning */
+      opacity: 1 !important;
+      visibility: visible !important;
     }
 
     .symbol-track.decelerating {
       animation: reelDecelerate 2s cubic-bezier(0.23, 1, 0.320, 1) forwards;
       filter: blur(0px) brightness(1);
       transition: filter 0.6s ease;
+      /* FIXED: Ensure visibility during deceleration */
+      opacity: 1 !important;
+      visibility: visible !important;
     }
 
     @keyframes reelSpinSmooth {
@@ -374,7 +380,7 @@
       100% { transform: translateY(0); }
     }
 
-    /* Ultra High-Quality Symbols */
+    /* Ultra High-Quality Symbols with visibility safeguards */
     .symbol-track img {
       width: var(--symbol-size);
       height: var(--symbol-size);
@@ -393,6 +399,9 @@
         rgba(0, 0, 0, 0.1) 100%);
       border: 2px solid rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(2px);
+      /* FIXED: Ensure symbols remain visible during all animation states */
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 
     .symbol-track img:hover {
