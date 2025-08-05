@@ -46,7 +46,7 @@
     * {
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
+      box-sizing: border-box !important;
     }
 
     body {
@@ -81,20 +81,25 @@
     }
 
     .game-container {
-      width: 100%;
+      padding: 0 !important;
+      margin: 0 auto !important;
+      width: 100vw !important;
+      box-sizing: border-box !important;
+      overflow-x: visible !important;
       min-height: 100dvh;
       display: flex;
       justify-content: center;
       align-items: center;
       position: relative;
       perspective: 1000px;
-      padding: 0 clamp(10px, 2vw, 30px);
-      box-sizing: border-box;
     }
 
     .slot-machine {
-      width: 100%;
-      max-width: min(95%, 1200px);
+      margin: 0 auto !important;
+      width: 100% !important;
+      max-width: min(95vw, 1200px) !important;
+      box-sizing: border-box !important;
+      overflow-x: visible !important;
       max-height: var(--machine-height);
       background: var(--machine-body);
       border: 8px solid var(--nfl-silver);
@@ -307,7 +312,12 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: clamp(12px, 2.5vw, 20px);
-      margin: clamp(20px, 4vw, 40px) auto;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow-x: visible !important;
+      box-sizing: border-box !important;
       padding: clamp(20px, 4vw, 35px);
       background: var(--reel-bg);
       border: 6px solid var(--nfl-silver);
@@ -317,10 +327,6 @@
         0 0 30px rgba(255, 182, 18, 0.3),
         inset 0 0 80px rgba(0, 0, 0, 0.5);
       position: relative;
-      overflow: visible;
-      width: 100%;
-      max-width: 100%;
-      box-sizing: border-box;
     }
 
     /* Enhanced Reels with Perfect 3-Row Visibility */
@@ -341,6 +347,11 @@
         0 0 20px rgba(255, 182, 18, 0.2),
         inset 0 0 50px rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(5px);
+    }
+
+    .reel:first-child {
+      margin-left: 0 !important;
+      transform: none !important;
     }
 
     /* Perfect Symbol Track for 3 Visible Rows */
