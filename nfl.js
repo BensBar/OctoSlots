@@ -239,13 +239,19 @@
 
     .symbol-track.spinning {
       animation: reelSpinSmooth 0.15s linear infinite;
-      filter: blur(3px);
+      filter: blur(1px); /* FIXED: Reduced from 3px to 1px to maintain symbol visibility */
       transition: filter 0.3s;
+      /* FIXED: Ensure visibility during spinning */
+      opacity: 1 !important;
+      visibility: visible !important;
     }
 
     .symbol-track.decelerating {
       filter: blur(0px);
       transition: filter 0.3s;
+      /* FIXED: Ensure visibility during deceleration */
+      opacity: 1 !important;
+      visibility: visible !important;
     }
 
     /* FIXED: Smooth continuous spinning animation */
@@ -254,7 +260,7 @@
       100% { transform: translateY(-80px); }
     }
 
-    /* FIXED: Enhanced symbol styling */
+    /* FIXED: Enhanced symbol styling with visibility safeguards */
     .symbol-track img {
       width: 80px;
       height: 80px;
@@ -265,6 +271,9 @@
       flex-shrink: 0;
       margin: 0;
       display: block;
+      /* FIXED: Ensure symbols remain visible during all animation states */
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 
     .symbol-track img.win {
@@ -677,14 +686,20 @@
 
     .symbol-track.spinning {
       animation: reelSpinSmooth 0.15s linear infinite;
-      filter: blur(3px);
+      filter: blur(1px); /* FIXED: Reduced from 3px to 1px to maintain symbol visibility */
       transition: filter 0.3s;
+      /* FIXED: Ensure visibility during spinning */
+      opacity: 1 !important;
+      visibility: visible !important;
     }
 
     .symbol-track.decelerating {
       animation: reelDecelerate 1.5s cubic-bezier(0.23, 1, 0.320, 1) forwards;
       filter: blur(0px);
       transition: filter 0.3s;
+      /* FIXED: Ensure visibility during deceleration */
+      opacity: 1 !important;
+      visibility: visible !important;
     }
   </style>
 </head>

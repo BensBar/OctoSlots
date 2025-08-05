@@ -691,6 +691,17 @@
     .reel.spinning {
       box-shadow: var(--reel-glow), var(--reel-shadow);
       transform: scale(1.02);
+      /* FIXED: Ensure spinning reels maintain visibility */
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+    
+    /* FIXED: Additional safeguard for spinning symbols */
+    .reel.spinning .symbol,
+    .reel.spinning .symbol img {
+      visibility: visible !important;
+      opacity: 1 !important;
+      display: block !important;
     }
     
     .reel:last-child {
@@ -706,6 +717,9 @@
       transition: filter 0.2s;
       min-height: 100%;
       background: transparent;
+      /* FIXED: Ensure reel strips are always visible during animations */
+      visibility: visible !important;
+      opacity: 1 !important;
     }
     /* Enhanced symbol styles for 4K */
     .symbol {
@@ -723,6 +737,9 @@
       /* Ensure symbols are always visible during animation */
       min-height: var(--symbol-size);
       overflow: hidden;
+      /* FIXED: Force visibility during all animation states */
+      visibility: visible !important;
+      opacity: 1 !important;
     }
     
     .symbol::before {
@@ -748,6 +765,9 @@
       border: none !important;
       transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       display: block;
+      /* FIXED: Ensure symbol images remain visible during blur animations */
+      visibility: visible !important;
+      opacity: 1 !important;
     }
     
     /* Improved fallback for images that fail to load */
@@ -1718,9 +1738,12 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
         const totalSymbols = 160; // 150 + 10 duplicates for seamless loop
         const symbolHeight = 128; // Enhanced for 4K: 8rem = 128px
         
-        // Enhanced spinning with acceleration and subtle blur
-        strip.style.filter = 'blur(1px)';
+        // FIXED: Enhanced spinning with lighter blur to maintain symbol visibility
+        strip.style.filter = 'blur(0.5px)'; // Reduced from 1px to 0.5px
         strip.style.transition = 'filter 0.3s ease-out';
+        // Ensure symbols remain visible during blur
+        strip.style.opacity = '1';
+        strip.style.visibility = 'visible';
         
     function spinLoop(ts) {
       if (!startTime) startTime = ts;
@@ -1769,14 +1792,20 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
             const y = currentModY + easeOut * forwardDistance;
             const modY = ((y % (totalSymbols * symbolHeight)) + (totalSymbols * symbolHeight)) % (totalSymbols * symbolHeight);
             strip.style.transform = `translateY(${-modY}px)`;
-            // Gradually remove blur as it slows down
-            const blurAmount = 1 * (1 - progress);
+            // FIXED: Gradually remove blur with gentler transition to maintain visibility
+            const blurAmount = 0.5 * (1 - progress); // Reduced from 1 to 0.5
             strip.style.filter = `blur(${blurAmount}px)`;
+            // Ensure opacity remains at 1 during blur transitions
+            strip.style.opacity = '1';
+            strip.style.visibility = 'visible';
             if (progress < 1) {
               requestAnimationFrame(animStep);
             } else {
               strip.style.transform = `translateY(${-targetY}px)`;
               strip.style.filter = 'none';
+              // FIXED: Explicitly ensure visibility after animation completes
+              strip.style.opacity = '1';
+              strip.style.visibility = 'visible';
               // Add winning effect if this reel has winning symbols
               setTimeout(() => {
                 reel.classList.add('win-effect');
