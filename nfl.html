@@ -35,6 +35,7 @@
       --vh: calc(var(--vh, 1vh) * 100);
       --4k-shadow: 0 0 80px #FFD700, 0 0 120px #FFA500, 0 0 40px #fff8;
       --4k-glow: 0 0 40px #FFD700, 0 0 80px #FFA500;
+      --symbol-size: 80px;
     }
 
     * {
@@ -241,9 +242,12 @@
     }
 
     .symbol-track.spinning {
-      animation: reelSpinSmooth 0.8s linear infinite;
+      animation: reelSpinSmooth 0.08s linear infinite;
       filter: blur(1px) brightness(0.9);
       transition: filter 0.3s;
+      /* FIXED: Ensure visibility during spinning */
+      opacity: 1 !important;
+      visibility: visible !important;
       /* Keep the track constrained to reel height during spinning */
       height: 100%;
       min-height: 100%;
@@ -252,27 +256,30 @@
     /* Removed preload-symbol CSS - no longer needed with simplified spinning */
 
     .symbol-track.decelerating {
-      animation: reelDecelerate 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+      animation: reelDecelerate 2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
       filter: blur(0px) brightness(1);
       transition: filter 0.5s ease;
+      /* FIXED: Ensure visibility during deceleration */
+      opacity: 1 !important;
+      visibility: visible !important;
     }
 
-    /* Enhanced smooth spinning animation with appropriate distance for reduced symbols */
+    /* Enhanced smooth spinning animation with responsive distance using CSS variables */
     @keyframes reelSpinSmooth {
       0% { transform: translateY(0); }
-      100% { transform: translateY(-80px); }
+      100% { transform: translateY(calc(-1 * var(--symbol-size, 80px))); }
     }
     
     /* Improved deceleration animation to ensure smooth transition with all rows visible */
     @keyframes reelDecelerate {
-      0% { transform: translateY(-80px); }
+      0% { transform: translateY(calc(-1 * var(--symbol-size, 80px))); }
       100% { transform: translateY(0); }
     }
 
-    /* FIXED: Enhanced symbol styling */
+    /* FIXED: Enhanced symbol styling with visibility safeguards */
     .symbol-track img {
-      width: 80px;
-      height: 80px;
+      width: var(--symbol-size);
+      height: var(--symbol-size);
       object-fit: contain;
       border-radius: 10px;
       transition: all 0.3s ease;
@@ -280,6 +287,9 @@
       flex-shrink: 0;
       margin: 0;
       display: block;
+      /* FIXED: Ensure symbols remain clearly visible throughout all animation states */
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 
     .symbol-track img.win {
@@ -677,6 +687,9 @@
 
     /* Responsive Design */
     @media (max-width: 768px) {
+      :root {
+        --symbol-size: 48px;
+      }
       body { padding: 5px; }
       .slot-machine {
         max-width: 100vw;
@@ -700,10 +713,6 @@
       .reel {
         height: 200px; /* Increased height to show all rows in portrait mode */
         min-height: 200px;
-      }
-      .symbol-track img {
-        width: 48px;
-        height: 48px;
       }
       .controls-section {
         grid-template-columns: 1fr;
@@ -789,6 +798,9 @@
     }
 
     @media (min-width: 1200px) and (min-device-pixel-ratio: 3) {
+      :root {
+        --symbol-size: 120px;
+      }
       .slot-machine {
         max-width: 900px;
         box-shadow: var(--4k-shadow);
@@ -810,11 +822,6 @@
         border-width: 8px;
         box-shadow: 0 0 40px #FFD700;
       }
-      .symbol-track img {
-        width: 120px;
-        height: 120px;
-        filter: drop-shadow(0 0 20px #FFD700) drop-shadow(0 0 40px #FFA500);
-      }
       .payline.active {
         box-shadow: 0 0 40px #FFD700, 0 0 80px #FFA500;
       }
@@ -825,6 +832,9 @@
     }
 
     @media (device-width: 1290px) and (device-height: 2796px) and (min-device-pixel-ratio: 3) {
+      :root {
+        --symbol-size: 160px;
+      }
       .slot-machine {
         max-width: 1200px;
         padding: 60px;
@@ -835,10 +845,6 @@
       }
       .reel {
         height: 420px;
-      }
-      .symbol-track img {
-        width: 160px;
-        height: 160px;
       }
     }
 
@@ -859,6 +865,9 @@
     @media only screen 
     and (max-device-width: 428px) 
     and (orientation: portrait) {
+      :root {
+        --symbol-size: 56px;
+      }
       .reels-container {
         margin: 10px 0;
         padding: 10px;
@@ -869,10 +878,6 @@
       }
       .symbol-track {
         justify-content: space-between;
-      }
-      .symbol-track img {
-        width: 56px;
-        height: 56px;
       }
       /* Ensure all three paylines are visible */
       .payline.line-1 { top: 25%; }
@@ -886,13 +891,12 @@
     and (max-device-width: 430px)
     and (min-device-height: 926px) 
     and (orientation: portrait) {
+      :root {
+        --symbol-size: 65px;
+      }
       .reel {
         height: 280px;
         min-height: 280px;
-      }
-      .symbol-track img {
-        width: 65px;
-        height: 65px;
       }
     }
 
@@ -901,13 +905,12 @@
     and (device-width: 1290px) 
     and (device-height: 2796px) 
     and (orientation: portrait) {
+      :root {
+        --symbol-size: 80px;
+      }
       .reel {
         height: 320px;
         min-height: 320px;
-      }
-      .symbol-track img {
-        width: 80px;
-        height: 80px;
       }
     }
 
