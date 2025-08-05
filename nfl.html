@@ -1211,7 +1211,7 @@
         };
 
         this.spinDuration = 2000;
-        this.reelStopDelay = 300;
+        this.reelStopDelay = 500; // Increased from 300 to make individual reel stops more noticeable
         this.jackpot = 50000;
 
         // --- DEMO MODE ---
@@ -1770,11 +1770,16 @@
           track.classList.add('decelerating');
           this.setReelSymbols(index, finalGrid[index]);
           
-          // Play stop.wav as a new instance for each reel
+          // Play stop.wav as a new Audio instance for each reel stop
+          console.log(`🔊 Playing stop sound for reel ${index}`);
           if (this.sounds['stop']) {
-            const stopClone = this.sounds['stop'].cloneNode();
-            stopClone.currentTime = 0;
-            stopClone.play();
+            // Create a new Audio instance to ensure independent playback
+            const stopSound = new Audio('sounds/stop.wav');
+            stopSound.volume = soundEnabled ? 0.8 : 0;
+            stopSound.currentTime = 0;
+            stopSound.play().catch(e => {
+              console.warn(`Failed to play stop sound for reel ${index}:`, e);
+            });
           }
           
           // Stop spin sound when the final (3rd) reel starts decelerating
