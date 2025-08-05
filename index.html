@@ -1913,26 +1913,17 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
         reel.style.willChange = 'transform';
       });
 
-      const spinTimes = [1800, 2300, 2800];
+      const spinTimes = [3000, 3000, 3000]; // All reels spin for the same duration
 
-      // REVERT: Use original logic (no onStopPhaseStart, no setTimeout for spinSound)
+      // Start all reels spinning and wait for all to complete simultaneously  
       const reelPromises = reels.map((reel, i) => animateReel(reel, spinTimes[i], stops[i]));
-      for (let i = 0; i < reelPromises.length; i++) {
-        await reelPromises[i];
-        // Play stop sound for first 2 reels (overlaps with spin sound)
-        if (i < 2) {
-          const stopClone = stopSound.cloneNode();
-          stopClone.currentTime = 0;
-          stopClone.play();
-        }
-        // On the 3rd (final) reel, stop spin sound and play final stop sound
-        if (i === 2) {
-          spinSound.pause();
-          spinSound.currentTime = 0;
-          stopSound.currentTime = 0;
-          stopSound.play();
-        }
-      }
+      await Promise.all(reelPromises); // Wait for all reels to finish at the same time
+      
+      // Play stop sound once when all reels stop
+      spinSound.pause();
+      spinSound.currentTime = 0;
+      stopSound.currentTime = 0;
+      stopSound.play();
       
       // Remove spinning effects after all reels stop
       reels.forEach(reel => {

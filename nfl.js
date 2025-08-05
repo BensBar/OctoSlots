@@ -238,7 +238,7 @@
     }
 
     .symbol-track.spinning {
-      animation: reelSpinSmooth 0.15s linear infinite;
+      animation: reelSpinSmooth 0.08s linear infinite;
       filter: blur(1px); /* FIXED: Reduced from 3px to 1px to maintain symbol visibility */
       transition: filter 0.3s;
       /* FIXED: Ensure visibility during spinning */
@@ -257,7 +257,7 @@
     /* FIXED: Smooth continuous spinning animation */
     @keyframes reelSpinSmooth {
       0% { transform: translateY(0); }
-      100% { transform: translateY(-80px); }
+      100% { transform: translateY(-160px); }
     }
 
     /* FIXED: Enhanced symbol styling with visibility safeguards */
@@ -685,7 +685,7 @@
     }
 
     .symbol-track.spinning {
-      animation: reelSpinSmooth 0.15s linear infinite;
+      animation: reelSpinSmooth 0.08s linear infinite;
       filter: blur(1px); /* FIXED: Reduced from 3px to 1px to maintain symbol visibility */
       transition: filter 0.3s;
       /* FIXED: Ensure visibility during spinning */
@@ -969,8 +969,8 @@
           lose: null
         };
 
-        this.spinDuration = 2000;
-        this.reelStopDelay = 300;
+        this.spinDuration = 3000; // Increased from 2000 to make spins last longer
+        this.reelStopDelay = 0; // Removed delay to make all reels stop simultaneously
         this.jackpot = 50000;
 
         // --- DEMO MODE ---
