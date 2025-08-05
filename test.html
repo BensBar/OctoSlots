@@ -88,13 +88,13 @@
       align-items: center;
       position: relative;
       perspective: 1000px;
-      padding: 0 clamp(5px, 1vw, 20px);
+      padding: 0 clamp(10px, 2vw, 30px);
       box-sizing: border-box;
     }
 
     .slot-machine {
       width: 100%;
-      max-width: min(100%, 1200px);
+      max-width: min(95%, 1200px);
       max-height: var(--machine-height);
       background: var(--machine-body);
       border: 8px solid var(--nfl-silver);
@@ -306,8 +306,8 @@
     .reels-container {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: clamp(15px, 3vw, 25px);
-      margin: clamp(20px, 4vw, 40px) 0;
+      gap: clamp(12px, 2.5vw, 20px);
+      margin: clamp(20px, 4vw, 40px) auto;
       padding: clamp(20px, 4vw, 35px);
       background: var(--reel-bg);
       border: 6px solid var(--nfl-silver);
@@ -318,6 +318,9 @@
         inset 0 0 80px rgba(0, 0, 0, 0.5);
       position: relative;
       overflow: visible;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
     }
 
     /* Enhanced Reels with Perfect 3-Row Visibility */
@@ -1007,17 +1010,17 @@
       }
       
       .game-container {
-        padding: 0 clamp(5px, 1.5vw, 15px);
+        padding: 0 clamp(8px, 2vw, 20px);
       }
       
       .slot-machine {
         border-width: 4px;
         padding: clamp(10px, 3vw, 20px);
-        max-width: min(95vw, 600px);
+        max-width: min(96vw, 600px);
       }
       
       .reels-container {
-        gap: clamp(8px, 2vw, 15px);
+        gap: clamp(6px, 1.5vw, 12px);
         padding: clamp(12px, 3vw, 20px);
       }
       
@@ -1042,11 +1045,11 @@
       }
       
       .game-container {
-        padding: 0 clamp(8px, 2vw, 16px);
+        padding: 0 clamp(12px, 2.5vw, 24px);
       }
       
       .slot-machine {
-        max-width: min(92vw, 420px);
+        max-width: min(94vw, 420px);
         padding: clamp(8px, 2vw, 15px);
         border-width: 3px;
       }
