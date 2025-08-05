@@ -242,7 +242,7 @@
 
     .symbol-track.spinning {
       animation: reelSpinSmooth 0.8s linear infinite;
-      filter: blur(2px);
+      filter: blur(1px) brightness(0.9);
       transition: filter 0.3s;
       /* Keep the track constrained to reel height during spinning */
       height: 100%;
@@ -253,20 +253,20 @@
 
     .symbol-track.decelerating {
       animation: reelDecelerate 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-      filter: blur(0px);
-      transition: filter 0.3s;
+      filter: blur(0px) brightness(1);
+      transition: filter 0.5s ease;
     }
 
     /* Enhanced smooth spinning animation with appropriate distance for reduced symbols */
     @keyframes reelSpinSmooth {
       0% { transform: translateY(0); }
-      100% { transform: translateY(-800px); }
+      100% { transform: translateY(-80px); }
     }
     
     /* Improved deceleration animation to ensure smooth transition with all rows visible */
     @keyframes reelDecelerate {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-240px); }
+      0% { transform: translateY(-80px); }
+      100% { transform: translateY(0); }
     }
 
     /* FIXED: Enhanced symbol styling */
