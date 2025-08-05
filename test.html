@@ -1042,11 +1042,11 @@
       }
       
       .game-container {
-        padding: 0 clamp(3px, 1vw, 10px);
+        padding: 0 clamp(8px, 2vw, 16px);
       }
       
       .slot-machine {
-        max-width: min(98vw, 450px);
+        max-width: min(92vw, 420px);
         padding: clamp(8px, 2vw, 15px);
         border-width: 3px;
       }
@@ -1072,13 +1072,80 @@
       }
       
       .slot-machine {
-        max-width: min(95vw, 500px);
+        max-width: min(88vw, 450px);
         padding: clamp(12px, 3vw, 25px);
       }
       
       :root {
         --symbol-size: min(20vw, 75px);
         --reel-height: calc(var(--symbol-size) * 3.2);
+      }
+    }
+
+    /* iPhone Portrait Mode Specific Optimizations (320px-414px) */
+    @media only screen 
+      and (max-width: 414px) 
+      and (orientation: portrait) {
+      
+      .game-container {
+        padding: 0 clamp(4px, 1.5vw, 12px);
+        min-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      }
+      
+      .slot-machine {
+        max-width: min(90vw, 380px);
+        padding: clamp(6px, 2vw, 14px);
+        border-width: 2px;
+        margin: 0 auto;
+      }
+      
+      :root {
+        --symbol-size: min(24vw, 65px);
+        --reel-height: calc(var(--symbol-size) * 3.0);
+      }
+      
+      .reels-container {
+        gap: clamp(4px, 1.5vw, 12px);
+        padding: clamp(8px, 2.5vw, 16px);
+      }
+      
+      .machine-title {
+        font-size: clamp(16px, 4.5vw, 24px);
+      }
+    }
+
+    /* Very Narrow iPhone Portrait Mode (iPhone SE, 12 mini) */
+    @media only screen 
+      and (max-width: 375px) 
+      and (orientation: portrait) {
+      
+      .game-container {
+        padding: 0 clamp(2px, 1vw, 8px);
+      }
+      
+      .slot-machine {
+        max-width: min(88vw, 340px);
+        padding: clamp(4px, 1.5vw, 12px);
+        border-width: 2px;
+      }
+      
+      :root {
+        --symbol-size: min(26vw, 60px);
+        --reel-height: calc(var(--symbol-size) * 2.9);
+      }
+      
+      .reels-container {
+        gap: clamp(3px, 1vw, 8px);
+        padding: clamp(6px, 2vw, 12px);
+      }
+      
+      .machine-title {
+        font-size: clamp(14px, 4vw, 20px);
+      }
+      
+      .led-light {
+        width: clamp(8px, 2.5vw, 16px);
+        height: clamp(8px, 2.5vw, 16px);
       }
     }
 
