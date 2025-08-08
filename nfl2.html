@@ -1,41 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OctoSlots</title>
-    <script>
-        function playSpin() {
-            document.getElementById('spinSound').play();
-        }
+function evaluateWin(symbols) {
+    const divisions = {
+        'AFC East': ['Buffalo Bills', 'Miami Dolphins', 'New England Patriots', 'New York Jets'],
+        'AFC North': ['Baltimore Ravens', 'Cincinnati Bengals', 'Cleveland Browns', 'Pittsburgh Steelers'],
+        'AFC South': ['Houston Texans', 'Indianapolis Colts', 'Jacksonville Jaguars', 'Tennessee Titans'],
+        'AFC West': ['Denver Broncos', 'Kansas City Chiefs', 'Las Vegas Raiders', 'Los Angeles Chargers'],
+        'NFC East': ['Dallas Cowboys', 'New York Giants', 'Philadelphia Eagles', 'Washington Commanders'],
+        'NFC North': ['Chicago Bears', 'Detroit Lions', 'Green Bay Packers', 'Minnesota Vikings'],
+        'NFC South': ['Atlanta Falcons', 'Carolina Panthers', 'New Orleans Saints', 'Tampa Bay Buccaneers'],
+        'NFC West': ['Arizona Cardinals', 'Los Angeles Rams', 'San Francisco 49ers', 'Seattle Seahawks']
+    };
 
-        function playStop() {
-            document.getElementById('stopSound').play();
-        }
+    const teamDivisions = {};
+    for (const division in divisions) {
+        divisions[division].forEach(team => {
+            teamDivisions[team] = division;
+        });
+    }
 
-        function playLose() {
-            document.getElementById('loseSound').play();
-        }
+    const symbolDivisions = symbols.map(symbol => teamDivisions[symbol]);
+    const allSameDivision = symbolDivisions.every(division => division === symbolDivisions[0]);
 
-        function playWin() {
-            document.getElementById('winSound').play();
-        }
-    </script>
-</head>
-<body>
-    <audio id="spinSound" src="spin.wav" preload="auto"></audio>
-    <audio id="stopSound" src="stop.wav" preload="auto"></audio>
-    <audio id="loseSound" src="lose.wav" preload="auto"></audio>
-    <audio id="winSound" src="win.wav" preload="auto"></audio>
-    
-    <!-- Game elements go here -->
-    
-    <script>
-        // Example usage of the functions
-        // Call playSpin() when the reels start spinning
-        // Call playStop() when each reel stops
-        // Call playLose() if the player loses
-        // Call playWin() if the player wins
-    </script>
-</body>
-</html>
+    return allSameDivision; // Return true if all symbols belong to the same division
+}
