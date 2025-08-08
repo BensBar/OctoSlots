@@ -1,35 +1,41 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OctoSlots</title>
     <script>
-        // Sound effect variables
-        var spinSound = new Audio('/sounds/spin.wav');
-        var stopSound = new Audio('/sounds/stop.wav');
-        var winSound = new Audio('/sounds/win.wav');
-        var loseSound = new Audio('/sounds/lose.wav');
-
-        function startReels() {
-            spinSound.play(); // Play spin sound when reels start
-            // Logic to start spinning reels
+        function playSpin() {
+            document.getElementById('spinSound').play();
         }
 
-        function stopReel(reelIndex) {
-            stopSound.play(); // Play stop sound when each reel stops
-            // Logic to stop the specific reel
+        function playStop() {
+            document.getElementById('stopSound').play();
         }
 
-        function checkWin() {
-            // Logic to check win condition
-            if (/* win condition */) {
-                winSound.play(); // Play win sound on win
-            } else {
-                loseSound.play(); // Play lose sound on no win
-            }
+        function playLose() {
+            document.getElementById('loseSound').play();
+        }
+
+        function playWin() {
+            document.getElementById('winSound').play();
         }
     </script>
 </head>
 <body>
-    <h1>Welcome to OctoSlots!</h1>
-    <!-- Additional HTML and game elements here -->
+    <audio id="spinSound" src="spin.wav" preload="auto"></audio>
+    <audio id="stopSound" src="stop.wav" preload="auto"></audio>
+    <audio id="loseSound" src="lose.wav" preload="auto"></audio>
+    <audio id="winSound" src="win.wav" preload="auto"></audio>
+    
+    <!-- Game elements go here -->
+    
+    <script>
+        // Example usage of the functions
+        // Call playSpin() when the reels start spinning
+        // Call playStop() when each reel stops
+        // Call playLose() if the player loses
+        // Call playWin() if the player wins
+    </script>
 </body>
 </html>
