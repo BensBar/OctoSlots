@@ -1,24 +1,35 @@
-function evaluateWin(symbols) {
-    const divisions = {
-        'AFC East': ['Buffalo Bills', 'Miami Dolphins', 'New England Patriots', 'New York Jets'],
-        'AFC North': ['Baltimore Ravens', 'Cincinnati Bengals', 'Cleveland Browns', 'Pittsburgh Steelers'],
-        'AFC South': ['Houston Texans', 'Indianapolis Colts', 'Jacksonville Jaguars', 'Tennessee Titans'],
-        'AFC West': ['Denver Broncos', 'Kansas City Chiefs', 'Las Vegas Raiders', 'Los Angeles Chargers'],
-        'NFC East': ['Dallas Cowboys', 'New York Giants', 'Philadelphia Eagles', 'Washington Commanders'],
-        'NFC North': ['Chicago Bears', 'Detroit Lions', 'Green Bay Packers', 'Minnesota Vikings'],
-        'NFC South': ['Atlanta Falcons', 'Carolina Panthers', 'New Orleans Saints', 'Tampa Bay Buccaneers'],
-        'NFC West': ['Arizona Cardinals', 'Los Angeles Rams', 'San Francisco 49ers', 'Seattle Seahawks']
-    };
+<html>
+<head>
+    <title>OctoSlots</title>
+    <script>
+        // Sound effect variables
+        var spinSound = new Audio('/sounds/spin.wav');
+        var stopSound = new Audio('/sounds/stop.wav');
+        var winSound = new Audio('/sounds/win.wav');
+        var loseSound = new Audio('/sounds/lose.wav');
 
-    const teamDivisions = {};
-    for (const division in divisions) {
-        divisions[division].forEach(team => {
-            teamDivisions[team] = division;
-        });
-    }
+        function startReels() {
+            spinSound.play(); // Play spin sound when reels start
+            // Logic to start spinning reels
+        }
 
-    const symbolDivisions = symbols.map(symbol => teamDivisions[symbol]);
-    const allSameDivision = symbolDivisions.every(division => division === symbolDivisions[0]);
+        function stopReel(reelIndex) {
+            stopSound.play(); // Play stop sound when each reel stops
+            // Logic to stop the specific reel
+        }
 
-    return allSameDivision; // Return true if all symbols belong to the same division
-}
+        function checkWin() {
+            // Logic to check win condition
+            if (/* win condition */) {
+                winSound.play(); // Play win sound on win
+            } else {
+                loseSound.play(); // Play lose sound on no win
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Welcome to OctoSlots!</h1>
+    <!-- Additional HTML and game elements here -->
+</body>
+</html>
