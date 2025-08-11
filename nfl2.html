@@ -795,8 +795,22 @@
               finalSymbols.push(symbols[1]); // Take middle symbol
               this.setReelSymbols(i, symbols);
               
-              // Play stop sound for each reel
-              this.playSound('stop');
+              // Play stop.wav for each reel using an independent instance
+              try {
+                const stopInstance = this.sounds.stop ? this.sounds.stop.cloneNode() : new Audio('./sounds/stop.wav');
+                stopInstance.volume = this.sounds.stop ? this.sounds.stop.volume : 0.7;
+                stopInstance.currentTime = 0;
+                stopInstance.play().catch(() => {});
+              } catch (e) {
+                // Fallback to existing sound system
+                this.playSound('stop');
+              }
+
+              // On the final reel, stop the spin.wav
+              if (i === 2 && this.sounds.spin) {
+                this.sounds.spin.pause();
+                this.sounds.spin.currentTime = 0;
+              }
               
               resolve();
             }, this.spinDuration + (i * this.reelStopDelay));
