@@ -1482,18 +1482,21 @@
       symbol.trim().length > 0
     );
 
-    // Emoji fallback symbols for when images fail to load
-    const fallbackSymbols = [
-      '🍒', '🍋', '🍊', '🍇', '🔔', '⭐', '💎', '🎰',
-      '🎲', '🍀', '💰', '🏆', '🎯', '🎊', '🎁', '🌟'
-    ];
+    // Preload original.png once during initialization to reduce fallback latency
+    (function preloadOriginal(){
+      if (!window._originalPreloaded) {
+        const im = new Image();
+        im.src = 'images/original.png';
+        window._originalPreloaded = true;
+      }
+    })();
 
-    // Function to get a valid random symbol (never returns empty)
+    // Function to get a valid random symbol (never returns empty, always returns image path)
     function getValidRandomSymbol() {
       if (symbols.length === 0) {
-        console.warn('No symbols available, using emoji fallback');
-        // Use emoji fallback if no valid image symbols
-        return fallbackSymbols[Math.floor(Math.random() * fallbackSymbols.length)];
+        console.warn('No symbols available, using original.png fallback');
+        // Use original.png fallback if no valid image symbols
+        return 'images/original.png';
       }
       
       // 25% chance to get a wild symbol for easier wins
@@ -1564,94 +1567,101 @@
         // Enhanced symbol creation with fallback support
         const symbol = getValidRandomSymbol();
         
-        // Check if symbol is an emoji or image path
-        if (fallbackSymbols.includes(symbol)) {
-          // Display emoji symbol directly
-          sym.style.fontSize = '4rem';
-          sym.style.textAlign = 'center';
-          sym.style.color = '#333';
-          sym.style.textShadow = '0 2px 4px rgba(0,0,0,0.3)';
-          sym.textContent = symbol;
-          sym.style.background = '#ffffff';
-          sym.style.border = 'none';
-        } else {
-          // Display image with fallback handling
-          const img = document.createElement('img');
-          img.style.width = '100%';
-          img.style.height = '100%';
-          img.style.objectFit = 'contain';
-          img.src = symbol;
-          img.alt = 'Symbol';
-          
-          // Add timeout to prevent blank symbols
-          let imageLoaded = false;
-          const fallbackTimeout = setTimeout(() => {
-            if (!imageLoaded) {
-              console.warn('Image loading timeout for:', symbol, '- using emoji fallback');
-              img.remove();
-              const fallbackEmoji = fallbackSymbols[Math.floor(Math.random() * fallbackSymbols.length)];
-              sym.style.fontSize = '4rem';
-              sym.style.textAlign = 'center';
-              sym.style.color = '#333';
-              sym.style.textShadow = '0 2px 4px rgba(0,0,0,0.3)';
-              sym.textContent = fallbackEmoji;
-              sym.style.background = '#ffffff';
-              sym.style.border = 'none';
-            }
-          }, 3000); // 3 second timeout
-          
-          // Success: clean white background, no border
-          img.onload = function() {
-            imageLoaded = true;
-            clearTimeout(fallbackTimeout);
-            sym.style.background = '#ffffff';
-            sym.style.border = 'none';
-          };
-          
-          // Enhanced error handling: fallback to original.png first, then emoji
-          img.onerror = function() {
-            imageLoaded = true;
-            clearTimeout(fallbackTimeout);
-            console.warn('Image failed to load:', symbol, '- trying original.png fallback');
-            // First try original.png as fallback
-            if (symbol !== 'images/original.png') {
-              img.src = 'images/original.png';
-              img.onerror = function() {
-                console.warn('original.png also failed to load - using emoji fallback');
-                img.remove();
-                const fallbackEmoji = fallbackSymbols[Math.floor(Math.random() * fallbackSymbols.length)];
-                sym.style.fontSize = '4rem';
-                sym.style.textAlign = 'center';
-                sym.style.color = '#333';
-                sym.style.textShadow = '0 2px 4px rgba(0,0,0,0.3)';
-                sym.textContent = fallbackEmoji;
-                sym.style.background = '#ffffff';
-                sym.style.border = 'none';
-              };
-            } else {
-              // If original.png itself failed, go directly to emoji
-              img.remove();
-              const fallbackEmoji = fallbackSymbols[Math.floor(Math.random() * fallbackSymbols.length)];
-              sym.style.fontSize = '4rem';
-              sym.style.textAlign = 'center';
-              sym.style.color = '#333';
-              sym.style.textShadow = '0 2px 4px rgba(0,0,0,0.3)';
-              sym.textContent = fallbackEmoji;
-              sym.style.background = '#ffffff';
-              sym.style.border = 'none';
-            }
-          };
-          
-          sym.appendChild(img);
-        }
+        // Single-fallback image creation (no emoji/text fallbacks)
+        const img = document.createElement('img');
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'contain';
+        img.decoding = 'async';
+        img.loading = 'eager';
+        img.alt = 'Symbol';
+
+        let triedOriginal = false;
+        let finished = false;
+
+        // Safety timeout: if slow to load, swap to original.png
+        const safetyTimeout = setTimeout(() => {
+          if (!finished && !triedOriginal && symbol !== 'images/original.png') {
+            console.warn('Symbol load slow, swapping to original.png:', symbol);
+            triedOriginal = true;
+            img.src = 'images/original.png';
+          }
+        }, 2500);
+
+        img.onload = () => {
+          finished = true;
+          clearTimeout(safetyTimeout);
+          img.style.background = 'transparent';
+        };
+
+        img.onerror = () => {
+          if (!triedOriginal && img.src.indexOf('images/original.png') === -1) {
+            triedOriginal = true;
+            img.src = 'images/original.png';
+            return; // wait for onload/onerror again
+          }
+          finished = true;
+          clearTimeout(safetyTimeout);
+          img.style.opacity = '0.15';
+          img.style.background = '#ffffff'; // subtle placeholder
+        };
+
+        img.src = symbol;
+        sym.appendChild(img);
         
         strip.appendChild(sym);
         reelSymbols.push(sym);
       }
       
-      // Duplicate the first 10 symbols at the end for seamless looping
+      // Duplicate the first 10 symbols at the end for seamless looping (with fresh handlers)
       for (let i = 0; i < Math.min(10, reelSymbols.length); i++) {
-        strip.appendChild(reelSymbols[i].cloneNode(true));
+        const originalImg = reelSymbols[i].querySelector('img');
+        if (!originalImg) continue;
+        const symClone = document.createElement('div');
+        symClone.className = 'symbol';
+        
+        // Copy symbol styling
+        symClone.style.minHeight = '128px';
+        symClone.style.height = '128px';
+        symClone.style.width = '100%';
+        symClone.style.background = '#ffffff';
+        symClone.style.borderRadius = '4px';
+        symClone.style.display = 'flex';
+        symClone.style.alignItems = 'center';
+        symClone.style.justifyContent = 'center';
+        symClone.style.position = 'relative';
+        symClone.style.overflow = 'hidden';
+        
+        const imgClone = document.createElement('img');
+        imgClone.style.width = '100%';
+        imgClone.style.height = '100%';
+        imgClone.style.objectFit = 'contain';
+        imgClone.decoding = 'async';
+        imgClone.loading = 'eager';
+        imgClone.alt = 'Symbol';
+        let triedOriginalClone = false;
+        let finishedClone = false;
+        const safetyTimeoutClone = setTimeout(() => {
+          if (!finishedClone && !triedOriginalClone && originalImg.src.indexOf('images/original.png') === -1) {
+            triedOriginalClone = true;
+            imgClone.src = 'images/original.png';
+          }
+        }, 2500);
+        imgClone.onload = () => { finishedClone = true; clearTimeout(safetyTimeoutClone); };
+        imgClone.onerror = () => {
+          if (!triedOriginalClone && imgClone.src.indexOf('images/original.png') === -1) {
+            triedOriginalClone = true;
+            imgClone.src = 'images/original.png';
+            return;
+          }
+          finishedClone = true;
+          clearTimeout(safetyTimeoutClone);
+          imgClone.style.opacity = '0.15';
+          imgClone.style.background = '#ffffff';
+        };
+        imgClone.src = originalImg.getAttribute('src');
+        symClone.appendChild(imgClone);
+        strip.appendChild(symClone);
       }
 
       // If a stop position is given, set the strip position so the chosen symbol is centered
