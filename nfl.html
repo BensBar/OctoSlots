@@ -242,15 +242,9 @@
       will-change: transform;
     }
 
-    .symbol-track.spinning {
-      /* Seamless loop: animate only half the track, with duplicated content */
-      animation: reelLoop var(--spin-speed, 400ms) linear infinite;
-      filter: blur(1px) brightness(0.95);
-      transition: filter 0.3s;
-      opacity: 1 !important;
-      visibility: visible !important;
-      height: 100%;
-      min-height: 100%;
+    .reel.spinning .symbol-track {
+      /* Animation timing matches nfl2.html for identical spin speed */
+      animation: spin 0.1s linear infinite;
     }
 
     .symbol-track.decelerating {
@@ -262,10 +256,10 @@
       visibility: visible !important;
     }
 
-    /* New seamless loop keyframe */
-    @keyframes reelLoop {
-      from { transform: translateY(0); }
-      to   { transform: translateY(-50%); } /* Only half because content is duplicated */
+    /* Spin keyframe matches nfl2.html for identical animation behavior */
+    @keyframes spin {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-100px); }
     }
 
     /* Updated deceleration */
@@ -1752,8 +1746,8 @@
 
           console.log(`Starting spin animation for reel ${index} (${reel.id})`);
 
-          // All reels: start spinning immediately
-          track.classList.add('spinning');
+          // All reels: start spinning immediately (matches nfl2.html pattern)
+          reel.classList.add('spinning');
           this.createSpinningSymbols(track, index);
 
           // Only the stopping is staggered
@@ -1763,8 +1757,8 @@
 
           console.log(`Stopping reel ${index} and setting final symbols`);
 
-          // Stop spinning and set final symbols
-          track.classList.remove('spinning');
+          // Stop spinning and set final symbols (matches nfl2.html pattern)
+          reel.classList.remove('spinning');
           track.classList.add('decelerating');
           this.setReelSymbols(index, finalGrid[index]);
           
