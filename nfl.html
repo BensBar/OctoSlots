@@ -234,7 +234,7 @@
       display: flex;
       flex-direction: column;
       height: 100%;
-      justify-content: space-around;
+      justify-content: flex-start;
       align-items: center;
       padding: 20px 0; /* Added padding to ensure symbols are properly spaced */
       transition: transform 0.1s ease;
@@ -267,12 +267,12 @@
     /* Enhanced smooth spinning animation with responsive distance using CSS variables */
     @keyframes reelSpinSmooth {
       0% { transform: translateY(0); }
-      100% { transform: translateY(calc(-1 * var(--symbol-size, 80px))); }
+      100% { transform: translateY(-2000%); }
     }
     
     /* Improved deceleration animation to ensure smooth transition with all rows visible */
     @keyframes reelDecelerate {
-      0% { transform: translateY(calc(-1 * var(--symbol-size, 80px))); }
+      0% { transform: translateY(-2000%); }
       100% { transform: translateY(0); }
     }
 
