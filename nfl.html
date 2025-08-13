@@ -236,44 +236,42 @@
       height: 100%;
       justify-content: flex-start;
       align-items: center;
-      padding: 20px 0; /* Added padding to ensure symbols are properly spaced */
+      padding: 20px 0; /* spacing between symbols */
       transition: transform 0.1s ease;
       position: relative;
+      will-change: transform;
     }
 
     .symbol-track.spinning {
-      animation: reelSpinSmooth 0.08s linear infinite;
-      filter: blur(1px) brightness(0.9);
+      /* Seamless loop: animate only half the track, with duplicated content */
+      animation: reelLoop var(--spin-speed, 400ms) linear infinite;
+      filter: blur(1px) brightness(0.95);
       transition: filter 0.3s;
-      /* FIXED: Ensure visibility during spinning */
       opacity: 1 !important;
       visibility: visible !important;
-      /* Keep the track constrained to reel height during spinning */
       height: 100%;
       min-height: 100%;
     }
-    
-    /* Removed preload-symbol CSS - no longer needed with simplified spinning */
 
     .symbol-track.decelerating {
-      animation: reelDecelerate 2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-      filter: blur(0px) brightness(1);
+      /* Decelerate from -50% (end of loop) back to 0 */
+      animation: reelDecelerate 1.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+      filter: blur(0) brightness(1);
       transition: filter 0.5s ease;
-      /* FIXED: Ensure visibility during deceleration */
       opacity: 1 !important;
       visibility: visible !important;
     }
 
-    /* Enhanced smooth spinning animation with responsive distance using CSS variables */
-    @keyframes reelSpinSmooth {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-2000%); }
+    /* New seamless loop keyframe */
+    @keyframes reelLoop {
+      from { transform: translateY(0); }
+      to   { transform: translateY(-50%); } /* Only half because content is duplicated */
     }
-    
-    /* Improved deceleration animation to ensure smooth transition with all rows visible */
+
+    /* Updated deceleration */
     @keyframes reelDecelerate {
-      0% { transform: translateY(-2000%); }
-      100% { transform: translateY(0); }
+      from { transform: translateY(-50%); }
+      to   { transform: translateY(0); }
     }
 
     /* FIXED: Enhanced symbol styling with visibility safeguards */
@@ -2347,6 +2345,15 @@
     // Initialize the game and demo button when DOM is loaded
     document.addEventListener('DOMContentLoaded', () => {
       if (document.querySelector('.slot-machine')) {
+        // Duplicate each reel's symbols for seamless looping
+        document.querySelectorAll('.symbol-track').forEach(track => {
+          const currentSymbols = Array.from(track.children);
+          currentSymbols.forEach(symbol => {
+            const clonedSymbol = symbol.cloneNode(true);
+            track.appendChild(clonedSymbol);
+          });
+        });
+        
         window.nflSlots = new NFLSlots();
         // Add a demo mode toggle button to the UI (if not present)
         const demoBtn = document.createElement('button');
