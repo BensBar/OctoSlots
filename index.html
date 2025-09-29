@@ -572,6 +572,7 @@
     .reels {
       display: flex;
       overflow: visible;
+      /* Height: 3 symbols + 4 gaps (top padding, 2 between symbols, bottom padding) for proper 3-row visibility */
       height: calc(var(--symbol-size) * 3 + var(--symbol-gap) * 4);
       width: var(--reels-width);
       max-width: 100%;
@@ -1635,7 +1636,7 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
         const symbolHeight = 128; // Enhanced for 4K: 8rem = 128px
         
         // Enhanced spinning with optimized blur for smooth visibility
-        strip.style.filter = 'blur(0.5px)'; // Very subtle blur for crisp visibility during spin
+        strip.style.filter = 'blur(0.5px)'; // Subtle blur maintains visibility while showing motion
         strip.style.transition = 'filter 0.5s ease-out';
         // Ensure symbols remain visible during blur
         strip.style.opacity = '1';
@@ -1683,7 +1684,7 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
           function animStep(ts) {
             if (!animStart) animStart = ts;
             const progress = Math.min((ts - animStart) / duration, 1);
-            // Smoother cubic bezier-style easing for natural deceleration
+            // Quintic easing (power of 5) for very smooth, gradual deceleration
             const easeOut = 1 - Math.pow(1 - progress, 5);
             const y = currentModY + easeOut * forwardDistance;
             const modY = ((y % (totalSymbols * symbolHeight)) + (totalSymbols * symbolHeight)) % (totalSymbols * symbolHeight);
