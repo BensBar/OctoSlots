@@ -199,7 +199,7 @@
       --reel-glow: 0 0 40px 12px #FFD70066, 0 0 80px 20px #FF850033;
       --reel-radius: 3rem;
       --symbol-size: clamp(4rem, 14vw, 8rem);
-      --symbol-gap: 0;
+      --symbol-gap: 0.3rem;
       --reels-width: min(36rem, 95vw);
       --reel-drum: linear-gradient(180deg, #ffffff 0%, #ffffff 30%, #ffffff 70%, #ffffff 100%), 
                    radial-gradient(ellipse at 50% 30%, #ffffff 0%, #ffffff 70%), 
@@ -572,7 +572,8 @@
     .reels {
       display: flex;
       overflow: visible;
-      height: calc(var(--symbol-size) * 3);
+      /* Height: 3 symbols + 4 gaps (top padding, 2 between symbols, bottom padding) for proper 3-row visibility */
+      height: calc(var(--symbol-size) * 3 + var(--symbol-gap) * 4);
       width: var(--reels-width);
       max-width: 100%;
       border: 6px solid #bfa100;
@@ -583,6 +584,22 @@
       margin-bottom: 2rem;
       border-top: 10px solid #fff8;
       border-bottom: 10px solid #fff8;
+    }
+    
+    /* Center win line indicator */
+    .reels::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -12px;
+      right: -12px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent 0%, #FFD700 10%, #FFD700 90%, transparent 100%);
+      transform: translateY(-50%);
+      pointer-events: none;
+      z-index: 10;
+      box-shadow: 0 0 12px #FFD700, 0 0 24px #FFD700;
+      opacity: 0.7;
     }
     /* Slot machine handle */
     .slot-handle {
@@ -1618,9 +1635,9 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
         const totalSymbols = 160; // 150 + 10 duplicates for seamless loop
         const symbolHeight = 128; // Enhanced for 4K: 8rem = 128px
         
-        // FIXED: Enhanced spinning with lighter blur to maintain symbol visibility
-        strip.style.filter = 'blur(0.5px)'; // Reduced from 1px to 0.5px
-        strip.style.transition = 'filter 0.3s ease-out';
+        // Enhanced spinning with optimized blur for smooth visibility
+        strip.style.filter = 'blur(0.5px)'; // Subtle blur maintains visibility while showing motion
+        strip.style.transition = 'filter 0.5s ease-out';
         // Ensure symbols remain visible during blur
         strip.style.opacity = '1';
         strip.style.visibility = 'visible';
@@ -1630,10 +1647,10 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
       const elapsed = ts - startTime;
       
       if (elapsed < spinTime) {
-        // Improved animation with easing and better seamless wrapping
+        // Smoother animation with refined easing for better visual flow
         const progress = elapsed / spinTime;
-        const easeOut = 1 - Math.pow(1 - progress, 3);
-        const speed = 2.5 + (1.5 * (1 - easeOut)); // Slightly slower to prevent rendering gaps
+        const easeOut = 1 - Math.pow(1 - progress, 4); // More gradual easing
+        const speed = 1.5 + (1.0 * (1 - easeOut)); // Reduced speed for smoother motion
         
         // More stable modulo calculation to prevent visual gaps
         const totalHeight = totalSymbols * symbolHeight;
@@ -1662,18 +1679,18 @@ function animateReel(reel, spinTime, stopAt, reelIndex, onStopPhaseStart) {
           if (typeof onStopPhaseStart === 'function') {
             onStopPhaseStart();
           }
-          const duration = 800; // Slightly longer for smoother stop
+          const duration = 1000; // Longer duration for smoother stop
           let animStart = null;
           function animStep(ts) {
             if (!animStart) animStart = ts;
             const progress = Math.min((ts - animStart) / duration, 1);
-            // Smooth easing for stopping
-            const easeOut = 1 - Math.pow(1 - progress, 4);
+            // Quintic easing (power of 5) for very smooth, gradual deceleration
+            const easeOut = 1 - Math.pow(1 - progress, 5);
             const y = currentModY + easeOut * forwardDistance;
             const modY = ((y % (totalSymbols * symbolHeight)) + (totalSymbols * symbolHeight)) % (totalSymbols * symbolHeight);
             strip.style.transform = `translateY(${-modY}px)`;
-            // FIXED: Gradually remove blur with gentler transition to maintain visibility
-            const blurAmount = 0.5 * (1 - progress); // Reduced from 1 to 0.5
+            // Gradually remove blur with smooth transition
+            const blurAmount = 0.5 * (1 - progress); // Smooth blur fade-out from 0.5px
             strip.style.filter = `blur(${blurAmount}px)`;
             // Ensure opacity remains at 1 during blur transitions
             strip.style.opacity = '1';
